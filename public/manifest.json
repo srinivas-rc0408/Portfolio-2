@@ -1,0 +1,24 @@
+{
+  "name": "Srinivas RC - Software Developer & AI Engineer",
+  "short_name": "Srinivas RC",
+  "description": "Software Developer & AI Engineer building LLM-powered web applications and agentic systems",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#22c55e",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/images/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

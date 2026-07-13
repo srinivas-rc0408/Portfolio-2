@@ -1,0 +1,542 @@
+/* Container - fills pane; pane has the padding for space inside green border */
+.identity-container { 
+  perspective: 800px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  background: #000;
+  color: #22d3ee;
+  font-family: Consolas, Menlo, monospace;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+/* Same CRT scanlines as terminal */
+.identity-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 1px,
+    rgba(0, 0, 0, 0.12) 1px,
+    rgba(0, 0, 0, 0.12) 2px
+  );
+}
+
+/* Same CRT noise as terminal */
+.identity-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+@media (min-width: 640px) {
+  .identity-container {
+    perspective: 1000px;
+  }
+}
+
+/* Lanyard String - Mobile responsive */
+.lanyard-string {
+  margin-bottom: 0.25rem;
+  width: 1px;
+  height: 3rem;
+  border-radius: 0.125rem;
+  background: linear-gradient(to bottom, rgb(63 63 70), rgb(113 113 122), rgb(63 63 70));
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .lanyard-string {
+    margin-bottom: 0.5rem;
+    height: 5rem;
+  }
+}
+
+.lanyard-string::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -1.5px;
+  width: 4px;
+  height: 4px;
+  background: #6b7280;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0,0,0,0.4) inset;
+}
+
+@media (min-width: 640px) {
+  .lanyard-string::before {
+    top: -6px;
+    left: -2px;
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* Lanyard Clip - Mobile responsive */
+.lanyard-clip {
+  margin-bottom: 0.25rem;
+  position: relative;
+  width: 1rem;
+  height: 0.75rem;
+  border-radius: 0.2rem;
+  border: 1px solid rgb(63 63 70);
+  background: linear-gradient(to bottom right, rgb(63 63 70), rgb(24 24 27));
+}
+
+@media (min-width: 640px) {
+  .lanyard-clip {
+    margin-bottom: 0.5rem;
+    width: 1.25rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+  }
+}
+
+.lanyard-clip::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 1.5px;
+  background: #71717a;
+  transform: translate(-50%, -50%);
+  border-radius: 1px;
+  opacity: 0.9;
+}
+
+@media (min-width: 640px) {
+  .lanyard-clip::before {
+    width: 8px;
+    height: 2px;
+  }
+}
+
+/* ID Card - Mobile responsive */
+.identity-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 90vw;
+  max-width: 280px;
+  height: 320px;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(34, 211, 238, 0.4);
+  background: rgba(9, 9, 11, 0.8);
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 0 0 1px rgba(34, 211, 238, 0.25),
+    0 0 20px rgba(34, 211, 238, 0.08);
+  transform-style: preserve-3d;
+  transition: box-shadow 0.3s ease;
+}
+
+@media (min-width: 480px) {
+  .identity-card {
+    max-width: 320px;
+    height: 360px;
+    border-radius: 0.6rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .identity-card {
+    width: 15rem;
+    max-width: none;
+    height: 360px;
+    border-radius: 0.75rem;
+    box-shadow: 
+      0 0 0 1px rgba(34, 211, 238, 0.25),
+      0 0 40px rgba(34, 211, 238, 0.08);
+    transition: box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@media (min-width: 768px) {
+  .identity-card {
+    width: 18rem;
+    height: 420px;
+  }
+}
+
+/* Hovered state: stronger shadow (rotation/transform is handled by Framer Motion) */
+.identity-card.mobile.hovered {
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(34, 211, 238,0.45),
+    0 0 20px rgba(34, 211, 238,0.20);
+  transition: box-shadow 0.3s ease;
+}
+
+.identity-card.hovered:not(.mobile) {
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(34, 211, 238,0.55),
+    0 0 34px rgba(34, 211, 238,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  transition: box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Card Header - Mobile responsive */
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem 0.5rem;
+  border-bottom: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+@media (min-width: 640px) {
+  .card-header {
+    padding: 1.25rem 1.25rem 1rem 1.25rem;
+  }
+}
+
+.company-logo {
+  margin-right: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .company-logo {
+    margin-right: 0.75rem;
+  }
+}
+
+.logo-icon {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: rgb(52 211 153);
+}
+
+@media (min-width: 640px) {
+  .logo-icon {
+    font-size: 1.125rem;
+  }
+}
+
+.company-name {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.625rem;
+  color: rgb(228 228 231);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 480px) {
+  .company-name {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+  }
+}
+
+@media (min-width: 640px) {
+  .company-name {
+    font-size: 0.875rem;
+  }
+}
+
+/* Photo Section - Mobile responsive */
+.photo-section {
+  padding: 1rem 1rem 0.75rem;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .photo-section {
+    padding: 1.5rem 1.25rem 1rem 1.25rem;
+  }
+}
+
+.photo-frame {
+  position: relative;
+  width: 90px;
+  height: 110px;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(34, 211, 238, 0.6);
+  box-shadow: 
+    0 0 0 1px rgba(34, 211, 238, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 480px) {
+  .photo-frame {
+    width: 100px;
+    height: 125px;
+    border-radius: 0.3rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .photo-frame {
+    width: 120px;
+    height: 150px;
+    border-radius: 0.375rem;
+    box-shadow: 
+      0 0 0 1px rgba(34, 211, 238, 0.3),
+      0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.2) contrast(1.1);
+  transition: all 0.3s ease;
+}
+
+.identity-card.hovered .profile-photo { 
+  filter: grayscale(0%) contrast(1.2); 
+}
+
+/* Info Section - Mobile responsive */
+.info-section {
+  padding: 0 1rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .info-section {
+    padding: 0 1.25rem;
+  }
+}
+
+.employee-name {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: rgb(244 244 245);
+  letter-spacing: 0.025em;
+  line-height: 1.2;
+}
+
+@media (min-width: 480px) {
+  .employee-name {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .employee-name {
+    font-size: 1.125rem;
+  }
+}
+
+.employee-title {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.625rem;
+  color: rgb(52 211 153);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-top: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .employee-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+  }
+}
+
+.employee-id {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 9px;
+  color: rgb(113 113 122);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .employee-id {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    margin-top: 0.75rem;
+  }
+}
+
+/* Card Footer - Mobile responsive */
+.card-footer {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .card-footer {
+    bottom: 1.25rem;
+    left: 1.25rem;
+    right: 1.25rem;
+  }
+}
+
+.access-level {
+  display: flex;
+  align-items: center;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 9px;
+  color: rgb(52 211 153);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .access-level {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+  }
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: rgb(16 185 129);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  margin-right: 0.375rem;
+}
+
+@media (min-width: 640px) {
+  .status-indicator {
+    width: 0.5rem;
+    height: 0.5rem;
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+    margin-right: 0.5rem;
+  }
+}
+
+/* Interactive Label - same green as terminal (#22d3ee) */
+.interaction-label {
+  font-family: Consolas, Menlo, monospace;
+  font-size: 10px;
+  color: #22d3ee;
+  margin-top: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .interaction-label {
+    font-size: 11px;
+    margin-top: 1.25rem;
+    letter-spacing: 0.2em;
+  }
+}
+
+/* Backdrop glow - Same for all devices */
+.backdrop-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.1;
+  mix-blend-mode: screen;
+  background: 
+    radial-gradient(800px 200px at 20% 0%, rgba(34, 211, 238,.15), transparent),
+    radial-gradient(800px 200px at 80% 100%, rgba(34, 211, 238,.1), transparent);
+}
+
+@media (min-width: 640px) {
+  .backdrop-glow {
+    background: 
+      radial-gradient(1000px 300px at 20% 0%, rgba(34, 211, 238,.15), transparent),
+      radial-gradient(1000px 300px at 80% 100%, rgba(34, 211, 238,.1), transparent);
+  }
+}
+
+/* CRT scanlines - Lighter on mobile */
+.crt-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.crt-scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(18,16,16,0) 50%, rgba(0,0,0,0.15) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: multiply;
+  opacity: 0.3;
+}
+
+@media (min-width: 640px) {
+  .crt-scanlines::before {
+    background: linear-gradient(to bottom, rgba(18,16,16,0) 50%, rgba(0,0,0,0.28) 50%);
+    background-size: 100% 6px;
+    opacity: 0.6;
+  }
+}
+
+/* Photo overlay */
+.photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right, transparent, rgba(34, 211, 238, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.identity-card.hovered .photo-overlay { 
+  opacity: 1; 
+}
+
+.holographic-overlay {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.08), transparent);
+}
+
+@media (min-width: 640px) {
+  .holographic-overlay {
+    background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.12), transparent);
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Prevent text selection on touch devices */
+@media (hover: none) {
+  .identity-card {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
