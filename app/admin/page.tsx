@@ -191,6 +191,7 @@ const THEME_PRESETS: { name: string; color: string }[] = [
   { name: "Blue", color: "#22d3ee" },
   { name: "Red", color: "#ef4444" },
   { name: "Green", color: "#22c55e" },
+  { name: "White", color: "#ffffff" },
   { name: "Mono", color: "#e5e7eb" },
 ];
 

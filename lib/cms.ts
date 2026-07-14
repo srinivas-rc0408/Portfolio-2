@@ -65,6 +65,34 @@ let cacheSettings: SiteSettings = DEFAULT_SETTINGS;
 let cachePublic: CmsItem[] = [];
 let cacheUser: SessionUser | null = null;
 
+// Last-known settings survive reloads so the boot screen and theme accent
+// paint with the chosen color immediately (no default-cyan flash while the
+// server hydrate is in flight). profileImage is skipped — data URLs are too
+// large for localStorage.
+const SETTINGS_LS_KEY = "portfolio:settings";
+
+function persistSettings(): void {
+  if (typeof window === "undefined") return;
+  try {
+    const { displayName, title, themeAccent } = cacheSettings;
+    localStorage.setItem(
+      SETTINGS_LS_KEY,
+      JSON.stringify({ displayName, title, themeAccent })
+    );
+  } catch {
+    /* quota / private mode — in-memory cache still works */
+  }
+}
+
+if (typeof window !== "undefined") {
+  try {
+    const raw = localStorage.getItem(SETTINGS_LS_KEY);
+    if (raw) cacheSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+  } catch {
+    /* corrupted entry — fall back to defaults */
+  }
+}
+
 interface ApiEntry {
   id: string;
   section: string;
@@ -104,6 +132,7 @@ export async function hydrate(): Promise<void> {
     if (!res.ok) return;
     const data = await res.json();
     cacheSettings = { ...DEFAULT_SETTINGS, ...data.settings };
+    persistSettings();
     cachePublic = (data.entries as ApiEntry[]).map(toItem);
     cacheUser = data.user ?? null;
     fire(SETTINGS_UPDATED_EVENT);
@@ -178,6 +207,7 @@ export async function logout(): Promise<void> {
 
 export async function saveSettings(patch: Partial<SiteSettings>): Promise<void> {
   cacheSettings = { ...cacheSettings, ...patch };
+  persistSettings();
   fire(SETTINGS_UPDATED_EVENT); // optimistic → live UI updates instantly
   await fetch("/api/settings", {
     method: "PUT",

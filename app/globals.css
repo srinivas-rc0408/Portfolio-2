@@ -73,7 +73,7 @@ html {
 
 /* === Boot sequence: ch-precise typing for "Loading Srinivas's Portfolio..." (31 chars) === */
 @keyframes blinkCursor {
-  0%, 100% { border-right-color: #38bdf8; } /* sky-400 */
+  0%, 100% { border-right-color: var(--boot-accent, #38bdf8); }
   50% { border-right-color: transparent; }
 }
 

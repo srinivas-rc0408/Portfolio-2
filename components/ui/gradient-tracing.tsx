@@ -11,17 +11,12 @@ interface GradientTracingProps {
   animationDuration?: number;
   strokeWidth?: number;
   path?: string;
-  /** Optional SVG text traced with the same gradient (e.g. ".RC"). */
-  text?: string;
-  textX?: number;
-  textY?: number;
-  fontSize?: number;
   className?: string;
 }
 
 /**
- * Traces an SVG path — and, optionally, an SVG <text> — with an animated
- * gradient stroke and no fill. Responsive via viewBox; scales on all screens.
+ * Traces an SVG path with an animated gradient stroke and no fill.
+ * Responsive via viewBox; scales on all screens.
  * (Uses framer-motion, already installed; API-compatible with the `motion` pkg.)
  */
 export const GradientTracing: React.FC<GradientTracingProps> = ({
@@ -32,25 +27,9 @@ export const GradientTracing: React.FC<GradientTracingProps> = ({
   animationDuration = 2,
   strokeWidth = 2,
   path = `M0,${height / 2} L${width},${height / 2}`,
-  text,
-  textX,
-  textY,
-  fontSize = 130,
   className = "",
 }) => {
   const gradientId = useId();
-
-  const textProps = text
-    ? {
-        x: textX ?? width * 0.55,
-        y: textY ?? height * 0.62,
-        fontSize,
-        fontWeight: 900 as const,
-        fontStyle: "italic" as const,
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        dominantBaseline: "middle" as const,
-      }
-    : null;
 
   return (
     <div className={`relative ${className}`}>
@@ -61,15 +40,10 @@ export const GradientTracing: React.FC<GradientTracingProps> = ({
         fill="none"
         className="h-auto w-full"
         role="img"
-        aria-label={text ? `S ${text}` : "logo"}
+        aria-label="Lightning S logo"
       >
-        {/* Faint base outlines */}
+        {/* Faint base outline */}
         <path d={path} stroke={baseColor} strokeOpacity="0.2" strokeWidth={strokeWidth} />
-        {textProps && (
-          <text {...textProps} fill="transparent" stroke={baseColor} strokeOpacity="0.2" strokeWidth={strokeWidth}>
-            {text}
-          </text>
-        )}
         {/* Animated gradient tracing */}
         <path
           d={path}
@@ -78,17 +52,6 @@ export const GradientTracing: React.FC<GradientTracingProps> = ({
           strokeLinejoin="round"
           strokeWidth={strokeWidth}
         />
-        {textProps && (
-          <text
-            {...textProps}
-            fill="transparent"
-            stroke={`url(#${gradientId})`}
-            strokeWidth={strokeWidth}
-            strokeLinejoin="round"
-          >
-            {text}
-          </text>
-        )}
         <defs>
           <motion.linearGradient
             animate={{ x1: [0, width * 2], x2: [0, width] }}

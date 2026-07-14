@@ -16,13 +16,15 @@ import {
   logout,
 } from "@/lib/cms";
 
-/** "S RC" brand mark — lightning-bolt S + initials, with a hover tooltip. */
+/** "S.RC" brand mark — lightning-bolt S + initials, no gap, hover tooltip. */
 const BrandMark: React.FC = () => (
-  <div className="group/logo relative flex cursor-default items-center gap-1">
+  <div className="group/logo relative flex cursor-default items-center gap-0.5">
+    {/* viewBox cropped to the bolt's visual bounds (x 6–32) so no dead space
+        pads the right edge — the ".RC" sits snug against the bolt. */}
     <svg
-      width="40"
+      width="28"
       height="40"
-      viewBox="0 0 40 40"
+      viewBox="5 0 28 40"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label="S.RC"
