@@ -2,6 +2,8 @@
 
 The personal portfolio of **Srinivas R C**, an AI/ML Engineer from Bengaluru, India — built as an interactive terminal with Next.js 16, React 19, TypeScript, and Tailwind CSS. Features command-line navigation, a two-stage boot sequence, an AI assistant ("Jerry"), a Neon-backed admin CMS, and matrix-style animations.
 
+_Developed and maintained solely by Srinivas R C._
+
 [![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](http://localhost:3000/)
 [![Next.js](https://img.shields.io/badge/Next.js-16.0-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2-blue)](https://react.dev/)
@@ -299,6 +301,6 @@ If you like this project, please consider giving it a ⭐ on GitHub!
 
 ---
 
-**© 2026 Srinivas R C — AI/ML Engineer, Bengaluru** · Licensed under the [MIT License](LICENSE)
+**© 2026 Srinivas R C — AI/ML Engineer, Bengaluru** · Developed and maintained solely by Srinivas R C · Licensed under the [MIT License](LICENSE)
 
 _Last Updated: November 2025_

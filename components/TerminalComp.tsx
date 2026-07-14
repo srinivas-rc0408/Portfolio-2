@@ -308,6 +308,7 @@ const HELP_GROUPS: HelpGroup[] = [
     accent: "text-white",
     entries: [
       { command: "about", description: "Learn more about me." },
+      { command: "about-portfolio", description: "System info about this portfolio build." },
       { command: "projects", description: "View my recent AI and Web projects." },
       { command: "skills", description: "See my technical stack." },
       { command: "experience", description: "View my professional experience." },
@@ -363,6 +364,7 @@ const JerryHint: React.FC = () => (
 const TAB_COMPLETIONS: string[] = [
   "help",
   "about",
+  "about-portfolio",
   "projects",
   "skills",
   "experience",
@@ -572,9 +574,43 @@ const Welcome: React.FC = () => {
 };
 
 // Section renderers shared by `cd <section>` and the bare section commands.
+// Stylized system-info card for the "About Portfolio" nav button / command.
+const AboutPortfolio: React.FC = () => (
+  <div
+    role="region"
+    aria-label="Portfolio system info"
+    className="font-mono text-sm leading-relaxed text-cyan-300"
+  >
+    <div className="mb-1 font-bold tracking-[0.2em] text-cyan-400">
+      [ SYSTEM PORTFOLIO INFO ]
+    </div>
+    <div>
+      <span className="text-cyan-500">Version:</span> v2.0.0
+    </div>
+    <div>
+      <span className="text-cyan-500">Developer &amp; Sole Architect:</span>{" "}
+      <span className="font-bold text-cyan-200">Srinivas R C</span>
+    </div>
+    <div>
+      <span className="text-cyan-500">Tech Stack:</span> Next.js, TypeScript,
+      Tailwind CSS, Framer Motion
+    </div>
+    <div>
+      <span className="text-cyan-500">AI Integration:</span>{" "}
+      Custom Edge-Runtime LLM Agent (&quot;Jerry&quot;)
+    </div>
+    <div className="mt-3 border-l-2 border-cyan-500/60 pl-3 italic text-cyan-300/90">
+      &quot;This interactive terminal interface was architected and developed to
+      showcase advanced full-stack engineering, prompt architecture, and
+      ultra-smooth UI/UX motion design.&quot;
+    </div>
+  </div>
+);
+
 const SECTION_COMPONENTS: Record<string, React.ReactNode> = {
   welcome: <Welcome />,
   about: <About />,
+  "about-portfolio": <AboutPortfolio />,
   projects: <Projects />,
   skills: <Skills />,
   experience: <Experience />,
@@ -1180,10 +1216,10 @@ export default function Terminal({
     >
       <header className="terminal-header">
         <div className="window-dots">
-          {/* Saffron — view profile picture */}
+          {/* Red — view profile picture */}
           <button
             type="button"
-            className="dot dot-saffron"
+            className="dot dot-red"
             title="View profile picture"
             aria-label="View profile picture"
             onClick={(e) => {
@@ -1191,10 +1227,10 @@ export default function Terminal({
               window.dispatchEvent(new CustomEvent("profile:view"));
             }}
           />
-          {/* White — clear the terminal */}
+          {/* Blue — clear the terminal */}
           <button
             type="button"
-            className="dot dot-white"
+            className="dot dot-blue"
             title="Clear terminal"
             aria-label="Clear terminal"
             onClick={(e) => {
@@ -1205,7 +1241,7 @@ export default function Terminal({
           {/* Green — show help */}
           <button
             type="button"
-            className="dot dot-india-green"
+            className="dot dot-green"
             title="Show help"
             aria-label="Show help"
             onClick={(e) => {
@@ -1224,6 +1260,7 @@ export default function Terminal({
             "education",
             "certificates",
             "contact",
+            "about-portfolio",
             "clear",
           ].map((cmd) => (
             <button
@@ -1231,9 +1268,9 @@ export default function Terminal({
               onClick={() => handleNav(cmd)}
               className="nav-button"
               type="button"
-              aria-label={`Navigate to ${cmd}`}
+              aria-label={`Navigate to ${cmd === "about-portfolio" ? "About Portfolio" : cmd}`}
             >
-              {cmd}
+              {cmd === "about-portfolio" ? "About Portfolio" : cmd}
             </button>
           ))}
         </nav>

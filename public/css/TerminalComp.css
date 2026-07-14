@@ -77,7 +77,7 @@
   flex-shrink: 0;
 }
 
-/* Interactive window dots — Indian tricolor, each with a function */
+/* Interactive window dots — glossy RGB traffic lights, each with a function */
 .dot {
   width: 0.85rem;
   height: 0.85rem;
@@ -85,8 +85,11 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
   will-change: transform;
+  /* glossy top highlight + crisp edge, so each dot reads as a raised bead */
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.45),
+    0 0 0 0.5px rgba(0, 0, 0, 0.4);
 }
 
 .dot:hover {
@@ -97,31 +100,34 @@
   transform: scale(0.9);
 }
 
-/* Saffron → view profile picture */
-.dot-saffron {
-  background: #ff9933;
+/* Red → view profile picture */
+.dot-red {
+  background: radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06);
 }
 
-.dot-saffron:hover {
-  box-shadow: 0 0 10px rgba(255, 153, 51, 0.85);
+.dot-red:hover {
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
+    0 0 12px rgba(229, 35, 26, 0.95);
 }
 
-/* White → clear terminal */
-.dot-white {
-  background: #ffffff;
+/* Blue → clear terminal */
+.dot-blue {
+  background: radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6);
 }
 
-.dot-white:hover {
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
+.dot-blue:hover {
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
+    0 0 12px rgba(59, 157, 255, 0.9);
 }
 
 /* Green → show help */
-.dot-india-green {
-  background: #138808;
+.dot-green {
+  background: radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636);
 }
 
-.dot-india-green:hover {
-  box-shadow: 0 0 10px rgba(19, 136, 8, 0.95);
+.dot-green:hover {
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
+    0 0 12px rgba(47, 216, 79, 0.9);
 }
 
 /* Navigation group — right-aligned, wraps neatly with a subtle gap */
@@ -406,6 +412,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     transform: none;
+  }
+
+  /* 10 buttons → 4 / 4 / 2 grid: the two last buttons ("About Portfolio",
+     "clear") each span two columns so the long label never truncates. */
+  .terminal-nav .nav-button:nth-child(9),
+  .terminal-nav .nav-button:nth-child(10) {
+    grid-column: span 2;
   }
 
   .nav-button:hover {
