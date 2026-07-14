@@ -346,8 +346,18 @@ const WELCOME_LINES: string[] = [
   "Hi, I'm Srinivas RC, an AI / ML Engineer.",
   "Welcome to my interactive portfolio terminal!",
   "Type 'help' or 'ls' for commands. Use 'cd <name>' to open sections (e.g. cd about, cd projects, cd education).",
-  "✨ NEW: Try 'ai <your question>' to chat with AI assistant!",
 ];
+
+// Final welcome line — `ai <question>` in Cyber Blue, Jerry bolded to fix his identity.
+const JerryHint: React.FC = () => (
+  <span>
+    &gt; Type{" "}
+    <span className="text-cyan-400">&apos;ai &lt;question&gt;&apos;</span> to
+    interface with{" "}
+    <span className="font-bold text-cyan-400">Jerry</span>, my personal and
+    customized AI assistant.
+  </span>
+);
 
 // Tab completion: full-line completions (for backward compatibility)
 const TAB_COMPLETIONS: string[] = [
@@ -531,16 +541,19 @@ const Help: React.FC = () => (
 const Welcome: React.FC = () => {
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
   const [currentLine, setCurrentLine] = useState<number>(0);
+  const [showHint, setShowHint] = useState<boolean>(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentLine < WELCOME_LINES.length) {
         setDisplayedLines((prev) => [...prev, WELCOME_LINES[currentLine]]);
         setCurrentLine(currentLine + 1);
+      } else if (!showHint) {
+        setShowHint(true); // styled Jerry hint follows the plain intro lines
       }
     }, 400);
     return () => clearTimeout(timer);
-  }, [currentLine]);
+  }, [currentLine, showHint]);
 
   return (
     <div role="region" aria-label="Welcome message">
@@ -549,6 +562,11 @@ const Welcome: React.FC = () => {
           <TypewriterText text={line} speed={20} />
         </OutputLine>
       ))}
+      {showHint && (
+        <OutputLine>
+          <JerryHint />
+        </OutputLine>
+      )}
     </div>
   );
 };
