@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { findUserByEmail, createUser } from "@/lib/db";
 import { setSessionCookie } from "@/lib/auth";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
+  // 5 registrations / 10 min per IP — blunts bot signups.
+  if (!rateLimit(`register:${clientIp(req)}`, 5, 10 * 60_000)) {
+    return NextResponse.json({ error: "Too many attempts. Try again later." }, { status: 429 });
+  }
   const { name, email, password } = await req.json().catch(() => ({}));
   if (
     typeof name !== "string" ||
@@ -20,6 +27,12 @@ export async function POST(req: NextRequest) {
       { error: "Password must be at least 6 characters." },
       { status: 400 }
     );
+  }
+  if (name.length > 100 || email.length > 254 || password.length > 128) {
+    return NextResponse.json({ error: "Input too long." }, { status: 400 });
+  }
+  if (!EMAIL_RE.test(email.trim())) {
+    return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
   }
   if (email.trim().toLowerCase() === (process.env.ADMIN_EMAIL || "").toLowerCase()) {
     return NextResponse.json({ error: "That email is reserved." }, { status: 409 });

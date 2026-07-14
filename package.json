@@ -1,7 +1,12 @@
 {
-  "name": "terminal",
+  "name": "srinivas-rc-portfolio",
   "version": "0.1.0",
   "private": true,
+  "author": "Srinivas R C <srinivasrc0408@gmail.com> (https://github.com/srinivas-rc0408)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/srinivas-rc0408/Portfolio-2.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

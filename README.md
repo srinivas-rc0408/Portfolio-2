@@ -1,6 +1,6 @@
-# 🖥️ Portfolio.sh
+# 🖥️ Srinivas R C — Terminal Portfolio
 
-A modern, interactive terminal-themed portfolio website built with Next.js 16, React 19, TypeScript, and Tailwind CSS. Features a unique terminal interface with matrix-style animations and AI-powered chat functionality.
+The personal portfolio of **Srinivas R C**, an AI/ML Engineer from Bengaluru, India — built as an interactive terminal with Next.js 16, React 19, TypeScript, and Tailwind CSS. Features command-line navigation, a two-stage boot sequence, an AI assistant ("Jerry"), a Neon-backed admin CMS, and matrix-style animations.
 
 [![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](http://localhost:3000/)
 [![Next.js](https://img.shields.io/badge/Next.js-16.0-black)](https://nextjs.org/)
@@ -104,8 +104,8 @@ portfolio.sh/
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/anupPradhan0/portfolio.sh.git
-cd portfolio.sh
+git clone https://github.com/srinivas-rc0408/Portfolio-2.git
+cd Portfolio-2
 ```
 
 2. **Install dependencies**
@@ -211,7 +211,7 @@ This project is deployed on **Vercel** for optimal performance and seamless CI/C
 
 ### Deploy Your Own
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/anupPradhan0/portfolio.sh)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/srinivas-rc0408/Portfolio-2)
 
 ### Manual Deployment
 
@@ -291,7 +291,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🐛 Bug Reports
 
-Found a bug? Please open an issue on [GitHub Issues](https://github.com/anupPradhan0/portfolio.sh/issues).
+Found a bug? Please open an issue on [GitHub Issues](https://github.com/srinivas-rc0408/Portfolio-2/issues).
 
 ## ⭐ Show Your Support
 
@@ -299,6 +299,6 @@ If you like this project, please consider giving it a ⭐ on GitHub!
 
 ---
 
-**White-labeled portfolio of Srinivas RC — original terminal portfolio built by [Anup Pradhan](https://github.com/anupPradhan0) (MIT licensed)**
+**© 2026 Srinivas R C — AI/ML Engineer, Bengaluru** · Licensed under the [MIT License](LICENSE)
 
 _Last Updated: November 2025_

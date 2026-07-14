@@ -1,4 +1,5 @@
 import "server-only";
+import { timingSafeEqual } from "crypto";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
@@ -18,9 +19,15 @@ export const SESSION_COOKIE = "portfolio_session";
 const MAX_AGE = 60 * 60 * 24; // 24h
 
 function secret(): Uint8Array {
-  return new TextEncoder().encode(
-    process.env.AUTH_SECRET || "insecure-dev-secret-set-AUTH_SECRET"
-  );
+  const s = process.env.AUTH_SECRET;
+  if (!s) {
+    // Refuse to run production with a known secret — forgeable admin JWTs.
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("AUTH_SECRET must be set in production");
+    }
+    return new TextEncoder().encode("insecure-dev-secret-set-AUTH_SECRET");
+  }
+  return new TextEncoder().encode(s);
 }
 
 export async function signSession(payload: SessionPayload): Promise<string> {
@@ -73,9 +80,20 @@ export async function clearSessionCookie(): Promise<void> {
   store.set(SESSION_COOKIE, "", { httpOnly: true, path: "/", maxAge: 0 });
 }
 
+/** Constant-time string compare (length leak only). */
+function safeEqual(a: string, b: string): boolean {
+  const ba = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ba.length === bb.length && timingSafeEqual(ba, bb);
+}
+
 /** True if the credentials match the server-side admin (env vars). */
 export function isAdminCredential(email: string, password: string): boolean {
   const e = (process.env.ADMIN_EMAIL || "").toLowerCase();
   const p = process.env.ADMIN_PASSWORD || "";
-  return e.length > 0 && email.trim().toLowerCase() === e && password === p;
+  if (!e || !p) return false;
+  // Evaluate both before combining — no early-exit timing signal.
+  const emailOk = safeEqual(email.trim().toLowerCase(), e);
+  const passOk = safeEqual(password, p);
+  return emailOk && passOk;
 }

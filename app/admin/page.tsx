@@ -394,19 +394,22 @@ function Workspace({ section }: { section: CmsSection }) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const [loading, setLoading] = useState(false);
+  // Starts true: Workspace mounts fresh per tab (keyed) and always fetches.
+  const [loading, setLoading] = useState(true);
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    const all = await apiGetAllEntries();
-    setItems(all.filter((i) => i.section === section));
-    setLoading(false);
-  }, [section]);
+  const refresh = useCallback(
+    () =>
+      apiGetAllEntries().then((all) => {
+        setItems(all.filter((i) => i.section === section));
+        setLoading(false);
+      }),
+    [section]
+  );
 
+  // Workspace is keyed by section (see render below), so form/editing state
+  // resets automatically when the tab changes — only the fetch lives here.
   useEffect(() => {
     void refresh();
-    setForm(EMPTY_FORM);
-    setEditingId(null);
   }, [refresh]);
 
   const submit = async (e: React.FormEvent) => {
@@ -633,10 +636,11 @@ export default function AdminPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Verify the session against the server (httpOnly cookie) before rendering.
-  const check = useCallback(async () => {
-    await hydrate();
-    setUser(currentUser());
-  }, []);
+  // setState lives in the promise callback (async), never sync in the effect.
+  const check = useCallback(
+    () => hydrate().then(() => setUser(currentUser())),
+    []
+  );
   useEffect(() => {
     void check();
   }, [check]);
@@ -728,7 +732,7 @@ export default function AdminPage() {
         {tab === "settings" ? (
           <GlobalSettingsPanel />
         ) : (
-          <Workspace section={tab} />
+          <Workspace key={tab} section={tab} />
         )}
       </main>
     </div>

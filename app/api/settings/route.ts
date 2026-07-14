@@ -18,10 +18,24 @@ export async function PUT(req: NextRequest) {
   }
   const body = await req.json().catch(() => ({}));
   const patch: Partial<DbSettings> = {};
-  if (typeof body.displayName === "string") patch.displayName = body.displayName;
-  if (typeof body.title === "string") patch.title = body.title;
-  if (typeof body.themeAccent === "string") patch.themeAccent = body.themeAccent;
-  if (typeof body.profileImage === "string" || body.profileImage === null) {
+  if (typeof body.displayName === "string" && body.displayName.length <= 100) {
+    patch.displayName = body.displayName;
+  }
+  if (typeof body.title === "string" && body.title.length <= 200) {
+    patch.title = body.title;
+  }
+  // Accent must be a hex color — it's injected into CSS variables client-side.
+  if (typeof body.themeAccent === "string" && /^#[0-9a-fA-F]{3,8}$/.test(body.themeAccent)) {
+    patch.themeAccent = body.themeAccent;
+  }
+  // Data-URL image, capped at ~2.5MB so a bad upload can't bloat the DB row.
+  if (body.profileImage === null) {
+    patch.profileImage = null;
+  } else if (
+    typeof body.profileImage === "string" &&
+    body.profileImage.startsWith("data:image/") &&
+    body.profileImage.length <= 2_500_000
+  ) {
     patch.profileImage = body.profileImage;
   }
   try {

@@ -60,10 +60,12 @@ export default function QuoteOfDay() {
   const holdRef = useRef(false);
 
   useEffect(() => {
-    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-    const raf = requestAnimationFrame(() =>
-      requestAnimationFrame(() => setEntered(true))
-    );
+    // Pick client-side (avoids hydration mismatch); double-rAF lets the
+    // hidden state paint once so the slide-up transition actually runs.
+    const raf = requestAnimationFrame(() => {
+      setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+      requestAnimationFrame(() => setEntered(true));
+    });
     return () => cancelAnimationFrame(raf);
   }, []);
 
@@ -90,8 +92,8 @@ export default function QuoteOfDay() {
 
   return (
     /* pointer-events-none wrapper: the page scrolls/clicks straight through
-       everywhere except the card itself */
-    <div className="pointer-events-none fixed bottom-10 left-1/2 z-50 w-[92vw] max-w-md -translate-x-1/2 transform">
+       everywhere except the card itself. Anchored bottom-right. */
+    <div className="pointer-events-none fixed bottom-4 right-4 z-50 w-[92vw] max-w-sm sm:bottom-10 sm:right-10">
       <div
         className="qotd group pointer-events-auto"
         onMouseEnter={() => {
@@ -124,15 +126,16 @@ export default function QuoteOfDay() {
           aria-expanded={expanded}
           className="qotd-pulse relative w-full cursor-pointer rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 px-5 py-4 text-left shadow-[0_8px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-colors duration-300 hover:border-[rgba(var(--theme-accent-rgb),0.7)] active:scale-[0.99]"
         >
-          {/* Dismiss */}
+          {/* Dismiss — pointer-events-auto + high stack so the click always lands */}
           <button
             type="button"
             aria-label="Dismiss quote"
-            onClick={(e) => {
+            onPointerDown={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               setDismissed(true);
             }}
-            className="absolute right-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full text-white/40 transition-all hover:bg-white/10 hover:text-white active:scale-90"
+            className="pointer-events-auto absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white/50 transition-all hover:bg-white/10 hover:text-white active:scale-90"
           >
             ✕
           </button>

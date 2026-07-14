@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatBlogPostLabel } from "@/lib/blog-search";
@@ -226,14 +226,17 @@ const Blog: React.FC<BlogProps> = ({
   const contentRef = useRef<HTMLDivElement | null>(null);
   const articleRef = useRef<HTMLDivElement | null>(null);
 
-  const goToSlug = (next: string | null) => {
-    if (syncUrls) {
-      if (next) router.push(`/blog/${next}`);
-      else router.push("/blog");
-      return;
-    }
-    setInternalSlug(next);
-  };
+  const goToSlug = useCallback(
+    (next: string | null) => {
+      if (syncUrls) {
+        if (next) router.push(`/blog/${next}`);
+        else router.push("/blog");
+        return;
+      }
+      setInternalSlug(next);
+    },
+    [syncUrls, router]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -337,7 +340,7 @@ const Blog: React.FC<BlogProps> = ({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [activeSlug, syncUrls]);
+  }, [activeSlug, goToSlug]);
 
   if (activeSlug) {
     return (

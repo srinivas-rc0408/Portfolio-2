@@ -65,6 +65,10 @@ interface TerminalProps {
   initialCommand?: string | null;
 }
 
+// Shown when the user types just `ai` with no question.
+const AI_GREETING =
+  "Hi! My name is Jerry, Srinivas RC's personal AI assistant. How can I help you explore his portfolio today? (e.g., 'ai what are his skills?' or 'ai show me his resume')";
+
 const HOME_CD_SECTIONS = [
   "about",
   "projects",
@@ -156,43 +160,69 @@ const TypewriterText: React.FC<{ text: string; speed?: number; onComplete?: () =
   );
 };
 
-// ============ NEW: AI Response Component with Typewriter ============
-const AIResponse: React.FC<{ text: string }> = ({ text }) => {
-  const [displayedText, setDisplayedText] = useState<string>("");
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+// Jerry's streaming reply — consumes the SSE-style token stream from /api/chat
+// and types characters live in a cool cyan. Self-contained: fetches on mount,
+// signals completion via onDone (so the terminal input re-enables).
+const StreamingAI: React.FC<{ question: string; onDone?: () => void }> = ({
+  question,
+  onDone,
+}) => {
+  const [text, setText] = useState<string>("");
+  const [done, setDone] = useState<boolean>(false);
+  const doneRef = useRef(onDone);
+  doneRef.current = onDone;
 
   useEffect(() => {
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayedText((prev) => prev + text[currentIndex]);
-        setCurrentIndex((prev) => prev + 1);
-      }, 20); // Fast typewriter speed
-
-      return () => clearTimeout(timeout);
-    }
-  }, [currentIndex, text]);
+    const controller = new AbortController();
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: question }),
+          signal: controller.signal,
+        });
+        if (!res.body) throw new Error("no stream");
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        for (;;) {
+          const { done: streamDone, value } = await reader.read();
+          if (streamDone || cancelled) break;
+          setText((prev) => prev + decoder.decode(value, { stream: true }));
+        }
+      } catch {
+        if (!cancelled) {
+          setText(
+            (prev) =>
+              prev ||
+              "Jerry (System): I couldn't reach the network. Try the 'help' command or the left-panel buttons."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setDone(true);
+          doneRef.current?.();
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [question]);
 
   return (
     <div className="ai-response">
-      <div className="flex items-center space-x-2 mb-2">
-        <span className="text-white font-mono text-sm">AI Assistant:</span>
+      <div className="mb-1 flex items-center gap-2">
+        <span className="font-mono text-sm font-bold text-cyan-400">
+          Jerry ⚡
+        </span>
       </div>
-      <div className="text-gray-300 font-mono text-sm leading-relaxed whitespace-pre-wrap">
-        {displayedText}
-        {currentIndex < text.length && (
-          <span className="animate-pulse text-white">|</span>
-        )}
+      <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-cyan-300">
+        {text}
+        {!done && <span className="animate-pulse text-cyan-400">▋</span>}
       </div>
-    </div>
-  );
-};
-
-// ============ NEW: Loading Indicator ============
-const AILoading: React.FC = () => {
-  return (
-    <div className="flex items-center space-x-2 text-white font-mono text-sm">
-      <span>AI thinking</span>
-      <span className="animate-pulse">...</span>
     </div>
   );
 };
@@ -570,14 +600,9 @@ export default function Terminal({
   ): Promise<void> => {
     const trimmedQuestion = question.trim();
 
+    // Empty `ai` is handled with a greeting upstream; guard just in case.
     if (!trimmedQuestion) {
-      setHistory([
-        ...historyWithPrompt,
-        {
-          type: "output",
-          content: "Please provide a question. Usage: ai <your question>",
-        },
-      ]);
+      setHistory([...historyWithPrompt, { type: "output", content: AI_GREETING }]);
       return;
     }
 
@@ -593,51 +618,27 @@ export default function Terminal({
       return;
     }
 
+    // Stream Jerry's reply live. StreamingAI fetches on mount and re-enables
+    // the input via onDone when the stream completes.
+    incrementAIUsage();
+    const newRemaining = getRemainingRequests();
     setIsAILoading(true);
     setHistory([
       ...historyWithPrompt,
-      { type: "output", content: <AILoading /> },
+      {
+        type: "output",
+        content: (
+          <StreamingAI
+            question={trimmedQuestion}
+            onDone={() => setIsAILoading(false)}
+          />
+        ),
+      },
+      {
+        type: "output",
+        content: `\n Remaining AI requests today: ${newRemaining}/10`,
+      },
     ]);
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: trimmedQuestion }),
-      });
-
-      const data = await response.json();
-      setIsAILoading(false);
-
-      setHistory((prev) => {
-        const withoutLoading = prev.slice(0, -1);
-        if (data.success) {
-          incrementAIUsage();
-          const newRemaining = getRemainingRequests();
-          return [
-            ...withoutLoading,
-            { type: "output", content: <AIResponse text={data.response} /> },
-            {
-              type: "output",
-              content: `\n Remaining AI requests today: ${newRemaining}/10`,
-            },
-          ];
-        }
-        return [
-          ...withoutLoading,
-          { type: "output", content: `AI Error: ${data.error}` },
-        ];
-      });
-    } catch {
-      setIsAILoading(false);
-      setHistory((prev) => [
-        ...prev.slice(0, -1),
-        {
-          type: "output",
-          content: "Failed to connect to AI. Please try again.",
-        },
-      ]);
-    }
   };
 
   const redirectFromBlogRoute = (trimmedCmd: string): boolean => {
@@ -715,11 +716,11 @@ export default function Terminal({
       return;
     }
 
-    // Handle 'ai' alone without question
+    // Handle 'ai' alone without a question → Jerry's greeting
     if (trimmedCmd.toLowerCase() === "ai") {
       newHist.push({
         type: "output",
-        content: "Please provide a question. Usage: ai <your question>",
+        content: <span className="text-cyan-300">{AI_GREETING}</span>,
       });
       setHistory(newHist);
       return;

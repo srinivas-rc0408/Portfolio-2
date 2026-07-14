@@ -1,75 +1,59 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 // --- Config (keys live in .env.local, never in source) ---
 const NVIDIA_API_KEY_1 = process.env.NVIDIA_API_KEY_1;
 const NVIDIA_API_KEY_2 = process.env.NVIDIA_API_KEY_2;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const NVIDIA_MODEL =
-  process.env.NVIDIA_MODEL || "nvidia/llama-3.3-nemotron-super-49b-v1.5";
+// Fast, non-reasoning model for low latency.
+const NVIDIA_MODEL = process.env.NVIDIA_MODEL || "meta/llama-3.1-8b-instruct";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
+const MAX_TOKENS = 1024;
 
-// Exact string fired when a question falls outside the allowed scope.
 const OUT_OF_SCOPE =
-  "I am specifically optimized to function as Srinivas RC's professional portfolio assistant. I cannot assist with general inquiries, but I would be happy to answer any questions regarding his experience, technical skills, or projects.";
+  "I am Jerry, specifically optimized to assist with Srinivas RC's portfolio. I cannot answer general questions, but I'd love to tell you about his AI engineering skills!";
 
-// --- Portfolio knowledge base (scoped context) ---
-const CONTEXT_PARTS = {
-  base: `You are Srinivas RC's AI assistant on his portfolio terminal. Srinivas RC is an AI / ML Engineer and Computer Science undergraduate (B.Tech AI & ML, REVA University, CGPA 7.5, Bengaluru, India). He builds and deploys web applications powered by Large Language Models (LLMs) and agentic systems, and is passionate about Linux system optimization (CachyOS).`,
-  skills: `Tech: Python, JavaScript/TypeScript, C/C++, Machine Learning, Large Language Models (LLMs), Prompt Engineering, Agentic Frameworks (CrewAI), React, Next.js, Linux Administration (Arch / CachyOS), Git, Web Applications.`,
-  projects: `Projects: 1) Archagent — an autonomous AI agent for architecture and interior design tasks, built with LLMs and agentic frameworks (CrewAI). 2) Language Detector — a minimalist single-page language-detection web app with machine learning under the hood.`,
-  experience: `Experience: Independent AI/ML project work (Archagent, Language Detector). Core Member & Head of Media at the Yantra IoT Club, REVA University. Open to internships and university placements in AI engineering.`,
-  contact: `Contact: Email srinivasrc0408@gmail.com. Phone +91 72049 54568. GitHub github.com/srinivas-rc0408. Location: Bengaluru, Karnataka, India.`,
-  education: `Education: B.Tech in Artificial Intelligence & Machine Learning at REVA University, Bengaluru (CGPA 7.5). Certifications: Deep Learning (IIT Ropar / NPTEL), Software Engineering Fundamentals (Microsoft), Prompt Engineering (Infosys Springboard), Machine Learning (Rinex, Grade A+).`,
-};
+const FALLBACK_ERROR =
+  "Jerry (System): I am currently experiencing a high volume of requests or a network timeout. Please use the manual terminal commands like 'help' or the left-panel buttons to navigate the portfolio.";
 
-const SCOPE_RULES = `STRICT SCOPE: Only answer questions about Srinivas RC's professional profile, certifications, technical skills/stack, experience, education, or his software projects (Archagent, Language Detector). Reply in 2-3 short sentences. If the user asks you to write code, generate/draw images, write essays/poems/stories, translate text, solve homework/math, or anything unrelated to Srinivas RC's professional profile, you MUST reply with EXACTLY this text and nothing else: "${OUT_OF_SCOPE}"`;
+// Jerry — the exact persona prompt, plus factual context so answers are accurate.
+const JERRY_SYSTEM = `You are Jerry, the exclusive and highly professional AI assistant for Srinivas RC, an AI/ML Engineer. Your personality is helpful, incredibly fast, and sleek.
 
-function buildContext(question: string): string {
-  const q = question.toLowerCase();
-  const parts = [CONTEXT_PARTS.base];
-  const add = (keys: string[], part: string) => {
-    if (keys.some((k) => q.includes(k))) parts.push(part);
-  };
-  add(["skill", "tech", "stack", "know", "language", "tool", "framework", "python", "react"], CONTEXT_PARTS.skills);
-  add(["project", "built", "portfolio", "github", "app", "archagent", "detector"], CONTEXT_PARTS.projects);
-  add(["experience", "job", "work", "company", "placement", "internship", "role", "club"], CONTEXT_PARTS.experience);
-  add(["contact", "reach", "email", "phone", "linkedin", "resume", "hire", "connect"], CONTEXT_PARTS.contact);
-  add(["study", "education", "university", "college", "btech", "reva", "cgpa", "certif"], CONTEXT_PARTS.education);
-  if (["who", "about srinivas", "tell me about", "introduce", "summary"].some((k) => q.includes(k))) {
-    parts.push(CONTEXT_PARTS.skills, CONTEXT_PARTS.experience, CONTEXT_PARTS.projects);
-  }
-  return parts.join("\n") + "\n" + SCOPE_RULES;
-}
+CORE RULES:
+1. You represent Srinivas. Speak in the third person about him (e.g., 'Srinivas is a developer...'), but introduce yourself as Jerry if asked.
+2. If the user asks for Srinivas's Resume, CV, or Certificates, do NOT just summarize them. You must explicitly guide them to the UI. Say exactly: 'You can view and download Srinivas's resume instantly by clicking the 'Resume' button in the left-hand Quick Access menu, or by typing the command \`resume\` right here in the terminal.'
+3. If the user asks about his projects, mention 'Archagent' and his 'Language Detector', and tell them to click the 'Projects' button or type \`projects\` for full details.
+4. If a user asks a general knowledge question, coding question, or asks for image generation, politely refuse and pivot back to Srinivas: '${OUT_OF_SCOPE}'
 
-// Deterministic guard for the most unambiguous out-of-scope requests.
+FACTS ABOUT SRINIVAS RC:
+- AI/ML Engineer; B.Tech in AI & ML at REVA University, Bengaluru (CGPA 7.5). Based in Bengaluru, India.
+- Skills: Python, JavaScript/TypeScript, C/C++, Machine Learning, LLMs, Prompt Engineering, Agentic Frameworks (CrewAI), React, Next.js, Linux Administration (Arch/CachyOS), Git.
+- Projects: Archagent (autonomous AI agent for architecture & interior design, built with LLMs + CrewAI) and Language Detector (minimalist single-page ML web app).
+- Certifications: Deep Learning (IIT Ropar/NPTEL), Software Engineering (Microsoft), Prompt Engineering (Infosys Springboard), Machine Learning (Rinex, A+).
+- Contact: srinivasrc0408@gmail.com · github.com/srinivas-rc0408.
+Keep replies concise (2-4 sentences) and in character.`;
+
 function isObviouslyOutOfScope(q: string): boolean {
   const s = q.toLowerCase();
-  const codeGen = /\b(write|generate|create|make|build|give me|show me)\b[^.?!]{0,30}\b(code|program|script|snippet|function|algorithm|regex|query)\b/;
-  const imageGen = /\b(generate|create|draw|make|design)\b[^.?!]{0,25}\b(image|picture|photo|logo|art|drawing|painting)\b/;
-  const creative = /\b(write|compose)\b[^.?!]{0,25}\b(poem|essay|story|song|joke|recipe)\b/;
+  const codeGen =
+    /\b(write|generate|create|make|build|give me|show me)\b[^.?!]{0,30}\b(code|program|script|snippet|function|algorithm|regex|query)\b/;
+  const imageGen =
+    /\b(generate|create|draw|make|design)\b[^.?!]{0,25}\b(image|picture|photo|logo|art|drawing|painting)\b/;
+  const creative =
+    /\b(write|compose)\b[^.?!]{0,25}\b(poem|essay|story|song|joke|recipe)\b/;
   return codeGen.test(s) || imageGen.test(s) || creative.test(s);
 }
 
-/** Strip nemotron reasoning traces and tidy whitespace. */
-function cleanReply(text: string): string {
-  return text
-    .replace(/<think>[\s\S]*?<\/think>/gi, "")
-    .replace(/^\s*(assistant|answer)\s*:\s*/i, "")
-    .trim();
-}
+type Send = (text: string) => void;
 
-function isRateLimit(msg: string): boolean {
-  return /429|too many requests|quota|rate limit|overloaded/i.test(msg);
-}
-
-// --- Tier 1 & 2: NVIDIA (OpenAI-compatible) ---
-async function callNvidia(
+/** NVIDIA (OpenAI-compatible) streaming. Throws only if no token was sent. */
+async function streamNvidia(
   key: string,
-  system: string,
-  user: string
-): Promise<string> {
+  user: string,
+  send: Send
+): Promise<void> {
   const res = await fetch(NVIDIA_URL, {
     method: "POST",
     headers: {
@@ -79,102 +63,131 @@ async function callNvidia(
     body: JSON.stringify({
       model: NVIDIA_MODEL,
       messages: [
-        // Nemotron reasoning toggle — "off" gives direct, fast answers.
-        { role: "system", content: `detailed thinking off\n\n${system}` },
+        { role: "system", content: JERRY_SYSTEM },
         { role: "user", content: user },
       ],
       temperature: 0.4,
       top_p: 0.95,
-      max_tokens: 300,
-      stream: false,
+      max_tokens: MAX_TOKENS,
+      stream: true,
     }),
   });
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`NVIDIA ${res.status}: ${body.slice(0, 160)}`);
+  if (!res.ok || !res.body) {
+    throw new Error(`NVIDIA ${res.status}`);
   }
-  const data = await res.json();
-  const msg = data?.choices?.[0]?.message ?? {};
-  const text = cleanReply(msg.content ?? "");
-  if (!text) throw new Error("NVIDIA empty response");
-  return text;
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let sentAny = false;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      for (const line of lines) {
+        const t = line.trim();
+        if (!t.startsWith("data:")) continue;
+        const data = t.slice(5).trim();
+        if (data === "[DONE]") return;
+        try {
+          const json = JSON.parse(data);
+          const token: string = json?.choices?.[0]?.delta?.content ?? "";
+          if (token) {
+            send(token);
+            sentAny = true;
+          }
+        } catch {
+          /* ignore keep-alive / partial json */
+        }
+      }
+    }
+  } catch (e) {
+    if (!sentAny) throw e; // let the caller fall back
+  }
+  if (!sentAny) throw new Error("NVIDIA empty stream");
 }
 
-// --- Tier 3: Google Gemini ---
-async function callGemini(system: string, user: string): Promise<string> {
+/** Google Gemini streaming. Throws only if no token was sent. */
+async function streamGemini(user: string, send: Send): Promise<void> {
   if (!GEMINI_API_KEY) throw new Error("Gemini key not configured");
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({
     model: GEMINI_MODEL,
-    generationConfig: { maxOutputTokens: 220, temperature: 0.4 },
-    systemInstruction: system,
+    generationConfig: { maxOutputTokens: MAX_TOKENS, temperature: 0.4 },
+    systemInstruction: JERRY_SYSTEM,
   });
-  const result = await model.startChat({ history: [] }).sendMessage(user);
-  const text = cleanReply(result.response.text());
-  if (!text) throw new Error("Gemini empty response");
-  return text;
-}
-
-export async function POST(request: NextRequest) {
-  const { message } = await request.json().catch(() => ({ message: "" }));
-  const question = typeof message === "string" ? message.trim() : "";
-
-  if (!question) {
-    return NextResponse.json(
-      { error: "No message provided", success: false },
-      { status: 400 }
-    );
-  }
-
-  // Fast deterministic scope guard.
-  if (isObviouslyOutOfScope(question)) {
-    return NextResponse.json({ response: OUT_OF_SCOPE, success: true, tier: "guard" });
-  }
-
-  const system = buildContext(question);
-
-  // Three-tier fallback: NVIDIA key1 → NVIDIA key2 → Gemini.
-  const tiers: { name: string; run: () => Promise<string> }[] = [];
-  if (NVIDIA_API_KEY_1) {
-    const key = NVIDIA_API_KEY_1;
-    tiers.push({ name: "nvidia-1", run: () => callNvidia(key, system, question) });
-  }
-  if (NVIDIA_API_KEY_2) {
-    const key = NVIDIA_API_KEY_2;
-    tiers.push({ name: "nvidia-2", run: () => callNvidia(key, system, question) });
-  }
-  if (GEMINI_API_KEY)
-    tiers.push({ name: "gemini", run: () => callGemini(system, question) });
-
-  if (tiers.length === 0) {
-    return NextResponse.json(
-      { error: "No AI provider configured", success: false },
-      { status: 500 }
-    );
-  }
-
-  const errors: string[] = [];
-  for (const tier of tiers) {
-    try {
-      const response = await tier.run();
-      return NextResponse.json({ response, success: true, tier: tier.name });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      errors.push(`${tier.name}: ${msg}`);
-      console.error(`AI tier ${tier.name} failed:`, msg);
-      // Rate limit or any error → fall through to the next tier.
+  const result = await model.generateContentStream(user);
+  let sentAny = false;
+  for await (const chunk of result.stream) {
+    const token = chunk.text();
+    if (token) {
+      send(token);
+      sentAny = true;
     }
   }
+  if (!sentAny) throw new Error("Gemini empty stream");
+}
 
-  // Every tier exhausted.
-  const rateLimited = errors.some(isRateLimit);
-  return NextResponse.json(
-    {
-      error: rateLimited
-        ? "All AI providers are rate-limited right now. Please try again in a few minutes."
-        : "AI temporarily unavailable across all providers.",
-      success: false,
+export async function POST(req: NextRequest) {
+  // 20 questions / 5 min per IP — protects the upstream API keys from abuse.
+  if (!rateLimit(`chat:${clientIp(req)}`, 20, 5 * 60_000)) {
+    return new Response(FALLBACK_ERROR, { status: 429 });
+  }
+  const { message } = await req.json().catch(() => ({ message: "" }));
+  const question =
+    typeof message === "string" ? message.trim().slice(0, 500) : "";
+
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const send: Send = (t) => controller.enqueue(encoder.encode(t));
+
+      if (!question) {
+        send(OUT_OF_SCOPE);
+        controller.close();
+        return;
+      }
+      if (isObviouslyOutOfScope(question)) {
+        send(OUT_OF_SCOPE);
+        controller.close();
+        return;
+      }
+
+      const tiers: (() => Promise<void>)[] = [];
+      if (NVIDIA_API_KEY_1) {
+        const k = NVIDIA_API_KEY_1;
+        tiers.push(() => streamNvidia(k, question, send));
+      }
+      if (NVIDIA_API_KEY_2) {
+        const k = NVIDIA_API_KEY_2;
+        tiers.push(() => streamNvidia(k, question, send));
+      }
+      if (GEMINI_API_KEY) tiers.push(() => streamGemini(question, send));
+
+      for (const tier of tiers) {
+        try {
+          await tier(); // resolves once fully streamed (or partial sent)
+          controller.close();
+          return;
+        } catch (e) {
+          console.error("AI tier failed:", e instanceof Error ? e.message : e);
+          // no tokens were sent → try the next tier
+        }
+      }
+
+      send(FALLBACK_ERROR);
+      controller.close();
     },
-    { status: rateLimited ? 429 : 502 }
-  );
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store, no-transform",
+      "X-Accel-Buffering": "no",
+    },
+  });
 }

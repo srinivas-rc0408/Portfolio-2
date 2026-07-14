@@ -4,7 +4,7 @@ import { BLOG_CANONICAL, BLOG_RSS_URL, SITE_URL } from "@/lib/seo-config";
 
 const now = new Date();
 
-function postPriority(index: number, total: number): number {
+function postPriority(index: number): number {
   if (index === 0) return 0.85;
   if (index === 1) return 0.8;
   return 0.72;
@@ -22,7 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         ? new Date(post.date)
         : now,
     changeFrequency: index < 2 ? "weekly" : "monthly",
-    priority: postPriority(index, posts.length),
+    priority: postPriority(index),
   }));
 
   return [
