@@ -119,6 +119,15 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/srinivas-rc0408/billing-project-java",
     tech: ["Java", "OOP"],
   },
+  {
+    name: "Notes Sharing Platform",
+    description:
+      "A collaborative notes platform built on Next.js 14's App Router. Users create, edit, and share notes with real-time collaboration and per-note permission management, secured with OTP authentication. Zustand drives global state and the responsive UI is composed from a modular component and hooks architecture.",
+    imageUrl: "/images/logo.jpg",
+    liveUrl: "#",
+    githubUrl: "https://github.com/srinivas-rc0408/notesharring-platform2",
+    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Zustand", "Axios"],
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -163,10 +172,23 @@ export const skillCommands: Record<keyof SkillsCategory, string> = {
 // Contact
 // ---------------------------------------------------------------------------
 
-export const CONTACT_EMAIL = "srinivasrc0408@gmail.com";
+export const CONTACT_EMAIL = "srinivasrc01@gmail.com";
 export const CONTACT_PHONE = "+91 72049 54568";
 export const CONTACT_LOCATION = "Bengaluru, Karnataka, India";
 export const RESUME_URL = "/srinivas-rc-resume.pdf";
+
+// Feedback button → opens the user's mail app, pre-addressed to Srinivas with
+// a subject and a prompt-filled body.
+export const FEEDBACK_EMAIL = CONTACT_EMAIL;
+export const FEEDBACK_SUBJECT = "Feedback abt Terminal Portfolio";
+export const FEEDBACK_BODY = `Hi Srinivas,
+
+Name:
+Changes / suggestions you'd like:
+Any errors or glitches faced:
+Overall experience:
+
+`;
 
 // Icon rendering differs between the static page and the terminal pane, so each
 // side keys its own icon set off `name`; only the link metadata lives here.
@@ -177,5 +199,20 @@ export interface SocialLinkData {
 }
 
 export const socialLinks: SocialLinkData[] = [
-  { name: "GitHub", href: "https://github.com/srinivas-rc0408", color: "purple" },
+  { name: "GitHub", href: "https://github.com/srinivas-rc0408", color: "#a78bfa" },
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/in/srinivas-r-c-169406294",
+    color: "#38bdf8",
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/superior__src",
+    color: "#f472b6",
+  },
+  {
+    name: "Steam",
+    href: "https://steamcommunity.com/profiles/76561199545795989/",
+    color: "#60a5fa",
+  },
 ];

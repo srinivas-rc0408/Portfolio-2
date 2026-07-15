@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 import { type Project } from "@/lib/portfolio-data";
 import { CMS_UPDATED_EVENT, getItems } from "@/lib/cms";
 
@@ -128,6 +129,17 @@ const Projects: React.FC = () => {
   const [projectsPerPage, setProjectsPerPage] = useState<number>(2);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [projectsData, setProjectsData] = useState<Project[]>([]);
+  const [detailProject, setDetailProject] = useState<Project | null>(null);
+
+  // Close the detail modal on Escape.
+  useEffect(() => {
+    if (!detailProject) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDetailProject(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [detailProject]);
 
   // CMS-backed data: re-read when the admin panel saves
   useEffect(() => {
@@ -332,9 +344,17 @@ const Projects: React.FC = () => {
                     ))}
                   </div>
 
-                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+                  <p className="line-clamp-3 text-gray-300 text-sm sm:text-base leading-relaxed">
                     {project.description}
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => setDetailProject(project)}
+                    className="inline-flex items-center gap-1 font-mono text-xs sm:text-sm text-[var(--theme-accent)] transition-all duration-200 hover:gap-2 hover:brightness-125"
+                    aria-label={`View full details for ${project.name}`}
+                  >
+                    view details <span aria-hidden="true">→</span>
+                  </button>
 
                   {/* Terminal-style command line - Mobile responsive */}
                   <div
@@ -492,6 +512,91 @@ const Projects: React.FC = () => {
           <ChevronRightIcon />
         </button>
       </nav>
+
+      {/* Detail modal — full project write-up on click */}
+      <AnimatePresence>
+        {detailProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 backdrop-blur-sm sm:items-center sm:p-6"
+            onClick={() => setDetailProject(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${detailProject.name} details`}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono shadow-[0_0_60px_rgba(var(--theme-accent-rgb),0.18)] backdrop-blur-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative h-44 shrink-0 overflow-hidden">
+                <Image
+                  src={detailProject.imageUrl}
+                  alt={`${detailProject.name} screenshot`}
+                  fill
+                  sizes="512px"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <button
+                  type="button"
+                  onClick={() => setDetailProject(null)}
+                  aria-label="Close details"
+                  className="absolute right-3 top-3 rounded-md bg-black/50 p-1.5 text-white/80 backdrop-blur-md transition-colors hover:bg-black/70 hover:text-white"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+                <h3 className="absolute bottom-3 left-4 right-4 text-lg font-bold text-white">
+                  {detailProject.name}
+                </h3>
+              </div>
+              <div className="space-y-4 overflow-y-auto px-5 py-4">
+                <div className="flex flex-wrap gap-1.5" aria-label="Tech stack">
+                  {detailProject.tech.map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-full border border-[rgba(var(--theme-accent-rgb),0.3)] bg-[rgba(var(--theme-accent-rgb),0.08)] px-2 py-0.5 text-[11px] text-white/90"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-sm leading-relaxed text-gray-200">
+                  {detailProject.description}
+                </p>
+                <div className="flex gap-3 pt-1">
+                  <a
+                    href={detailProject.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-3 py-2 text-sm text-white transition-all hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-95"
+                  >
+                    <GitHubIcon /> View Code
+                  </a>
+                  {detailProject.liveUrl && detailProject.liveUrl !== "#" && (
+                    <a
+                      href={detailProject.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white transition-all hover:bg-white/10 active:scale-95"
+                    >
+                      <ExternalLinkIcon /> Live Demo
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

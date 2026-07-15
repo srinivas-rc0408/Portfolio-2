@@ -136,10 +136,32 @@ const TerminalWindow: React.FC<TerminalWindowProps> = ({
       {/* Terminal header */}
       <div className="flex items-center justify-between p-3 bg-black/30 border-b border-cyan-400/20">
         <div className="flex items-center space-x-2">
+          {/* Glossy R·G·B window dots — matches the main terminal header */}
           <div className="flex space-x-1.5" aria-hidden="true">
-            <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-            <div className="w-3 h-3 rounded-full bg-blue-500/80"></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06)",
+                boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
+              }}
+            ></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)",
+                boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
+              }}
+            ></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)",
+                boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
+              }}
+            ></div>
           </div>
           <span className="text-white text-sm font-mono ml-2">
             ~ {title}

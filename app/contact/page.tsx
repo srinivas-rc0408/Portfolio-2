@@ -252,6 +252,26 @@ const ResumeIcon = () => (
   </svg>
 );
 
+const SteamIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="15.5" cy="8.5" r="2.5" />
+    <circle cx="8.5" cy="15" r="2" />
+    <path d="m13.7 10.5-4 3.2" />
+  </svg>
+);
+
 // Enhanced JSON-LD Structured Data
 const structuredData = {
   "@context": "https://schema.org",
@@ -321,12 +341,13 @@ export default function Contact() {
     LinkedIn: LinkedinIcon,
     GitHub: GithubIcon,
     LeetCode: LeetcodeIcon,
+    Steam: SteamIcon,
   };
 
-  const socialLinks: SocialLink[] = socialLinkData.map((link) => ({
-    ...link,
-    icon: socialIcons[link.name],
-  }));
+  // Skip any link without a matching icon so we never render <undefined />.
+  const socialLinks: SocialLink[] = socialLinkData
+    .filter((link) => socialIcons[link.name])
+    .map((link) => ({ ...link, icon: socialIcons[link.name] }));
 
   return (
     <>

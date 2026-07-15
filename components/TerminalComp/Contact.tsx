@@ -4,6 +4,9 @@ import {
   CONTACT_EMAIL,
   CONTACT_LOCATION,
   RESUME_URL,
+  FEEDBACK_EMAIL,
+  FEEDBACK_SUBJECT,
+  FEEDBACK_BODY,
 } from "@/lib/portfolio-data";
 
 // Type definitions
@@ -13,6 +16,51 @@ interface SocialLink {
   href: string;
   color: string;
 }
+
+// Pre-addressed feedback mail link (recipient + subject + prompt-filled body).
+const FEEDBACK_MAILTO = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(
+  FEEDBACK_SUBJECT
+)}&body=${encodeURIComponent(FEEDBACK_BODY)}`;
+
+const SteamIcon: React.FC = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="transition-all duration-300 group-hover:scale-110"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="15.5" cy="8.5" r="2.5" />
+    <circle cx="8.5" cy="15" r="2" />
+    <path d="m13.7 10.5-4 3.2" />
+  </svg>
+);
+
+const FeedbackIcon: React.FC = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="transition-all duration-300 group-hover:scale-110"
+    aria-hidden="true"
+  >
+    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+    <path d="M8 12h.01M12 12h.01M16 12h.01" />
+  </svg>
+);
 
 // --- Enhanced SVG Icons with hover effects ---
 const MailIcon: React.FC = () => (
@@ -232,12 +280,12 @@ const Contact: React.FC = () => {
     LinkedIn: LinkedinIcon,
     GitHub: GithubIcon,
     LeetCode: LeetcodeIcon,
+    Steam: SteamIcon,
   };
 
-  const socialLinks: SocialLink[] = socialLinkData.map((link) => ({
-    ...link,
-    icon: socialIcons[link.name],
-  }));
+  const socialLinks: SocialLink[] = socialLinkData
+    .filter((link) => socialIcons[link.name])
+    .map((link) => ({ ...link, icon: socialIcons[link.name] }));
 
   return (
     <div className="text-white max-w-5xl mx-auto p-3 sm:p-6 relative min-h-screen flex items-center">
@@ -462,11 +510,16 @@ const Contact: React.FC = () => {
                 >
                   <div className="flex items-center space-x-3">
                     <div
-                      className={`p-2 bg-gradient-to-br from-${social.color}-400/20 to-${social.color}-600/20 rounded-lg group-hover:from-${social.color}-400/30 group-hover:to-${social.color}-600/30 transition-all duration-300`}
+                      className="rounded-lg p-2 transition-all duration-300 group-hover:scale-110"
+                      style={{
+                        color: social.color,
+                        background: `${social.color}1f`,
+                        boxShadow: `0 0 0 1px ${social.color}33`,
+                      }}
                     >
                       <social.icon />
                     </div>
-                    <span className="font-mono text-sm sm:text-base group-hover:text-white transition-colors duration-300">
+                    <span className="font-mono text-sm sm:text-base text-white/80 transition-colors duration-300 group-hover:text-white">
                       {social.name}
                     </span>
                   </div>
@@ -481,6 +534,20 @@ const Contact: React.FC = () => {
             </nav>
           </section>
         </div>
+
+        {/* Feedback CTA — opens the mail app, pre-addressed with subject + body */}
+        <a
+          href={FEEDBACK_MAILTO}
+          className={`group mt-6 sm:mt-8 flex items-center justify-center gap-2 rounded-lg sm:rounded-xl border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.08)] px-4 py-3 font-mono text-sm text-white transition-all duration-300 hover:bg-[rgba(var(--theme-accent-rgb),0.18)] hover:shadow-[0_0_18px_rgba(var(--theme-accent-rgb),0.35)] active:scale-[0.98] ${
+            socialsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+          style={{ color: "var(--theme-accent)", transitionDelay: "450ms" }}
+          aria-label="Send feedback by email"
+        >
+          <FeedbackIcon />
+          <span className="font-semibold">Send Feedback</span>
+          <span className="text-white/50">— opens your mail app</span>
+        </a>
 
         {/* Terminal status bar - Animated */}
         <footer
