@@ -490,6 +490,11 @@ const AboutPortfolio: React.FC = () => (
       showcase advanced full-stack engineering, prompt architecture, and
       ultra-smooth UI/UX motion design.&quot;
     </div>
+    <div className="mt-2 text-xs text-white/50">
+      Built with genuine curiosity, a love for creativity, and far too many
+      late-night <span style={{ color: "var(--theme-accent)" }}>git push</span>
+      es — every pixel here was a joy to craft. ⚡
+    </div>
   </div>
 );
 
@@ -728,38 +733,24 @@ export default function Terminal({
       return;
     }
 
-    // resume — open the resume PDF in a new tab (CMS link first, static fallback)
-    if (commandName === "resume") {
-      const cmsLink = getItems("resume").find(
+    // resume / cv — open the in-page document viewer (CMS link first, static fallback)
+    if (commandName === "resume" || commandName === "cv") {
+      const label = commandName === "cv" ? "CV" : "Resume";
+      const cmsLink = getItems(commandName).find(
         (i) => i.link && i.link !== "#"
       )?.link;
-      const fallback: string = RESUME_URL;
-      const url = cmsLink ?? (fallback !== "#" ? fallback : null);
-      if (url) {
-        window.open(url, "_blank", "noopener,noreferrer");
-        newHist.push({
-          type: "output",
-          content: (
-            <span>
-              Opening resume ↗{" "}
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white underline decoration-dotted"
-              >
-                {url}
-              </a>
-            </span>
-          ),
-        });
-      } else {
-        newHist.push({
-          type: "output",
-          content:
-            "resume: no PDF configured yet. Add an entry with a link in /admin → Resume.",
-        });
-      }
+      const url = cmsLink ?? RESUME_URL;
+      window.dispatchEvent(
+        new CustomEvent("doc:view", { detail: { label, url } })
+      );
+      newHist.push({
+        type: "output",
+        content: (
+          <span style={{ color: "var(--theme-accent)" }}>
+            Opening {label} viewer… (download available inside)
+          </span>
+        ),
+      });
       setHistory(newHist);
       return;
     }

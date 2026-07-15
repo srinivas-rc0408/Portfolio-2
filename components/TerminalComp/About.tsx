@@ -219,12 +219,17 @@ const About: React.FC = () => {
                   </h3>
                   <p className="text-gray-400 text-sm sm:text-base leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
                     Building autonomous agents with{" "}
-                    <span className="text-white font-semibold">LLMs</span>{" "}
-                    and{" "}
-                    <span className="text-white font-semibold">CrewAI</span>
-                    , like Archagent — an agent that handles architecture and
-                    interior design tasks end to end. Focused on prompt
-                    engineering and shipping AI-powered web applications.
+                    <span className="text-white font-semibold">LLMs</span> and{" "}
+                    <span className="text-white font-semibold">
+                      agentic frameworks
+                    </span>
+                    , and constantly exploring the{" "}
+                    <span className="text-white font-semibold">
+                      open-source ecosystem
+                    </span>{" "}
+                    on GitHub — new frameworks, plugins, and developer tooling —
+                    then turning those experiments into production-grade,
+                    AI-powered web applications.
                   </p>
                 </div>
               </div>

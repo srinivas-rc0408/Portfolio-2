@@ -12,9 +12,18 @@ import {
   type SiteSettings,
   DEFAULT_SETTINGS,
   currentUser,
+  getItems,
   loadSettings,
   logout,
 } from "@/lib/cms";
+import { openDoc } from "@/components/DocViewer";
+import { RESUME_URL } from "@/lib/portfolio-data";
+
+/** CMS-backed doc link for a section (resume/cv), static PDF as fallback. */
+function docLink(section: "resume" | "cv"): string {
+  const linked = getItems(section).find((i) => i.link && i.link !== "#");
+  return linked?.link ?? RESUME_URL;
+}
 
 /** "S.RC" brand mark — lightning-bolt S + initials, no gap, hover tooltip. */
 const BrandMark: React.FC = () => (
@@ -68,15 +77,6 @@ function execInTerminal(command: string): void {
 }
 
 /** Direct file download via a transient anchor. */
-function downloadFile(url: string, filename: string): void {
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
-
 const DownloadIcon: React.FC = () => (
   <Download
     size={14}
@@ -103,12 +103,13 @@ const QUICK_ACTIONS: QuickAction[] = [
   {
     label: "Resume",
     icon: "download",
-    run: () => downloadFile("/srinivas-rc-resume.pdf", "Srinivas-RC-Resume.pdf"),
+    // Opens the in-page viewer (view first, branded download inside).
+    run: () => openDoc({ label: "Resume", url: docLink("resume") }),
   },
   {
     label: "CV",
     icon: "download",
-    run: () => downloadFile("/srinivas-rc-resume.pdf", "Srinivas-RC-CV.pdf"),
+    run: () => openDoc({ label: "CV", url: docLink("cv") }),
   },
   {
     label: "Certificates",

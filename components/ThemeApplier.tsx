@@ -27,8 +27,18 @@ export default function ThemeApplier() {
     window.addEventListener(SETTINGS_UPDATED_EVENT, apply);
     // Load live settings + content from the server, then re-apply.
     void hydrate();
+    // Keep open sessions fresh: admin edits reach every visitor within ~10s
+    // (poll only while the tab is visible; also refresh on focus).
+    const POLL_MS = 10_000;
+    const tick = () => {
+      if (document.visibilityState === "visible") void hydrate();
+    };
+    const interval = window.setInterval(tick, POLL_MS);
+    window.addEventListener("focus", tick);
     return () => {
       window.removeEventListener(SETTINGS_UPDATED_EVENT, apply);
+      window.clearInterval(interval);
+      window.removeEventListener("focus", tick);
     };
   }, []);
 

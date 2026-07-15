@@ -153,13 +153,13 @@ async function seed(): Promise<void> {
   push("experience", {
     title: "Core Member & Head of Media — Yantra IoT Club, REVA University",
     description:
-      "Spearheaded digital outreach for university-wide technical events; organised 2 technical workshops and coordinated career panels for 100+ students.",
+      "Lead digital outreach and technical branding for university-wide events. Organised 2 hands-on technical workshops and coordinated career panels for 100+ students, working end-to-end from planning to delivery.",
     date: "Ongoing",
   });
   push("experience", {
-    title: "Independent AI/ML Project Work",
+    title: "Independent AI/ML Engineering & Open-Source Exploration",
     description:
-      "Built agentic AI frameworks and ML web apps (ArchAgent, Language Detector). Open to internships and placements.",
+      "Design and ship full-stack AI products end to end — agentic frameworks, ML pipelines, and LLM-powered web apps (11+ projects). Actively explore the open-source ecosystem on GitHub: evaluating new frameworks, plugins, and developer tooling, and turning what I learn into production-grade builds. Open to AI/ML internships and placements.",
     date: "Ongoing",
     sortOrder: 1,
   });

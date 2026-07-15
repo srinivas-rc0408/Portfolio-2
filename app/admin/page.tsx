@@ -87,9 +87,30 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
         className="relative z-10 w-full max-w-md rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.28)] bg-black/50 p-6 font-mono shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.14)] backdrop-blur-xl"
       >
         <div className="mb-4 flex items-center gap-2" aria-hidden="true">
-          <span className="h-3 w-3 rounded-full bg-red-500" />
-          <span className="h-3 w-3 rounded-full bg-yellow-500" />
-          <span className="h-3 w-3 rounded-full bg-green-500" />
+          <span
+            className="h-3 w-3 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06)",
+              boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
+            }}
+          />
+          <span
+            className="h-3 w-3 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)",
+              boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
+            }}
+          />
+          <span
+            className="h-3 w-3 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)",
+              boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
+            }}
+          />
           <span className="ml-2 text-sm text-white">admin@login:~$</span>
         </div>
         <h1 className="mb-4 text-lg font-bold text-white">

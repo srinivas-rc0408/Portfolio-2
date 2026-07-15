@@ -10,7 +10,7 @@ interface TerminalLoaderProps {
  * BootSequence from the admin theme accent, contrast-guarded).
  */
 export const TerminalLoader: React.FC<TerminalLoaderProps> = ({
-  text = "Loading Srinivas R C Pro Portfolio...",
+  text = "Compiling Profile: Srinivas RC...",
   className = "",
 }) => {
   return (

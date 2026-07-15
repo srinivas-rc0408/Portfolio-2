@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Send, Trash2, X } from "lucide-react";
+import { getItems } from "@/lib/cms";
+import { RESUME_URL } from "@/lib/portfolio-data";
 
 /**
  * Jerry — dedicated floating AI chat interface.
@@ -108,6 +110,32 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       setInput("");
       if (q.toLowerCase() === "exit") {
         onClose();
+        return;
+      }
+      // Resume/CV asks open the document viewer directly (instant, no API) —
+      // the viewer stacks above this chat, so the conversation continues
+      // exactly where it left off once the user closes it.
+      const docAsk = /\b(cv|curriculum vitae)\b/i.test(q)
+        ? ("CV" as const)
+        : /\bresume\b/i.test(q)
+          ? ("Resume" as const)
+          : null;
+      if (docAsk) {
+        const section = docAsk === "CV" ? "cv" : "resume";
+        const url =
+          getItems(section).find((i) => i.link && i.link !== "#")?.link ??
+          RESUME_URL;
+        window.dispatchEvent(
+          new CustomEvent("doc:view", { detail: { label: docAsk, url } })
+        );
+        setAndCache((prev) => [
+          ...prev,
+          { role: "user", text: q },
+          {
+            role: "jerry",
+            text: `Opening Srinivas's ${docAsk} for you — view it right here and grab the download button inside. Close it any time and we'll pick up where we left off!`,
+          },
+        ]);
         return;
       }
       if (!takeAIRequest()) {
