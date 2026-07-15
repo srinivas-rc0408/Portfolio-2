@@ -272,8 +272,24 @@ function GlobalSettingsPanel() {
           id="s-title"
           value={settings.title}
           onChange={(e) => patch({ title: e.target.value })}
-          className={FIELD}
+          className={`mb-4 ${FIELD}`}
         />
+        <label className="mb-1 block text-xs text-gray-400" htmlFor="s-summary">
+          PROFESSIONAL SUMMARY{" "}
+          <span className="text-gray-600">— shown in the `about` section</span>
+        </label>
+        <textarea
+          id="s-summary"
+          value={settings.summary}
+          onChange={(e) => patch({ summary: e.target.value })}
+          rows={5}
+          maxLength={1500}
+          placeholder="Your professional summary…"
+          className={`resize-y ${FIELD}`}
+        />
+        <p className="mt-1 text-[10px] text-gray-600">
+          {settings.summary.length}/1500 · reflects on the site instantly
+        </p>
       </section>
 
       {/* Profile picture upload */}

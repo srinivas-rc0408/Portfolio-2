@@ -28,6 +28,7 @@ export interface DbSettings {
   title: string;
   themeAccent: string;
   profileImage: string | null;
+  summary: string;
 }
 
 export interface DbUser {
@@ -65,8 +66,11 @@ async function init(): Promise<void> {
     title TEXT NOT NULL DEFAULT 'AI / ML Engineer',
     theme_accent TEXT NOT NULL DEFAULT '#22d3ee',
     profile_image TEXT,
+    summary TEXT,
     updated_at TIMESTAMPTZ DEFAULT now()
   )`;
+  // Migrate existing tables that predate the summary column.
+  await sql`ALTER TABLE site_setting ADD COLUMN IF NOT EXISTS summary TEXT`;
   await sql`CREATE TABLE IF NOT EXISTS cms_entry (
     id TEXT PRIMARY KEY,
     section TEXT NOT NULL,
@@ -271,6 +275,7 @@ export async function getSettings(): Promise<DbSettings> {
     title: string;
     theme_accent: string;
     profile_image: string | null;
+    summary: string | null;
   }[];
   const r = rows[0];
   return {
@@ -278,6 +283,7 @@ export async function getSettings(): Promise<DbSettings> {
     title: r.title,
     themeAccent: r.theme_accent,
     profileImage: r.profile_image,
+    summary: r.summary ?? "",
   };
 }
 
@@ -288,7 +294,7 @@ export async function updateSettings(p: Partial<DbSettings>): Promise<DbSettings
   await sql`UPDATE site_setting SET
     display_name = ${next.displayName}, title = ${next.title},
     theme_accent = ${next.themeAccent}, profile_image = ${next.profileImage},
-    updated_at = now() WHERE id = 1`;
+    summary = ${next.summary}, updated_at = now() WHERE id = 1`;
   return next;
 }
 

@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { TypewriterText, MatrixRain } from "@/components/TerminalComp/effects";
+import {
+  DEFAULT_SUMMARY,
+  SETTINGS_UPDATED_EVENT,
+  loadSettings,
+} from "@/lib/cms";
 
 // Enhanced SVG Icons with hover animations - Mobile responsive
 const CodeIcon: React.FC = () => (
@@ -41,12 +46,21 @@ const SystemIcon: React.FC = () => (
 
 const About: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  // Admin-editable professional summary (falls back to the built-in default).
+  const [summary, setSummary] = useState<string>(DEFAULT_SUMMARY);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 0);
-    return () => clearTimeout(timer);
+    const syncSummary = () =>
+      setSummary(loadSettings().summary?.trim() || DEFAULT_SUMMARY);
+    syncSummary();
+    window.addEventListener(SETTINGS_UPDATED_EVENT, syncSummary);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener(SETTINGS_UPDATED_EVENT, syncSummary);
+    };
   }, []);
 
   return (
@@ -83,18 +97,8 @@ const About: React.FC = () => {
             </div>
 
             <div className="ml-3 sm:ml-6 border-l-2 border-cyan-800/30 pl-3 sm:pl-6">
-              <p className="text-gray-300 leading-relaxed text-sm sm:text-base font-light">
-                I&apos;m a results-driven{" "}
-                <span className="text-white font-semibold">
-                  AI/ML Engineer
-                </span>{" "}
-                and AIML undergraduate with proven experience building
-                end-to-end ML pipelines, LLM-powered applications, and
-                autonomous agentic AI frameworks. Proficient in Python, Linux
-                (Arch Linux, Ubuntu), and MLOps tooling, and certified by IIT
-                Ropar/NPTEL in Deep Learning and Microsoft in Software
-                Engineering. I&apos;m seeking an AI/ML engineering internship to
-                drive real-world impact.
+              <p className="whitespace-pre-line text-gray-300 leading-relaxed text-sm sm:text-base font-light">
+                {summary}
               </p>
 
               <div className="mt-4 sm:mt-6 flex flex-wrap gap-2">

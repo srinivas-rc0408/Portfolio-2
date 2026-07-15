@@ -30,6 +30,9 @@ export async function PUT(req: NextRequest) {
   if (typeof body.title === "string" && body.title.length <= 200) {
     patch.title = body.title;
   }
+  if (typeof body.summary === "string" && body.summary.length <= 1500) {
+    patch.summary = body.summary;
+  }
   // Accent must be a hex color — it's injected into CSS variables client-side.
   if (typeof body.themeAccent === "string" && /^#[0-9a-fA-F]{3,8}$/.test(body.themeAccent)) {
     patch.themeAccent = body.themeAccent;

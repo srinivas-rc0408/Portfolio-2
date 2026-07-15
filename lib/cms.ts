@@ -47,13 +47,19 @@ export interface SiteSettings {
   title: string;
   profileImage: string | null;
   themeAccent: string;
+  /** Professional summary shown in the terminal `about` section. */
+  summary: string;
 }
+
+export const DEFAULT_SUMMARY =
+  "I'm a results-driven AI/ML Engineer and AIML undergraduate with proven experience building end-to-end ML pipelines, LLM-powered applications, and autonomous agentic AI frameworks. Proficient in Python, Linux (Arch Linux, Ubuntu), and MLOps tooling, and certified by IIT Ropar/NPTEL in Deep Learning and Microsoft in Software Engineering. I'm seeking an AI/ML engineering internship to drive real-world impact.";
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   displayName: "Srinivas RC",
   title: "AI / ML Engineer",
   profileImage: null,
   themeAccent: "#22d3ee",
+  summary: DEFAULT_SUMMARY,
 };
 
 export const CMS_UPDATED_EVENT = "cms:updated";
@@ -74,10 +80,10 @@ const SETTINGS_LS_KEY = "portfolio:settings";
 function persistSettings(): void {
   if (typeof window === "undefined") return;
   try {
-    const { displayName, title, themeAccent } = cacheSettings;
+    const { displayName, title, themeAccent, summary } = cacheSettings;
     localStorage.setItem(
       SETTINGS_LS_KEY,
-      JSON.stringify({ displayName, title, themeAccent })
+      JSON.stringify({ displayName, title, themeAccent, summary })
     );
   } catch {
     /* quota / private mode — in-memory cache still works */
