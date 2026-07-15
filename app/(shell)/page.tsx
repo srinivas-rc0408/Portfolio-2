@@ -18,9 +18,15 @@ function HomeTerminal() {
     setHideIdentityOnMobile(true);
   };
 
+  // `clear` returns to the landing view — bring the profile pane back on mobile.
+  const handleClear = (): void => {
+    setHideIdentityOnMobile(false);
+  };
+
   return (
     <TerminalComp
       onFirstCommand={handleFirstCommand}
+      onClear={handleClear}
       initialSection={section}
       initialCommand={cmd}
     />

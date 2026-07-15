@@ -56,6 +56,8 @@ interface HelpGroup {
 
 interface TerminalProps {
   onFirstCommand?: () => void;
+  /** Fired on `clear` — lets the shell restore the identity pane on mobile. */
+  onClear?: () => void;
   /** When set, this terminal is mounted on /blog routes. */
   blogRoute?: boolean;
   initialBlogSlug?: string | null;
@@ -522,6 +524,7 @@ const MAX_COMMAND_HISTORY = 50;
 
 export default function Terminal({
   onFirstCommand,
+  onClear,
   blogRoute = false,
   initialBlogSlug = null,
   initialBlogPost = null,
@@ -681,9 +684,18 @@ export default function Terminal({
       return;
     }
 
-    // clear — wipe the screen, no output line
+    // clear — wipe the screen and reset to the landing view. On mobile this
+    // restores the identity/profile pane (hidden after the first command) and
+    // scrolls back to the top so the profile is reachable again.
     if (commandName === "clear") {
       setHistory([]);
+      onClear?.();
+      setIsFirstUserCommand(true);
+      if (typeof window !== "undefined") {
+        requestAnimationFrame(() =>
+          window.scrollTo({ top: 0, behavior: "smooth" })
+        );
+      }
       return;
     }
 
