@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSettings, updateSettings, type DbSettings } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 
+// Theme/profile/name changes must be fresh on next load, deployed.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
-    return NextResponse.json({ settings: await getSettings() });
+    return NextResponse.json(
+      { settings: await getSettings() },
+      { headers: { "Cache-Control": "no-store, must-revalidate" } }
+    );
   } catch (e) {
     console.error("settings GET error:", e);
     return NextResponse.json({ error: "Failed to load settings" }, { status: 500 });

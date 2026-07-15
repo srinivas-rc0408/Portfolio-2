@@ -96,12 +96,23 @@ export default function BootSequence() {
             {stage === "gradient" ? (
               <motion.div
                 key="gradient"
-                initial={{ opacity: 0, scale: 0.96 }}
+                initial={{ opacity: 0, scale: 0.82 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.02 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="flex w-1/2 max-w-[190px] items-center justify-center sm:max-w-[220px]"
+                exit={{ opacity: 0, scale: 1.12 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                className="relative flex w-2/3 max-w-[270px] items-center justify-center sm:max-w-[320px]"
               >
+                {/* Cinematic accent glow — breathes behind the bolt */}
+                <motion.div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    background: `radial-gradient(circle, ${accent}55 0%, transparent 66%)`,
+                    filter: "blur(26px)",
+                  }}
+                  animate={{ opacity: [0.35, 0.85, 0.35], scale: [0.85, 1.08, 0.85] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                />
                 <GradientTracing
                   width={BOLT_W}
                   height={BOLT_H}
@@ -110,6 +121,7 @@ export default function BootSequence() {
                   baseColor={baseOutline}
                   gradientColors={[accent, accent, accent]}
                   animationDuration={1.5}
+                  className="relative"
                 />
               </motion.div>
             ) : (

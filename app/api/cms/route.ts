@@ -8,6 +8,9 @@ import {
 } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 
+// Admin CMS edits (resume link, projects, …) must be fresh on next load.
+export const dynamic = "force-dynamic";
+
 const SECTIONS = new Set([
   "resume", "cv", "projects", "certificates",
   "education", "experience", "achievements", "connect",
@@ -35,7 +38,10 @@ export async function GET() {
   try {
     const session = await getSession();
     const entries = await getAllEntries(session?.role === "admin");
-    return NextResponse.json({ entries, admin: session?.role === "admin" });
+    return NextResponse.json(
+      { entries, admin: session?.role === "admin" },
+      { headers: { "Cache-Control": "no-store, must-revalidate" } }
+    );
   } catch (e) {
     console.error("cms GET error:", e);
     return NextResponse.json({ error: "Failed to load content" }, { status: 500 });

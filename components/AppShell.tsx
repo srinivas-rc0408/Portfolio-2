@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Tag from "@/components/Tag";
 import QuoteOfDay from "@/components/QuoteOfDay";
@@ -16,6 +16,27 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const isHome = pathname === "/";
   const isBlog = isBlogPath(pathname);
   const [hideIdentityOnMobile, setHideIdentityOnMobile] = useState(false);
+
+  // Reveal scrollbars only while the user is actively scrolling; hide 5s after
+  // they stop. Capture phase catches every nested scroll container (terminal,
+  // identity pane, chat, admin). Also keeps scrollbars invisible during boot.
+  useEffect(() => {
+    const root = document.documentElement;
+    let hideTimer: number;
+    const onScroll = () => {
+      root.classList.add("scrolling");
+      window.clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(
+        () => root.classList.remove("scrolling"),
+        5000
+      );
+    };
+    window.addEventListener("scroll", onScroll, { capture: true, passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll, { capture: true });
+      window.clearTimeout(hideTimer);
+    };
+  }, []);
 
   const hideIdentityOnMobileOnly =
     isBlog || (isHome && hideIdentityOnMobile);
