@@ -1077,10 +1077,10 @@ export default function Terminal({
               window.dispatchEvent(new CustomEvent("profile:view"));
             }}
           />
-          {/* Blue — clear the terminal */}
+          {/* Green — clear the terminal (R·G·B order) */}
           <button
             type="button"
-            className="dot dot-blue"
+            className="dot dot-green"
             title="Clear terminal"
             aria-label="Clear terminal"
             onClick={(e) => {
@@ -1088,10 +1088,10 @@ export default function Terminal({
               void processCommand("clear");
             }}
           />
-          {/* Green — show help */}
+          {/* Blue — show help */}
           <button
             type="button"
-            className="dot dot-green"
+            className="dot dot-blue"
             title="Show help"
             aria-label="Show help"
             onClick={(e) => {

@@ -25,7 +25,7 @@ export const TerminalLoader: React.FC<TerminalLoaderProps> = ({
         <span className="text-sm leading-6 text-gray-200">
           System Initializing
         </span>
-        {/* Glossy RGB window dots — matches the main terminal header */}
+        {/* Glossy R·G·B window dots — matches the main terminal header */}
         <div className="flex gap-2" aria-hidden="true">
           <span
             className="h-2.5 w-2.5 rounded-full"
@@ -39,7 +39,7 @@ export const TerminalLoader: React.FC<TerminalLoaderProps> = ({
             className="h-2.5 w-2.5 rounded-full"
             style={{
               background:
-                "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)",
+                "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)",
               boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
             }}
           />
@@ -47,7 +47,7 @@ export const TerminalLoader: React.FC<TerminalLoaderProps> = ({
             className="h-2.5 w-2.5 rounded-full"
             style={{
               background:
-                "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)",
+                "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)",
               boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
             }}
           />
