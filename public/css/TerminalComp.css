@@ -414,10 +414,9 @@
     transform: none;
   }
 
-  /* 10 buttons → 4 / 4 / 2 grid: the two last buttons ("About Portfolio",
-     "clear") each span two columns so the long label never truncates. */
-  .terminal-nav .nav-button:nth-child(9),
-  .terminal-nav .nav-button:nth-child(10) {
+  /* 9 buttons → 4 / 4 / 1 grid: "clear" spans two columns on its own row
+     so it doesn't sit as a skinny orphan cell. */
+  .terminal-nav .nav-button:nth-child(9) {
     grid-column: span 2;
   }
 

@@ -24,6 +24,11 @@ const HEAVY_DECLINE =
 const EMPTY_PROMPT =
   "I am Jerry, Srinivas RC's personal AI assistant! Ask me about his skills, projects, or experience.";
 
+// The flagship question gets one exact, pre-approved answer — served instantly
+// (no LLM round-trip) and also pinned in the system prompt for paraphrases.
+const WHY_CHOOSE_ANSWER =
+  "Srinivas combines a strong academic foundation (7.5 CGPA in AI/ML) with practical expertise in building agentic systems and highly optimized web applications. He is a fast learner, deeply passionate about AI engineering, and consistently delivers clean, production-ready code.";
+
 const FALLBACK_ERROR =
   "Jerry (System): I am currently experiencing network latency. Please use the manual terminal commands or the Left Panel to navigate the portfolio.";
 
@@ -37,6 +42,9 @@ YOUR SECONDARY DIRECTIVE (Conversational & Fundamental Knowledge):
 You are authorized to answer general fundamental questions, including basic math, science, fun facts, and greetings.
 1. For simple questions (e.g., 'what is your name?', 'what is 2+2?', 'tell me a fun fact'), provide a fast, crisp, one-line answer. Example: 'I am Jerry, Srinivas RC's personal AI assistant! And 2+2 is exactly 4.'
 2. Keep all general knowledge answers strictly accurate, concise, and friendly. Do not write massive paragraphs for simple questions.
+
+FLAGSHIP QUESTION:
+If the user asks 'Why choose Srinivas R C?' (or any variation of why someone should pick/hire/choose him), you must provide this exact, highly professional response: '${WHY_CHOOSE_ANSWER}'
 
 YOUR RESTRICTIONS (Guardrails):
 1. Never pretend to be Srinivas. You are Jerry. Speak of Srinivas in the third person.
@@ -167,6 +175,12 @@ export async function POST(req: NextRequest) {
       // Heavy code/image/creative generation is declined instantly (guardrail #2).
       if (isObviouslyOutOfScope(question)) {
         send(HEAVY_DECLINE);
+        controller.close();
+        return;
+      }
+      // Flagship question → the exact approved answer, zero latency.
+      if (/why\s+(should\s+\w+\s+)?(choose|pick|hire|select)\s+srinivas/i.test(question)) {
+        send(WHY_CHOOSE_ANSWER);
         controller.close();
         return;
       }

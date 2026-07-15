@@ -225,23 +225,25 @@ export default function Tag() {
           type="button"
           onClick={viewProfile}
           aria-label="View profile picture"
-          className="group relative h-36 w-36 cursor-pointer overflow-hidden rounded-xl shadow-[0_0_24px_rgba(var(--theme-accent-rgb),0.15),0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-300 active:scale-[0.98] sm:h-[359px] sm:w-[280px]"
+          className="group relative h-36 w-36 cursor-pointer overflow-hidden rounded-xl shadow-[0_0_24px_rgba(var(--theme-accent-rgb),0.15),0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-300 active:scale-[0.98] sm:h-[290px] sm:w-[232px]"
         >
           <Image
             src={profileSrc}
             alt={settings.displayName}
             fill
-            sizes="280px"
+            sizes="232px"
             priority
             unoptimized
             className="object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
           />
           {/* Frosted overlay + greeting, fades/slides in on hover */}
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/55 opacity-0 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100">
-            <p className="translate-y-3 text-center font-mono text-lg font-bold text-white opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [text-shadow:0_0_14px_rgba(var(--theme-accent-rgb),0.6)] group-hover:translate-y-0 group-hover:opacity-100">
-              Hi, I am
+            <p className="translate-y-3 px-3 text-center font-mono text-base font-bold text-white opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [text-shadow:0_0_14px_rgba(var(--theme-accent-rgb),0.6)] group-hover:translate-y-0 group-hover:opacity-100 sm:text-lg">
+              Yes, it&apos;s me —
               <br />
-              {settings.displayName}
+              <span className="text-[var(--theme-accent)]">
+                believe it or not.
+              </span>
             </p>
             <span className="mt-3 translate-y-3 rounded-full border border-white/40 px-3 py-1 font-mono text-[11px] text-white/80 opacity-0 transition-all delay-100 duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100">
               click to view ↗

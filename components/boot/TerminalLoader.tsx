@@ -10,12 +10,12 @@ interface TerminalLoaderProps {
  * BootSequence from the admin theme accent, contrast-guarded).
  */
 export const TerminalLoader: React.FC<TerminalLoaderProps> = ({
-  text = "Loading Srinivas's Portfolio...",
+  text = "Loading Srinivas R C Pro Portfolio...",
   className = "",
 }) => {
   return (
     <div
-      className={`terminal-loader relative w-[90%] max-w-[400px] overflow-hidden rounded border border-gray-700 bg-gray-950 p-6 pt-8 font-mono text-base ${className}`}
+      className={`terminal-loader relative w-[92%] max-w-[440px] overflow-hidden rounded border border-gray-700 bg-gray-950 p-6 pt-8 font-mono text-[15px] sm:text-base ${className}`}
       style={{
         boxShadow:
           "0 0 45px color-mix(in srgb, var(--boot-accent, #38bdf8) 30%, transparent)",

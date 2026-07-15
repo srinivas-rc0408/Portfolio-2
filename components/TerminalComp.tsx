@@ -13,6 +13,7 @@ import Experience from "./TerminalComp/Experience";
 import Blog from "./TerminalComp/Blog";
 import ArchMan from "./TerminalComp/ArchMan";
 import CmsSectionOutput from "./TerminalComp/CmsSection";
+import JerryChat from "./JerryChat";
 import type { CmsSection } from "@/lib/cms";
 import { getItems } from "@/lib/cms";
 import { RESUME_URL } from "@/lib/portfolio-data";
@@ -65,10 +66,6 @@ interface TerminalProps {
   initialCommand?: string | null;
 }
 
-// Shown when the user types just `ai` with no question.
-const AI_GREETING =
-  "Hi! My name is Jerry, Srinivas RC's personal AI assistant. How can I help you explore his portfolio today? (e.g., 'ai what are his skills?' or 'ai show me his resume')";
-
 const HOME_CD_SECTIONS = [
   "about",
   "projects",
@@ -79,59 +76,6 @@ const HOME_CD_SECTIONS = [
   "contact",
   "welcome",
 ] as const;
-
-// ============ NEW: AI Rate Limiting Helper ============
-const AI_RATE_LIMIT = {
-  maxRequests: 10,
-  maxOutputTokens: 1000,
-  timeWindow: 24 * 60 * 60 * 1000,
-};
-
-const getAIUsage = (): { count: number; timestamp: number } => {
-  if (typeof window === "undefined") return { count: 0, timestamp: Date.now() };
-
-  const stored = localStorage.getItem("ai_usage");
-  if (!stored) return { count: 0, timestamp: Date.now() };
-
-  return JSON.parse(stored);
-};
-
-const incrementAIUsage = (): boolean => {
-  const usage = getAIUsage();
-  const now = Date.now();
-
-  // Reset if 24 hours have passed
-  if (now - usage.timestamp > AI_RATE_LIMIT.timeWindow) {
-    localStorage.setItem(
-      "ai_usage",
-      JSON.stringify({ count: 1, timestamp: now })
-    );
-    return true;
-  }
-
-  // Check if limit reached
-  if (usage.count >= AI_RATE_LIMIT.maxRequests) {
-    return false;
-  }
-
-  // Increment count
-  localStorage.setItem(
-    "ai_usage",
-    JSON.stringify({ count: usage.count + 1, timestamp: usage.timestamp })
-  );
-  return true;
-};
-
-const getRemainingRequests = (): number => {
-  const usage = getAIUsage();
-  const now = Date.now();
-
-  if (now - usage.timestamp > AI_RATE_LIMIT.timeWindow) {
-    return AI_RATE_LIMIT.maxRequests;
-  }
-
-  return Math.max(0, AI_RATE_LIMIT.maxRequests - usage.count);
-};
 
 // ============ Typewriter Text Component ============
 const TypewriterText: React.FC<{ text: string; speed?: number; onComplete?: () => void }> = ({ text, speed = 20, onComplete }) => {
@@ -157,73 +101,6 @@ const TypewriterText: React.FC<{ text: string; speed?: number; onComplete?: () =
         <span className="animate-pulse text-white">|</span>
       )}
     </>
-  );
-};
-
-// Jerry's streaming reply — consumes the SSE-style token stream from /api/chat
-// and types characters live in a cool cyan. Self-contained: fetches on mount,
-// signals completion via onDone (so the terminal input re-enables).
-const StreamingAI: React.FC<{ question: string; onDone?: () => void }> = ({
-  question,
-  onDone,
-}) => {
-  const [text, setText] = useState<string>("");
-  const [done, setDone] = useState<boolean>(false);
-  const doneRef = useRef(onDone);
-  doneRef.current = onDone;
-
-  useEffect(() => {
-    const controller = new AbortController();
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: question }),
-          signal: controller.signal,
-        });
-        if (!res.body) throw new Error("no stream");
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        for (;;) {
-          const { done: streamDone, value } = await reader.read();
-          if (streamDone || cancelled) break;
-          setText((prev) => prev + decoder.decode(value, { stream: true }));
-        }
-      } catch {
-        if (!cancelled) {
-          setText(
-            (prev) =>
-              prev ||
-              "Jerry (System): I couldn't reach the network. Try the 'help' command or the left-panel buttons."
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setDone(true);
-          doneRef.current?.();
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
-  }, [question]);
-
-  return (
-    <div className="ai-response">
-      <div className="mb-1 flex items-center gap-2">
-        <span className="font-mono text-sm font-bold text-cyan-400">
-          Jerry ⚡
-        </span>
-      </div>
-      <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-cyan-300">
-        {text}
-        {!done && <span className="animate-pulse text-cyan-400">▋</span>}
-      </div>
-    </div>
   );
 };
 
@@ -307,8 +184,7 @@ const HELP_GROUPS: HelpGroup[] = [
     title: "PORTFOLIO",
     accent: "text-white",
     entries: [
-      { command: "about", description: "Learn more about me." },
-      { command: "about-portfolio", description: "System info about this portfolio build." },
+      { command: "about", description: "About me — plus this portfolio's build info." },
       { command: "projects", description: "View my recent AI and Web projects." },
       { command: "skills", description: "See my technical stack." },
       { command: "experience", description: "View my professional experience." },
@@ -323,7 +199,7 @@ const HELP_GROUPS: HelpGroup[] = [
     title: "AI & INTERACTIVE",
     accent: "text-white",
     entries: [
-      { command: "ai <question>", description: "Chat with my AI assistant about my background." },
+      { command: "jerry", description: "Open the interactive AI chat interface." },
       { command: "play archman", description: "Play the terminal-based Arch-Man game." },
     ],
   },
@@ -349,14 +225,12 @@ const WELCOME_LINES: string[] = [
   "Type 'help' or 'ls' for commands. Use 'cd <name>' to open sections (e.g. cd about, cd projects, cd education).",
 ];
 
-// Final welcome line — `ai <question>` in Cyber Blue, Jerry bolded to fix his identity.
+// Final welcome line — `jerry` in Cyber Blue, bolded to fix his identity.
 const JerryHint: React.FC = () => (
   <span>
-    &gt; Type{" "}
-    <span className="text-cyan-400">&apos;ai &lt;question&gt;&apos;</span> to
-    interface with{" "}
-    <span className="font-bold text-cyan-400">Jerry</span>, my personal and
-    customized AI assistant.
+    &gt; Type <span className="font-bold text-cyan-400">&apos;jerry&apos;</span>{" "}
+    to open the interactive AI Chat Interface and speak with my personal
+    assistant.
   </span>
 );
 
@@ -375,7 +249,7 @@ const TAB_COMPLETIONS: string[] = [
   "cv",
   "connect",
   "achievements",
-  "ai",
+  "jerry",
   "play archman",
   "admin",
   "clear",
@@ -609,7 +483,15 @@ const AboutPortfolio: React.FC = () => (
 
 const SECTION_COMPONENTS: Record<string, React.ReactNode> = {
   welcome: <Welcome />,
-  about: <About />,
+  // `about` = personal bio + the portfolio build card, one professional page.
+  about: (
+    <>
+      <About />
+      <div className="mt-4">
+        <AboutPortfolio />
+      </div>
+    </>
+  ),
   "about-portfolio": <AboutPortfolio />,
   projects: <Projects />,
   skills: <Skills />,
@@ -635,7 +517,8 @@ export default function Terminal({
   const [cwd, setCwd] = useState<string>("~");
   const [tabSuggestions, setTabSuggestions] = useState<string[] | null>(null);
   const [isFirstUserCommand, setIsFirstUserCommand] = useState<boolean>(true);
-  const [isAILoading, setIsAILoading] = useState<boolean>(false);
+  const [jerryOpen, setJerryOpen] = useState<boolean>(false);
+  const [jerryInitialQ, setJerryInitialQ] = useState<string | null>(null);
   const [isGameActive, setIsGameActive] = useState<boolean>(false);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
@@ -646,54 +529,6 @@ export default function Terminal({
   const user = "root";
   const host = "srinivas";
 
-
-  // ============ AI Command Handler: shows user question (prompt) + AI response ============
-  const handleAICommand = async (
-    question: string,
-    historyWithPrompt: HistoryLine[]
-  ): Promise<void> => {
-    const trimmedQuestion = question.trim();
-
-    // Empty `ai` is handled with a greeting upstream; guard just in case.
-    if (!trimmedQuestion) {
-      setHistory([...historyWithPrompt, { type: "output", content: AI_GREETING }]);
-      return;
-    }
-
-    const remaining = getRemainingRequests();
-    if (remaining <= 0) {
-      setHistory([
-        ...historyWithPrompt,
-        {
-          type: "output",
-          content: "Daily AI request limit reached (10/day). Try again tomorrow!",
-        },
-      ]);
-      return;
-    }
-
-    // Stream Jerry's reply live. StreamingAI fetches on mount and re-enables
-    // the input via onDone when the stream completes.
-    incrementAIUsage();
-    const newRemaining = getRemainingRequests();
-    setIsAILoading(true);
-    setHistory([
-      ...historyWithPrompt,
-      {
-        type: "output",
-        content: (
-          <StreamingAI
-            question={trimmedQuestion}
-            onDone={() => setIsAILoading(false)}
-          />
-        ),
-      },
-      {
-        type: "output",
-        content: `\n Remaining AI requests today: ${newRemaining}/10`,
-      },
-    ]);
-  };
 
   const redirectFromBlogRoute = (trimmedCmd: string): boolean => {
     if (!blogRoute) return false;
@@ -763,20 +598,23 @@ export default function Terminal({
       setHistoryIndex(-1);
     }
 
-    // ============ AI command: show user prompt + response (handleAICommand adds prompt so it stays visible) ============
-    if (trimmedCmd.toLowerCase().startsWith("ai ")) {
-      const question = trimmedCmd.substring(3).trim();
-      await handleAICommand(question, newHist);
-      return;
-    }
-
-    // Handle 'ai' alone without a question → Jerry's greeting
-    if (trimmedCmd.toLowerCase() === "ai") {
+    // ============ jerry: open the dedicated AI chat interface ============
+    // Chat messages live in the JerryChat panel, never in terminal history.
+    // Legacy `ai [question]` still works — it opens the chat (and auto-sends).
+    const lower = trimmedCmd.toLowerCase();
+    if (lower === "jerry" || lower === "ai" || lower.startsWith("ai ")) {
+      const question = lower.startsWith("ai ") ? trimmedCmd.slice(3).trim() : null;
       newHist.push({
         type: "output",
-        content: <span className="text-cyan-300">{AI_GREETING}</span>,
+        content: (
+          <span className="text-cyan-300">
+            Launching Jerry — interactive AI chat interface…
+          </span>
+        ),
       });
       setHistory(newHist);
+      setJerryInitialQ(question);
+      setJerryOpen(true);
       return;
     }
 
@@ -1047,7 +885,7 @@ export default function Terminal({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (isAILoading || isGameActive) return;
+    if (isGameActive) return;
     setTabSuggestions(null);
     processCommand(input);
     setInput("");
@@ -1260,7 +1098,6 @@ export default function Terminal({
             "education",
             "certificates",
             "contact",
-            "about-portfolio",
             "clear",
           ].map((cmd) => (
             <button
@@ -1268,9 +1105,9 @@ export default function Terminal({
               onClick={() => handleNav(cmd)}
               className="nav-button"
               type="button"
-              aria-label={`Navigate to ${cmd === "about-portfolio" ? "About Portfolio" : cmd}`}
+              aria-label={`Navigate to ${cmd}`}
             >
-              {cmd === "about-portfolio" ? "About Portfolio" : cmd}
+              {cmd}
             </button>
           ))}
         </nav>
@@ -1319,7 +1156,7 @@ export default function Terminal({
               autoComplete="off"
               spellCheck="false"
               aria-label="Terminal command input"
-              disabled={isAILoading || isGameActive}
+              disabled={isGameActive}
             />
           </div>
         </form>
@@ -1336,6 +1173,17 @@ export default function Terminal({
           </div>
         )}
       </main>
+
+      {/* Jerry — dedicated AI chat panel. Chats live here, not in history. */}
+      <JerryChat
+        open={jerryOpen}
+        initialQuestion={jerryInitialQ}
+        onClose={() => {
+          setJerryOpen(false);
+          setJerryInitialQ(null);
+          focusInput();
+        }}
+      />
     </div>
   );
 }

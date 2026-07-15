@@ -71,7 +71,7 @@ html {
   }
 }
 
-/* === Boot sequence: ch-precise typing for "Loading Srinivas's Portfolio..." (31 chars) === */
+/* === Boot sequence: ch-precise typing for "Loading Srinivas R C Pro Portfolio..." (37 chars) === */
 @keyframes blinkCursor {
   0%, 100% { border-right-color: var(--boot-accent, #38bdf8); }
   50% { border-right-color: transparent; }
@@ -79,13 +79,13 @@ html {
 
 @keyframes typeText {
   from { width: 0; }
-  to { width: 31ch; }
+  to { width: 37ch; }
 }
 
 .boot-type {
   width: 0;
   animation:
-    typeText 1.3s steps(31, end) forwards,
+    typeText 1.3s steps(37, end) forwards,
     blinkCursor 0.6s step-end infinite;
 }
 
