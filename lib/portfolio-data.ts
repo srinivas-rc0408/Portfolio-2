@@ -207,6 +207,11 @@ export const socialLinks: SocialLinkData[] = [
   },
   {
     name: "Instagram",
+    href: "https://www.instagram.com/ntg_much_69",
+    color: "#f472b6",
+  },
+  {
+    name: "Instagram (Personal)",
     href: "https://www.instagram.com/superior__src",
     color: "#f472b6",
   },
@@ -216,3 +221,12 @@ export const socialLinks: SocialLinkData[] = [
     color: "#60a5fa",
   },
 ];
+
+// Compact set for the left-panel footer (one Instagram, plus a direct email).
+export const footerLinks = [
+  { name: "GitHub", href: "https://github.com/srinivas-rc0408" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/in/srinivas-r-c-169406294" },
+  { name: "Email", href: `mailto:${CONTACT_EMAIL}` },
+  { name: "Instagram", href: "https://www.instagram.com/ntg_much_69" },
+  { name: "Steam", href: "https://steamcommunity.com/profiles/76561199545795989/" },
+] as const;

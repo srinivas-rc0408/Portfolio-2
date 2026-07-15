@@ -27,7 +27,7 @@ const rightLines = [
   "",
   "  [ Navigation ]",
   "  > GitHub    : github.com/srinivas-rc0408",
-  "  > Email     : srinivasrc0408@gmail.com",
+  "  > Email     : srinivasrc01@gmail.com",
   "  > Location  : Bengaluru, India",
   "",
   ""

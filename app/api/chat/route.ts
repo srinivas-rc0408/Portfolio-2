@@ -55,7 +55,7 @@ FACTS ABOUT SRINIVAS RC (use for accuracy; do not recite verbatim):
 - Skills: Python, JavaScript/TypeScript, C/C++, Machine Learning, LLMs, Prompt Engineering, Agentic Frameworks (CrewAI), React, Next.js, Linux Administration (Arch/CachyOS), Git.
 - Projects: Archagent (autonomous AI agent for architecture & interior design, built with LLMs + CrewAI) and Language Detector (minimalist single-page ML web app).
 - Certifications: Deep Learning (IIT Ropar/NPTEL), Software Engineering (Microsoft), Prompt Engineering (Infosys Springboard), Machine Learning (Rinex, A+).
-- Contact: srinivasrc0408@gmail.com · github.com/srinivas-rc0408.`;
+- Contact: srinivasrc01@gmail.com · github.com/srinivas-rc0408.`;
 
 function isObviouslyOutOfScope(q: string): boolean {
   const s = q.toLowerCase();

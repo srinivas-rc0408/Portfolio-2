@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Tag from "@/components/Tag";
 import QuoteOfDay from "@/components/QuoteOfDay";
+import IdentityFooter from "@/components/IdentityFooter";
 import BootSequence from "@/components/boot/BootSequence";
 import { ShellContext } from "@/context/ShellContext";
 
@@ -59,6 +60,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </main>
       {/* Floating quote toast — overlays the site, never affects layout/scroll */}
       <QuoteOfDay />
+      {/* Left-pane footer — reveals on scroll-to-bottom, desktop only */}
+      {!isBlog && <IdentityFooter />}
     </ShellContext.Provider>
   );
 }

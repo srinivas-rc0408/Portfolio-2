@@ -338,6 +338,7 @@ export default function Contact() {
     YouTube: YoutubeIcon,
     "Twitter / X": TwitterIcon,
     Instagram: InstagramIcon,
+    "Instagram (Personal)": InstagramIcon,
     LinkedIn: LinkedinIcon,
     GitHub: GithubIcon,
     LeetCode: LeetcodeIcon,

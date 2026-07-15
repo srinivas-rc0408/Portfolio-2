@@ -11,7 +11,7 @@ import {
 
 export const dynamic = "force-static";
 
-const EMAIL = "srinivasrc0408@gmail.com";
+const EMAIL = "srinivasrc01@gmail.com";
 
 function escapeXml(input: string): string {
   return input

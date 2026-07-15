@@ -166,8 +166,8 @@ async function seed(): Promise<void> {
   });
   push("connect", {
     title: "Email",
-    description: "srinivasrc0408@gmail.com",
-    link: "mailto:srinivasrc0408@gmail.com",
+    description: "srinivasrc01@gmail.com",
+    link: "mailto:srinivasrc01@gmail.com",
   });
   push("connect", {
     title: "GitHub",

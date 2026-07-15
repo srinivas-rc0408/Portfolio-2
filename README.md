@@ -268,7 +268,7 @@ vercel
 
 - **GitHub**: [@srinivas-rc0408](https://github.com/srinivas-rc0408)
 - **YouTube**: [@morscode7](https://www.youtube.com/@morscode7)
-- **Email**: [srinivasrc0408@gmail.com](mailto:srinivasrc0408@gmail.com)
+- **Email**: [srinivasrc01@gmail.com](mailto:srinivasrc01@gmail.com)
 
 ## 📝 License
 
