@@ -225,10 +225,13 @@ const WELCOME_LINES: string[] = [
   "Type 'help' or 'ls' for commands. Use 'cd <name>' to open sections (e.g. cd about, cd projects, cd education).",
 ];
 
-// Final welcome line — `jerry` in Cyber Blue, bolded to fix his identity.
+// Final welcome line — `jerry` in the theme accent, bolded to fix his identity.
 const JerryHint: React.FC = () => (
   <span>
-    &gt; Type <span className="font-bold text-cyan-400">&apos;jerry&apos;</span>{" "}
+    &gt; Type{" "}
+    <span className="font-bold" style={{ color: "var(--theme-accent)" }}>
+      &apos;jerry&apos;
+    </span>{" "}
     to open the interactive AI Chat Interface and speak with my personal
     assistant.
   </span>
@@ -448,32 +451,41 @@ const Welcome: React.FC = () => {
 };
 
 // Section renderers shared by `cd <section>` and the bare section commands.
-// Stylized system-info card for the "About Portfolio" nav button / command.
+// Stylized system-info card for the `about` section / about-portfolio command.
+// Colors follow the admin theme accent (universal site color).
 const AboutPortfolio: React.FC = () => (
   <div
     role="region"
     aria-label="Portfolio system info"
-    className="font-mono text-sm leading-relaxed text-cyan-300"
+    className="font-mono text-sm leading-relaxed text-white/85"
   >
-    <div className="mb-1 font-bold tracking-[0.2em] text-cyan-400">
+    <div
+      className="mb-1 font-bold tracking-[0.2em]"
+      style={{ color: "var(--theme-accent)" }}
+    >
       [ SYSTEM PORTFOLIO INFO ]
     </div>
     <div>
-      <span className="text-cyan-500">Version:</span> v2.0.0
+      <span style={{ color: "rgba(var(--theme-accent-rgb),0.75)" }}>Version:</span> v2.0.0
     </div>
     <div>
-      <span className="text-cyan-500">Developer &amp; Sole Architect:</span>{" "}
-      <span className="font-bold text-cyan-200">Srinivas R C</span>
+      <span style={{ color: "rgba(var(--theme-accent-rgb),0.75)" }}>
+        Developer &amp; Sole Architect:
+      </span>{" "}
+      <span className="font-bold text-white">Srinivas R C</span>
     </div>
     <div>
-      <span className="text-cyan-500">Tech Stack:</span> Next.js, TypeScript,
-      Tailwind CSS, Framer Motion
+      <span style={{ color: "rgba(var(--theme-accent-rgb),0.75)" }}>Tech Stack:</span>{" "}
+      Next.js, TypeScript, Tailwind CSS, Framer Motion
     </div>
     <div>
-      <span className="text-cyan-500">AI Integration:</span>{" "}
+      <span style={{ color: "rgba(var(--theme-accent-rgb),0.75)" }}>AI Integration:</span>{" "}
       Custom Edge-Runtime LLM Agent (&quot;Jerry&quot;)
     </div>
-    <div className="mt-3 border-l-2 border-cyan-500/60 pl-3 italic text-cyan-300/90">
+    <div
+      className="mt-3 border-l-2 pl-3 italic text-white/75"
+      style={{ borderColor: "rgba(var(--theme-accent-rgb),0.6)" }}
+    >
       &quot;This interactive terminal interface was architected and developed to
       showcase advanced full-stack engineering, prompt architecture, and
       ultra-smooth UI/UX motion design.&quot;
@@ -607,7 +619,7 @@ export default function Terminal({
       newHist.push({
         type: "output",
         content: (
-          <span className="text-cyan-300">
+          <span style={{ color: "var(--theme-accent)" }}>
             Launching Jerry — interactive AI chat interface…
           </span>
         ),

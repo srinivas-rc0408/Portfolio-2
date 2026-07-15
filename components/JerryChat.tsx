@@ -268,27 +268,68 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
               aria-live="polite"
             >
               {/* Jerry's standing introduction */}
-              <div className="max-w-[88%] rounded-xl rounded-tl-sm border border-[rgba(var(--theme-accent-rgb),0.25)] bg-[rgba(var(--theme-accent-rgb),0.07)] px-3.5 py-2.5 text-[13px] leading-relaxed text-cyan-100/90">
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                className="max-w-[88%] rounded-xl rounded-tl-sm border border-[rgba(var(--theme-accent-rgb),0.25)] bg-[rgba(var(--theme-accent-rgb),0.07)] px-3.5 py-2.5 text-[13px] leading-relaxed text-white/90"
+              >
                 {INTRO}
-              </div>
+              </motion.div>
 
               {messages.map((m, i) =>
                 m.role === "user" ? (
-                  <div key={i} className="flex justify-end">
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex justify-end"
+                  >
                     <div className="max-w-[88%] rounded-xl rounded-tr-sm bg-white/[0.08] px-3.5 py-2.5 text-[13px] leading-relaxed text-white">
                       {m.text}
                     </div>
-                  </div>
+                  </motion.div>
                 ) : (
-                  <div
+                  <motion.div
                     key={i}
-                    className="max-w-[88%] whitespace-pre-wrap rounded-xl rounded-tl-sm border border-[rgba(var(--theme-accent-rgb),0.25)] bg-[rgba(var(--theme-accent-rgb),0.07)] px-3.5 py-2.5 text-[13px] leading-relaxed text-cyan-100/90"
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    className="max-w-[88%] whitespace-pre-wrap rounded-xl rounded-tl-sm border border-[rgba(var(--theme-accent-rgb),0.25)] bg-[rgba(var(--theme-accent-rgb),0.07)] px-3.5 py-2.5 text-[13px] leading-relaxed text-white/90"
                   >
-                    {m.text}
-                    {busy && i === messages.length - 1 && (
-                      <span className="ml-0.5 inline-block h-3.5 w-[7px] animate-pulse bg-[var(--theme-accent)] align-middle" />
+                    {!m.text && busy && i === messages.length - 1 ? (
+                      /* Thinking indicator — shown until the first token lands */
+                      <span
+                        className="flex items-center gap-1.5 py-0.5"
+                        aria-label="Jerry is thinking"
+                      >
+                        <span className="text-[11px] italic text-white/50">
+                          Jerry is thinking
+                        </span>
+                        {[0, 1, 2].map((d) => (
+                          <motion.span
+                            key={d}
+                            className="h-1.5 w-1.5 rounded-full bg-[var(--theme-accent)]"
+                            animate={{ y: [0, -4, 0], opacity: [0.35, 1, 0.35] }}
+                            transition={{
+                              duration: 0.9,
+                              repeat: Infinity,
+                              delay: d * 0.15,
+                              ease: "easeInOut",
+                            }}
+                          />
+                        ))}
+                      </span>
+                    ) : (
+                      <>
+                        {m.text}
+                        {busy && i === messages.length - 1 && (
+                          <span className="ml-0.5 inline-block h-3.5 w-[7px] animate-pulse bg-[var(--theme-accent)] align-middle" />
+                        )}
+                      </>
                     )}
-                  </div>
+                  </motion.div>
                 )
               )}
             </div>
@@ -301,7 +342,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                   type="button"
                   disabled={busy}
                   onClick={() => void send(c)}
-                  className="shrink-0 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.06)] px-3 py-1.5 text-[11px] text-cyan-100/90 transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.16)] hover:shadow-[0_0_12px_rgba(var(--theme-accent-rgb),0.3)] active:scale-95 disabled:opacity-40"
+                  className="shrink-0 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.06)] px-3 py-1.5 text-[11px] text-white/90 transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.16)] hover:shadow-[0_0_12px_rgba(var(--theme-accent-rgb),0.3)] active:scale-95 disabled:opacity-40"
                 >
                   {c}
                 </button>
@@ -327,14 +368,21 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                 spellCheck={false}
                 className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-[13px] text-white placeholder-white/30 outline-none transition-all duration-200 [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)] focus:shadow-[0_0_0_3px_rgba(var(--theme-accent-rgb),0.15)]"
               />
-              <button
+              <motion.button
                 type="submit"
                 disabled={busy || !input.trim()}
                 aria-label="Send message"
-                className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] p-2 text-[var(--theme-accent)] transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.25)] hover:shadow-[0_0_14px_rgba(var(--theme-accent-rgb),0.4)] active:scale-90 disabled:opacity-35 disabled:hover:shadow-none"
+                animate={{
+                  scale: input.trim() && !busy ? 1 : 0.9,
+                  opacity: input.trim() && !busy ? 1 : 0.45,
+                }}
+                whileHover={input.trim() && !busy ? { scale: 1.08 } : undefined}
+                whileTap={{ scale: 0.82 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] p-2 text-[var(--theme-accent)] transition-shadow duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.25)] hover:shadow-[0_0_14px_rgba(var(--theme-accent-rgb),0.4)] disabled:hover:shadow-none"
               >
                 <Send size={15} strokeWidth={2.2} aria-hidden />
-              </button>
+              </motion.button>
             </form>
           </motion.div>
         </motion.div>

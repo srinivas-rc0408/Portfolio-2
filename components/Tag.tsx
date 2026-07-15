@@ -31,10 +31,11 @@ const BrandMark: React.FC = () => (
       className="shrink-0 transition-transform duration-300 group-hover/logo:scale-110 group-hover/logo:[filter:drop-shadow(0_0_6px_rgba(var(--theme-accent-rgb),0.8))]"
     >
       <title>S.RC</title>
+      {/* Bolt stroke follows the admin theme accent (universal site color) */}
       <path
         d="M29 3 H14 L9 17 H19 L7 37 L31 15 H20 L29 3 Z"
         fill="black"
-        stroke="white"
+        stroke="var(--theme-accent)"
         strokeWidth="2"
         strokeLinejoin="round"
       />

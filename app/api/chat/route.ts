@@ -63,8 +63,10 @@ function isObviouslyOutOfScope(q: string): boolean {
     /\b(write|generate|create|make|build|give me|show me)\b[^.?!]{0,30}\b(code|program|script|snippet|function|algorithm|regex|query)\b/;
   const imageGen =
     /\b(generate|create|draw|make|design)\b[^.?!]{0,25}\b(image|picture|photo|logo|art|drawing|painting)\b/;
+  // Long-form creative writing is declined; short friendly asks (jokes,
+  // fun facts) are allowed through — Jerry's secondary directive covers them.
   const creative =
-    /\b(write|compose)\b[^.?!]{0,25}\b(poem|essay|story|song|joke|recipe)\b/;
+    /\b(write|compose)\b[^.?!]{0,25}\b(poem|essay|story|song|recipe)\b/;
   return codeGen.test(s) || imageGen.test(s) || creative.test(s);
 }
 
