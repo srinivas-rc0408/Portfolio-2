@@ -684,11 +684,16 @@ export default function Terminal({
       return;
     }
 
-    // clear — wipe the screen and reset to the landing view. On mobile this
+    // clear — wipe the screen and reset to the landing view: re-show the
+    // welcome greeting (fresh key → typewriter replays). On mobile this also
     // restores the identity/profile pane (hidden after the first command) and
     // scrolls back to the top so the profile is reachable again.
     if (commandName === "clear") {
-      setHistory([]);
+      setCwd("~");
+      setHistory([
+        { type: "prompt", command: "cd welcome" },
+        { type: "output", content: <Welcome key={`welcome-${Date.now()}`} /> },
+      ]);
       onClear?.();
       setIsFirstUserCommand(true);
       if (typeof window !== "undefined") {
