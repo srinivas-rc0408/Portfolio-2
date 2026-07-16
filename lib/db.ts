@@ -71,6 +71,14 @@ async function init(): Promise<void> {
   )`;
   // Migrate existing tables that predate the summary column.
   await sql`ALTER TABLE site_setting ADD COLUMN IF NOT EXISTS summary TEXT`;
+  await sql`CREATE TABLE IF NOT EXISTS feedback (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT,
+    message TEXT NOT NULL,
+    starred BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT now()
+  )`;
   await sql`CREATE TABLE IF NOT EXISTS cms_entry (
     id TEXT PRIMARY KEY,
     section TEXT NOT NULL,
@@ -296,6 +304,65 @@ export async function updateSettings(p: Partial<DbSettings>): Promise<DbSettings
     theme_accent = ${next.themeAccent}, profile_image = ${next.profileImage},
     summary = ${next.summary}, updated_at = now() WHERE id = 1`;
   return next;
+}
+
+// --- Feedback ---
+
+export interface DbFeedback {
+  id: string;
+  name: string;
+  email: string | null;
+  message: string;
+  starred: boolean;
+  createdAt: string; // ISO timestamp
+}
+
+interface FeedbackRow {
+  id: string;
+  name: string;
+  email: string | null;
+  message: string;
+  starred: boolean;
+  created_at: string;
+}
+
+const mapFeedback = (r: FeedbackRow): DbFeedback => ({
+  id: r.id,
+  name: r.name,
+  email: r.email,
+  message: r.message,
+  starred: r.starred,
+  createdAt: new Date(r.created_at).toISOString(),
+});
+
+export async function addFeedback(
+  name: string,
+  email: string | null,
+  message: string
+): Promise<void> {
+  await ensureDb();
+  await sql`INSERT INTO feedback (id, name, email, message)
+    VALUES (${id()}, ${name}, ${email}, ${message})`;
+}
+
+export async function getFeedback(): Promise<DbFeedback[]> {
+  await ensureDb();
+  const rows =
+    (await sql`SELECT * FROM feedback ORDER BY created_at DESC`) as FeedbackRow[];
+  return rows.map(mapFeedback);
+}
+
+export async function setFeedbackStarred(
+  fid: string,
+  starred: boolean
+): Promise<void> {
+  await ensureDb();
+  await sql`UPDATE feedback SET starred = ${starred} WHERE id = ${fid}`;
+}
+
+export async function deleteFeedback(fid: string): Promise<void> {
+  await ensureDb();
+  await sql`DELETE FROM feedback WHERE id = ${fid}`;
 }
 
 // --- Users ---

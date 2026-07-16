@@ -855,9 +855,286 @@ function Workspace({ section }: { section: CmsSection }) {
   );
 }
 
+// --- Feedback inbox ---
+
+interface FeedbackEntry {
+  id: string;
+  name: string;
+  email: string | null;
+  message: string;
+  starred: boolean;
+  createdAt: string;
+}
+
+function fmtDate(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function FeedbackPanel() {
+  const [entries, setEntries] = useState<FeedbackEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [newestFirst, setNewestFirst] = useState(true);
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  const refresh = useCallback(
+    () =>
+      fetch("/api/feedback", { cache: "no-store" })
+        .then(async (res) => {
+          if (!res.ok) throw new Error("Failed to load feedback");
+          const { feedback } = await res.json();
+          setEntries(feedback);
+          setError(null);
+        })
+        .catch((e) =>
+          setError(e instanceof Error ? e.message : "Failed to load feedback")
+        )
+        .finally(() => setLoading(false)),
+    []
+  );
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  const toggleStar = async (entry: FeedbackEntry) => {
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: entry.id, starred: !entry.starred }),
+      });
+      if (!res.ok) throw new Error("Could not update the star.");
+      setEntries((prev) =>
+        prev.map((f) =>
+          f.id === entry.id ? { ...f, starred: !entry.starred } : f
+        )
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not update the star.");
+    }
+  };
+
+  const remove = async (fid: string) => {
+    try {
+      const res = await fetch(`/api/feedback?id=${encodeURIComponent(fid)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Could not delete the feedback.");
+      setEntries((prev) => prev.filter((f) => f.id !== fid));
+      if (openId === fid) setOpenId(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not delete the feedback.");
+    }
+  };
+
+  // Search across name, message, email, and the formatted date.
+  const q = query.trim().toLowerCase();
+  const filtered = entries.filter(
+    (f) =>
+      !q ||
+      f.name.toLowerCase().includes(q) ||
+      f.message.toLowerCase().includes(q) ||
+      (f.email ?? "").toLowerCase().includes(q) ||
+      fmtDate(f.createdAt).toLowerCase().includes(q)
+  );
+  const sorted = [...filtered].sort((a, b) =>
+    newestFirst
+      ? b.createdAt.localeCompare(a.createdAt)
+      : a.createdAt.localeCompare(b.createdAt)
+  );
+  const starred = entries.filter((f) => f.starred);
+  const open = openId ? entries.find((f) => f.id === openId) : null;
+
+  const StarButton = ({ entry, size = 16 }: { entry: FeedbackEntry; size?: number }) => (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        void toggleStar(entry);
+      }}
+      aria-label={entry.starred ? "Unstar this feedback" : "Star this feedback"}
+      aria-pressed={entry.starred}
+      title={entry.starred ? "Unstar (removes from pinned)" : "Star (pins on the right)"}
+      className={`shrink-0 transition-all hover:scale-125 ${
+        entry.starred ? "text-yellow-400" : "text-white/25 hover:text-white/60"
+      }`}
+      style={{ fontSize: size }}
+    >
+      {entry.starred ? "★" : "☆"}
+    </button>
+  );
+
+  // --- Detail view (with back button) ---
+  if (open) {
+    return (
+      <div className="max-w-2xl">
+        <button
+          type="button"
+          onClick={() => setOpenId(null)}
+          className="mb-4 flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-xs text-gray-300 transition-colors hover:bg-[rgba(var(--theme-accent-rgb),0.12)] hover:text-white"
+        >
+          ← back to inbox
+        </button>
+        <article className="rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.3)] bg-black/40 p-5 backdrop-blur-md">
+          <header className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="truncate text-base font-bold text-white">
+                {open.name}
+              </h3>
+              <p className="text-xs text-gray-500">
+                {fmtDate(open.createdAt)}
+                {open.email && (
+                  <>
+                    {" · "}
+                    <a
+                      href={`mailto:${open.email}`}
+                      className="text-[var(--theme-accent)] hover:underline"
+                    >
+                      {open.email}
+                    </a>
+                  </>
+                )}
+              </p>
+            </div>
+            <StarButton entry={open} size={22} />
+          </header>
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-200">
+            {open.message}
+          </p>
+          <footer className="mt-5 border-t border-white/10 pt-3">
+            <button
+              type="button"
+              onClick={() => void remove(open.id)}
+              className="rounded border border-red-900/60 px-3 py-1 text-xs text-red-400 hover:bg-red-900/20"
+            >
+              delete feedback
+            </button>
+          </footer>
+        </article>
+      </div>
+    );
+  }
+
+  // --- Inbox view ---
+  return (
+    <div className="flex flex-col gap-6 xl:flex-row">
+      <div className="min-w-0 flex-1">
+        {/* Toolbar: search + sort */}
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name, message, email, or date…"
+            aria-label="Search feedback"
+            className={`flex-1 ${FIELD}`}
+          />
+          <button
+            type="button"
+            onClick={() => setNewestFirst((v) => !v)}
+            aria-label={`Sorted ${newestFirst ? "newest" : "oldest"} first — click to flip`}
+            className="shrink-0 rounded-lg border border-white/15 px-4 py-2 text-xs text-gray-300 transition-colors hover:bg-[rgba(var(--theme-accent-rgb),0.12)] hover:text-white"
+          >
+            {newestFirst ? "↓ newest first" : "↑ oldest first"}
+          </button>
+        </div>
+
+        {error && (
+          <p role="alert" className="mb-3 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
+            ⚠ {error}
+          </p>
+        )}
+
+        {loading ? (
+          <p className="font-mono text-sm text-gray-500">loading…</p>
+        ) : sorted.length === 0 ? (
+          <p className="font-mono text-sm text-gray-500">
+            {q ? "no feedback matches your search." : "no feedback yet — it will appear here when visitors send it."}
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2.5">
+            {sorted.map((f) => (
+              <li key={f.id}>
+                {/* div[role=button], not <button>: the star inside is a real
+                    button and buttons can't nest (hydration error). */}
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setOpenId(f.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setOpenId(f.id);
+                    }
+                  }}
+                  className="w-full cursor-pointer rounded-xl border border-white/10 bg-black/40 p-3 text-left backdrop-blur-sm transition-colors hover:border-[rgba(var(--theme-accent-rgb),0.35)]"
+                  aria-label={`Open feedback from ${f.name}`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="truncate font-bold text-white">{f.name}</p>
+                    <span className="flex shrink-0 items-center gap-2">
+                      <span className="text-[10px] text-gray-500">
+                        {fmtDate(f.createdAt)}
+                      </span>
+                      <StarButton entry={f} />
+                    </span>
+                  </div>
+                  <p className="mt-1 line-clamp-2 text-sm text-gray-400">
+                    {f.message}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Pinned (starred) column */}
+      <aside className="w-full shrink-0 xl:w-72" aria-label="Pinned feedback">
+        <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-yellow-400">
+          ★ pinned
+        </h3>
+        {starred.length === 0 ? (
+          <p className="text-xs text-gray-600">
+            star a feedback to pin it here.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {starred.map((f) => (
+              <li key={f.id}>
+                <button
+                  type="button"
+                  onClick={() => setOpenId(f.id)}
+                  className="w-full rounded-lg border border-yellow-500/25 bg-yellow-500/5 p-2.5 text-left transition-colors hover:border-yellow-400/50"
+                  aria-label={`Open pinned feedback from ${f.name}`}
+                >
+                  <p className="truncate text-xs font-bold text-white">
+                    {f.name}
+                  </p>
+                  <p className="mt-0.5 line-clamp-2 text-[11px] text-gray-400">
+                    {f.message}
+                  </p>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </aside>
+    </div>
+  );
+}
+
 // --- Dashboard shell ---
 
-type Tab = CmsSection | "settings";
+type Tab = CmsSection | "settings" | "feedback";
 
 export default function AdminPage() {
   const [user, setUser] = useState<SessionUser | null | undefined>(undefined);
@@ -935,6 +1212,19 @@ export default function AdminPage() {
               {sidebarOpen ? SECTION_LABELS[s] : SECTION_LABELS[s][0]}
             </button>
           ))}
+          <div className="my-1 border-t border-white/5" />
+          <button
+            type="button"
+            onClick={() => setTab("feedback")}
+            className={`px-4 py-2 text-left text-sm transition-colors ${
+              tab === "feedback"
+                ? "border-l-2 border-[var(--theme-accent)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-white"
+                : "text-gray-400 hover:bg-[rgba(var(--theme-accent-rgb),0.08)] hover:text-white"
+            }`}
+            title="Feedback"
+          >
+            {sidebarOpen ? "💬 Feedback" : "💬"}
+          </button>
         </nav>
       </aside>
 
@@ -960,6 +1250,8 @@ export default function AdminPage() {
         </header>
         {tab === "settings" ? (
           <GlobalSettingsPanel />
+        ) : tab === "feedback" ? (
+          <FeedbackPanel />
         ) : (
           <Workspace key={tab} section={tab} />
         )}

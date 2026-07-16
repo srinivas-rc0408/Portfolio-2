@@ -2,13 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mail, MessageSquare } from "lucide-react";
-import {
-  footerLinks,
-  FEEDBACK_EMAIL,
-  FEEDBACK_SUBJECT,
-  FEEDBACK_BODY,
-} from "@/lib/portfolio-data";
+import { Mail } from "lucide-react";
+import { footerLinks } from "@/lib/portfolio-data";
 
 // lucide dropped its brand glyphs, so social marks are inline (18px, 2px stroke).
 const svg = (children: React.ReactNode) => (
@@ -38,13 +33,10 @@ const InstagramGlyph = () =>
  *   · Reveals once the user has scrolled the left pane down and reached
  *     (near) the bottom — requires at least 2 downward scroll gestures so a
  *     single flick doesn't trigger it.
- *   · Auto-hides 10s after appearing; re-appears on the next scroll-to-bottom.
- * Icons + feedback button glow in the admin theme accent (via CSS vars).
+ *   · Auto-hides 10s after appearing — unless hovered (hover holds it open;
+ *     the countdown restarts when the pointer leaves).
+ * Icons glow in the admin theme accent (via CSS vars).
  */
-
-const FEEDBACK_MAILTO = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(
-  FEEDBACK_SUBJECT
-)}&body=${encodeURIComponent(FEEDBACK_BODY)}`;
 
 const SteamGlyph = () =>
   svg(<>
@@ -69,6 +61,9 @@ export default function IdentityFooter() {
   const [visible, setVisible] = useState(false);
   const gesturesRef = useRef(0);
   const hideTimerRef = useRef<number | undefined>(undefined);
+  // Hovering the footer holds it open; leaving restarts the hide countdown.
+  const hoverRef = useRef(false);
+  const revealRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     const pane = document.querySelector<HTMLElement>(".identity-pane");
@@ -80,11 +75,14 @@ export default function IdentityFooter() {
     const reveal = () => {
       setVisible(true);
       window.clearTimeout(hideTimerRef.current);
+      // Don't start the countdown while the pointer is on the footer.
+      if (hoverRef.current) return;
       hideTimerRef.current = window.setTimeout(
         () => setVisible(false),
         HIDE_AFTER_MS
       );
     };
+    revealRef.current = reveal;
 
     const tryReveal = () => {
       if (atBottom() && gesturesRef.current >= SCROLL_GESTURES_REQUIRED) reveal();
@@ -136,9 +134,17 @@ export default function IdentityFooter() {
           className="pointer-events-none fixed bottom-0 left-0 z-40 hidden w-[30%] p-3 min-[1025px]:block"
           style={{ willChange: "transform, opacity" }}
           aria-label="Quick links"
+          onMouseEnter={() => {
+            hoverRef.current = true;
+            window.clearTimeout(hideTimerRef.current);
+          }}
+          onMouseLeave={() => {
+            hoverRef.current = false;
+            revealRef.current(); // restart the hide countdown
+          }}
         >
-          <div className="pointer-events-auto flex items-center justify-between gap-2 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 px-3 py-2.5 backdrop-blur-xl shadow-[0_0_30px_rgba(var(--theme-accent-rgb),0.18)]">
-            <nav className="flex items-center gap-2" aria-label="Social links">
+          <div className="pointer-events-auto flex items-center justify-center gap-2.5 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 px-3 py-2.5 backdrop-blur-xl shadow-[0_0_30px_rgba(var(--theme-accent-rgb),0.18)]">
+            <nav className="flex items-center gap-2.5" aria-label="Social links">
               {footerLinks.map((link) => (
                 <a
                   key={link.name}
@@ -153,15 +159,6 @@ export default function IdentityFooter() {
                 </a>
               ))}
             </nav>
-
-            <a
-              href={FEEDBACK_MAILTO}
-              className="flex items-center gap-1.5 rounded-full border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-3 py-1.5 font-mono text-xs font-semibold text-[var(--theme-accent)] transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] hover:shadow-[0_0_14px_rgba(var(--theme-accent-rgb),0.45)] active:scale-95"
-              aria-label="Send feedback by email"
-            >
-              <MessageSquare size={14} strokeWidth={2.2} aria-hidden />
-              Feedback
-            </a>
           </div>
         </motion.footer>
       )}

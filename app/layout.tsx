@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL, SITE_NAME, SITE_TAGLINE } from "@/lib/seo-config";
@@ -113,8 +114,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // suppressHydrationWarning: the pre-paint theme script mutates the html
+    // style attribute before React hydrates (standard next-themes pattern).
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Apply the cached theme accent BEFORE first paint — kills the
+            default-cyan flash on every page (incl. the admin login). */}
+        <Script
+          id="theme-accent-prepaint"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `try{var s=JSON.parse(localStorage.getItem("portfolio:settings")||"{}");var a=s.themeAccent;if(typeof a==="string"&&/^#[0-9a-fA-F]{3,8}$/.test(a)){var r=document.documentElement;r.style.setProperty("--theme-accent",a);var h=a.slice(1);if(h.length===3)h=h.split("").map(function(c){return c+c}).join("");var n=parseInt(h.slice(0,6),16);if(!isNaN(n))r.style.setProperty("--theme-accent-rgb",((n>>16)&255)+", "+((n>>8)&255)+", "+(n&255));}}catch(e){}`,
+          }}
+        />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"

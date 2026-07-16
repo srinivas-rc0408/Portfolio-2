@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Tag from "@/components/Tag";
 import QuoteOfDay from "@/components/QuoteOfDay";
 import IdentityFooter from "@/components/IdentityFooter";
+import FeedbackWidget from "@/components/FeedbackWidget";
 import DocViewer from "@/components/DocViewer";
 import BootSequence from "@/components/boot/BootSequence";
 import { ShellContext } from "@/context/ShellContext";
@@ -65,6 +66,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {!isBlog && <IdentityFooter />}
       {/* Document viewer — resume/CV/certificates popup (view + download) */}
       <DocViewer />
+      {/* Floating feedback button + popup (saved to the admin Feedback tab) */}
+      <FeedbackWidget />
     </ShellContext.Provider>
   );
 }
