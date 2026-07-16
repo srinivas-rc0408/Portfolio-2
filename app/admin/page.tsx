@@ -794,21 +794,41 @@ function Workspace({ section }: { section: CmsSection }) {
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
+                    {/* Public/Private toggle with a visible label so it's clear
+                        what it does. Private entries are hidden from the site. */}
                     <button
                       type="button"
                       role="switch"
                       aria-checked={item.private}
-                      aria-label={`Mark ${item.title} as private`}
+                      aria-label={`${item.title} is ${item.private ? "private" : "public"} — click to toggle`}
+                      title={
+                        item.private
+                          ? "Private — hidden from the site. Click to make public."
+                          : "Public — visible on the site. Click to make private."
+                      }
                       onClick={() => togglePrivate(item)}
-                      className={`relative inline-block h-5 w-10 rounded-full transition-colors ${
-                        item.private ? "bg-[var(--theme-accent)]" : "bg-gray-700"
-                      }`}
+                      className="flex items-center gap-1.5"
                     >
                       <span
-                        className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-transform ${
-                          item.private ? "translate-x-5" : "translate-x-0.5"
+                        className={`font-mono text-[10px] uppercase tracking-wide ${
+                          item.private
+                            ? "text-[var(--theme-accent)]"
+                            : "text-gray-500"
                         }`}
-                      />
+                      >
+                        {item.private ? "private" : "public"}
+                      </span>
+                      <span
+                        className={`relative inline-block h-5 w-10 rounded-full transition-colors ${
+                          item.private ? "bg-[var(--theme-accent)]" : "bg-gray-700"
+                        }`}
+                      >
+                        <span
+                          className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-transform ${
+                            item.private ? "translate-x-5" : "translate-x-0.5"
+                          }`}
+                        />
+                      </span>
                     </button>
                     <button
                       type="button"
