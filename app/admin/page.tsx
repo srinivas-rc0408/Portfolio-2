@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
 import {
   CMS_SECTIONS,
   SETTINGS_UPDATED_EVENT,
@@ -427,10 +428,27 @@ function GlobalSettingsPanel() {
 
 // --- CRUD workspace for one section ---
 
+// Which sections get a drag-and-drop upload zone, and what they accept.
+const UPLOAD_CONFIG: Partial<
+  Record<CmsSection, { accept: string; hint: string; kind: "doc" | "image" }>
+> = {
+  resume: { accept: "application/pdf", hint: "PDF resume — opens in the viewer. Or drop a .txt/.md to edit as text.", kind: "doc" },
+  cv: { accept: "application/pdf", hint: "PDF CV — opens in the viewer. Or drop a .txt/.md to edit as text.", kind: "doc" },
+  certificates: { accept: "application/pdf,image/*", hint: "PDF or image certificate.", kind: "doc" },
+  projects: { accept: "image/*", hint: "Project thumbnail image (edit the title & details after).", kind: "image" },
+};
+
 function Workspace({ section }: { section: CmsSection }) {
   const [items, setItems] = useState<CmsItem[]>([]);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  // Text file dropped → inline editor before saving.
+  const [textDraft, setTextDraft] = useState<{ title: string; text: string } | null>(null);
+
+  const uploadCfg = UPLOAD_CONFIG[section];
+  const isDocSection = section === "resume" || section === "cv";
 
   // Starts true: Workspace mounts fresh per tab (keyed) and always fetches.
   const [loading, setLoading] = useState(true);
@@ -450,6 +468,73 @@ function Workspace({ section }: { section: CmsSection }) {
     void refresh();
   }, [refresh]);
 
+  // Drag-and-drop upload → text editor (text files) or save as an entry (PDF/image).
+  const handleUpload = async (r: UploadResult) => {
+    setUploadError(null);
+    if (r.text !== undefined) {
+      setTextDraft({ title: r.name.replace(/\.[^.]+$/, ""), text: r.text });
+      return;
+    }
+    const asset = r.dataUrl;
+    if (!asset) return;
+    setUploading(true);
+    try {
+      if (section === "projects") {
+        // Image → new project entry (title = filename; edit details after).
+        await addItem(section, {
+          title: r.name.replace(/\.[^.]+$/, ""),
+          description: "",
+          imageUrl: asset,
+          private: false,
+        });
+      } else if (isDocSection) {
+        // Single resume/CV entry: replace the existing one or create it.
+        const label = SECTION_LABELS[section];
+        const existing = items[0];
+        const base = {
+          title: `Srinivas RC — ${label} (PDF)`,
+          description: existing?.description || `AI/ML Engineer ${label.toLowerCase()}: skills, projects, certifications, education.`,
+          link: asset,
+          date: existing?.date || String(new Date().getFullYear()),
+        };
+        if (existing) await updateItem(section, { ...existing, ...base });
+        else await addItem(section, { ...base, private: false });
+      } else {
+        // Certificates: PDF/image → new entry.
+        await addItem(section, {
+          title: r.name.replace(/\.[^.]+$/, ""),
+          description: "",
+          link: asset,
+          private: false,
+        });
+      }
+      await refresh();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const saveTextDraft = async () => {
+    if (!textDraft || !textDraft.title.trim()) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      await addItem(section, {
+        title: textDraft.title.trim(),
+        description: textDraft.text,
+        private: false,
+      });
+      setTextDraft(null);
+      await refresh();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not save. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return;
@@ -463,11 +548,16 @@ function Workspace({ section }: { section: CmsSection }) {
         : undefined,
       private: form.private,
     };
-    if (editingId) await updateItem(section, { ...payload, id: editingId });
-    else await addItem(section, payload);
-    setForm(EMPTY_FORM);
-    setEditingId(null);
-    await refresh();
+    setUploadError(null);
+    try {
+      if (editingId) await updateItem(section, { ...payload, id: editingId });
+      else await addItem(section, payload);
+      setForm(EMPTY_FORM);
+      setEditingId(null);
+      await refresh();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not save the entry.");
+    }
   };
 
   const startEdit = (item: CmsItem) => {
@@ -483,22 +573,34 @@ function Workspace({ section }: { section: CmsSection }) {
   };
 
   const remove = async (id: string) => {
-    await deleteItem(section, id);
-    if (editingId === id) {
-      setEditingId(null);
-      setForm(EMPTY_FORM);
+    setUploadError(null);
+    try {
+      await deleteItem(section, id);
+      if (editingId === id) {
+        setEditingId(null);
+        setForm(EMPTY_FORM);
+      }
+      await refresh();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not delete the entry.");
     }
-    await refresh();
   };
 
   const togglePrivate = async (item: CmsItem) => {
-    await updateItem(section, { ...item, private: !item.private });
-    await refresh();
+    setUploadError(null);
+    try {
+      await updateItem(section, { ...item, private: !item.private });
+      await refresh();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not update visibility.");
+    }
   };
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
-      {/* Add / edit form */}
+      {/* Add / edit form — for resume/CV the "add" form is replaced by upload,
+          so it only appears when editing an existing entry. */}
+      {(!isDocSection || editingId) && (
       <form
         onSubmit={submit}
         className="w-full shrink-0 rounded-2xl border border-white/10 bg-black/40 p-4 backdrop-blur-md lg:w-80"
@@ -589,9 +691,78 @@ function Workspace({ section }: { section: CmsSection }) {
           )}
         </div>
       </form>
+      )}
 
-      {/* Item list */}
-      <div className="min-w-0 flex-1">
+      {/* Right column: upload zone + item list */}
+      <div className="min-w-0 flex-1 space-y-5">
+        {uploadCfg && (
+          <div className="rounded-2xl border border-white/10 bg-black/40 p-4 backdrop-blur-md">
+            <h3 className="mb-3 text-sm font-bold text-white">
+              $ upload {SECTION_LABELS[section].toLowerCase()}
+            </h3>
+            <AdminUpload
+              accept={uploadCfg.accept}
+              maxSizeMB={3}
+              hint={uploadCfg.hint}
+              busy={uploading}
+              onFile={handleUpload}
+            />
+            {uploadError && (
+              <p
+                role="alert"
+                className="mt-3 flex items-start gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300"
+              >
+                <span aria-hidden>⚠</span>
+                <span>{uploadError}</span>
+              </p>
+            )}
+
+            {/* Text-file editor (opens when a .txt/.md is dropped) */}
+            {textDraft && (
+              <div className="mt-4 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/50 p-3">
+                <p className="mb-2 text-xs font-bold text-[var(--theme-accent)]">
+                  ✎ Editing text file — review, then save as an entry
+                </p>
+                <input
+                  value={textDraft.title}
+                  onChange={(e) =>
+                    setTextDraft({ ...textDraft, title: e.target.value })
+                  }
+                  placeholder="Title *"
+                  aria-label="Text entry title"
+                  className={`mb-2 ${FIELD}`}
+                />
+                <textarea
+                  value={textDraft.text}
+                  onChange={(e) =>
+                    setTextDraft({ ...textDraft, text: e.target.value })
+                  }
+                  rows={8}
+                  aria-label="Text content"
+                  className={`resize-y font-mono text-xs ${FIELD}`}
+                />
+                <div className="mt-2 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={saveTextDraft}
+                    disabled={uploading || !textDraft.title.trim()}
+                    className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] px-4 py-1.5 text-sm text-white transition-all hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95 disabled:opacity-40"
+                  >
+                    save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTextDraft(null)}
+                    className="rounded-lg border border-gray-600 px-4 py-1.5 text-sm text-gray-400 hover:bg-gray-800/50"
+                  >
+                    cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {loading && items.length === 0 ? (
           <p className="font-mono text-sm text-gray-500">loading…</p>
         ) : items.length === 0 ? (

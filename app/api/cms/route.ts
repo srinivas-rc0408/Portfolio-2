@@ -16,6 +16,16 @@ const SECTIONS = new Set([
   "education", "experience", "achievements", "connect",
 ]);
 
+// Uploaded docs/images ride in link/imageUrl as data URLs. Cap them so the
+// public bootstrap payload stays lean (and under the serverless body limit).
+const MAX_ASSET_CHARS = 4_200_000; // ~3MB file as base64
+
+function assetTooLarge(b: Record<string, unknown>): boolean {
+  const link = typeof b.link === "string" ? b.link : "";
+  const img = typeof b.imageUrl === "string" ? b.imageUrl : "";
+  return link.length > MAX_ASSET_CHARS || img.length > MAX_ASSET_CHARS;
+}
+
 function parseEntry(b: Record<string, unknown>): Omit<DbCmsEntry, "id"> | null {
   if (typeof b.section !== "string" || !SECTIONS.has(b.section)) return null;
   if (typeof b.title !== "string" || !b.title.trim()) return null;
@@ -56,20 +66,42 @@ async function requireAdmin() {
 export async function POST(req: NextRequest) {
   if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json().catch(() => ({}));
+  if (assetTooLarge(body)) {
+    return NextResponse.json(
+      { error: "File is too large (max ~3MB). Please upload a smaller file." },
+      { status: 413 }
+    );
+  }
   const parsed = parseEntry(body);
-  if (!parsed) return NextResponse.json({ error: "Invalid entry" }, { status: 400 });
-  return NextResponse.json({ entry: await createEntry(parsed) });
+  if (!parsed) return NextResponse.json({ error: "Invalid entry — a title is required." }, { status: 400 });
+  try {
+    return NextResponse.json({ entry: await createEntry(parsed) });
+  } catch (e) {
+    console.error("cms POST error:", e);
+    return NextResponse.json({ error: "Could not save the entry. Please try again." }, { status: 500 });
+  }
 }
 
 export async function PUT(req: NextRequest) {
   if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json().catch(() => ({}));
+  if (assetTooLarge(body)) {
+    return NextResponse.json(
+      { error: "File is too large (max ~3MB). Please upload a smaller file." },
+      { status: 413 }
+    );
+  }
   const parsed = parseEntry(body);
   if (!parsed || typeof body.id !== "string") {
-    return NextResponse.json({ error: "Invalid entry" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid entry — a title is required." }, { status: 400 });
   }
-  await updateEntry({ ...parsed, id: body.id });
-  return NextResponse.json({ ok: true });
+  try {
+    await updateEntry({ ...parsed, id: body.id });
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("cms PUT error:", e);
+    return NextResponse.json({ error: "Could not save the entry. Please try again." }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: NextRequest) {

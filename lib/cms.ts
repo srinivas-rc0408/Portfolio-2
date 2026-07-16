@@ -232,15 +232,33 @@ export async function apiGetAllEntries(): Promise<CmsItem[]> {
   return (entries as ApiEntry[]).map(toItem);
 }
 
+/** Throw a helpful Error if a CMS write failed, so the UI can surface it. */
+async function ensureOk(res: Response): Promise<void> {
+  if (res.ok) return;
+  let msg = `Request failed (HTTP ${res.status})`;
+  try {
+    const body = await res.json();
+    if (body?.error) msg = body.error;
+  } catch {
+    /* non-JSON error body */
+  }
+  if (res.status === 413) msg = "File is too large to save. Try a smaller file.";
+  if (res.status === 401) msg = "Your admin session expired — please log in again.";
+  throw new Error(msg);
+}
+
 export async function addItem(
   section: CmsSection,
   item: Omit<CmsItem, "id">
 ): Promise<void> {
-  await fetch("/api/cms", {
+  const res = await fetch("/api/cms", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...item, section, isPrivate: item.private }),
+  }).catch(() => {
+    throw new Error("Network error — could not reach the server.");
   });
+  await ensureOk(res);
   await hydrate();
 }
 
@@ -248,11 +266,14 @@ export async function updateItem(
   section: CmsSection,
   item: CmsItem
 ): Promise<void> {
-  await fetch("/api/cms", {
+  const res = await fetch("/api/cms", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...item, section, isPrivate: item.private }),
+  }).catch(() => {
+    throw new Error("Network error — could not reach the server.");
   });
+  await ensureOk(res);
   await hydrate();
 }
 
@@ -260,6 +281,11 @@ export async function deleteItem(
   _section: CmsSection,
   id: string
 ): Promise<void> {
-  await fetch(`/api/cms?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+  const res = await fetch(`/api/cms?id=${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  }).catch(() => {
+    throw new Error("Network error — could not reach the server.");
+  });
+  await ensureOk(res);
   await hydrate();
 }
