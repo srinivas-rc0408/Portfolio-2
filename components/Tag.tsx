@@ -25,6 +25,16 @@ function docLink(section: "resume" | "cv"): string {
   return linked?.link ?? RESUME_URL;
 }
 
+/** Direct download with a branded filename ("Srinivas RC's Resume.pdf"). */
+function downloadDoc(url: string, label: string): void {
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Srinivas RC's ${label}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
 /** "S.RC" brand mark — lightning-bolt S + initials, no gap, hover tooltip. */
 const BrandMark: React.FC = () => (
   <div className="group/logo relative flex cursor-default items-center gap-0.5">
@@ -95,25 +105,17 @@ const GamepadIcon: React.FC = () => (
 
 interface QuickAction {
   label: string;
-  run: () => void;
+  run?: () => void;
   icon?: "download" | "game";
+  /** Document row: clicking the label views it; the download icon downloads. */
+  doc?: { label: "Resume" | "CV"; section: "resume" | "cv" };
 }
 
 const QUICK_ACTIONS: QuickAction[] = [
-  {
-    label: "Resume",
-    icon: "download",
-    // Opens the in-page viewer (view first, branded download inside).
-    run: () => openDoc({ label: "Resume", url: docLink("resume") }),
-  },
-  {
-    label: "CV",
-    icon: "download",
-    run: () => openDoc({ label: "CV", url: docLink("cv") }),
-  },
+  { label: "Resume", doc: { label: "Resume", section: "resume" } },
+  { label: "CV", doc: { label: "CV", section: "cv" } },
   {
     label: "Certificates",
-    icon: "download",
     run: () => execInTerminal("certificates"),
   },
   { label: "Education", run: () => execInTerminal("education") },
@@ -121,6 +123,23 @@ const QUICK_ACTIONS: QuickAction[] = [
   { label: "Projects", run: () => execInTerminal("cd projects") },
   { label: "Games", icon: "game", run: () => execInTerminal("play archman") },
 ];
+
+// Shared row chrome (hover strip + sheen) so doc rows and plain rows match.
+const ROW_CLASS =
+  "group/qa relative w-full overflow-hidden rounded-md bg-gradient-to-r from-white/[0.03] to-white/[0.06] px-4 py-2.5 text-left font-mono text-sm text-gray-300 transition-all duration-300 hover:text-white active:scale-95";
+
+const RowDecor: React.FC = () => (
+  <>
+    <span
+      aria-hidden="true"
+      className="absolute left-0 top-0 h-full w-[3px] -translate-x-full bg-[var(--theme-accent)] transition-transform duration-300 ease-out group-hover/qa:translate-x-0"
+    />
+    <span
+      aria-hidden="true"
+      className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[rgba(var(--theme-accent-rgb),0.1)] to-transparent transition-transform duration-500 ease-out group-hover/qa:translate-x-full"
+    />
+  </>
+);
 
 /** Opens the fullscreen profile-picture viewer. */
 function viewProfile(): void {
@@ -267,33 +286,72 @@ export default function Tag() {
         className="mx-auto mt-4 flex w-full max-w-[280px] flex-col gap-2 sm:mt-8 sm:gap-2.5"
         aria-label="Quick actions"
       >
-        {QUICK_ACTIONS.map(({ label, run, icon }) => (
-          <button
-            key={label}
-            type="button"
-            onClick={run}
-            className="group/qa relative w-full overflow-hidden rounded-md bg-gradient-to-r from-white/[0.03] to-white/[0.06] px-4 py-2.5 text-left font-mono text-sm text-gray-300 transition-all duration-300 hover:text-white active:scale-95"
-          >
-            {/* tricolor left border strip, revealed on hover */}
-            <span
-              aria-hidden="true"
-              className="absolute left-0 top-0 h-full w-[3px] -translate-x-full bg-gradient-to-b from-[#FF9933] via-white to-[#138808] transition-transform duration-300 ease-out group-hover/qa:translate-x-0"
-            />
-            {/* left-to-right sheen fill on hover */}
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[rgba(var(--theme-accent-rgb),0.1)] to-transparent transition-transform duration-500 ease-out group-hover/qa:translate-x-full"
-            />
-            <span className="relative flex items-center justify-between text-white">
-              <span>
-                <span className="text-white/50">$ </span>
-                {label.toLowerCase()}
+        {QUICK_ACTIONS.map((action) => {
+          const { label, run, icon, doc } = action;
+
+          // Document rows: label click → view; download icon → direct download.
+          if (doc) {
+            const url = docLink(doc.section);
+            const view = () => openDoc({ label: doc.label, url });
+            return (
+              <div
+                key={label}
+                role="button"
+                tabIndex={0}
+                onClick={view}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    view();
+                  }
+                }}
+                className={`${ROW_CLASS} cursor-pointer`}
+                aria-label={`View ${doc.label}`}
+              >
+                <RowDecor />
+                <span className="relative flex items-center justify-between text-white">
+                  <span>
+                    <span className="text-white/50">$ </span>
+                    {label.toLowerCase()}
+                    <span className="ml-2 text-[10px] text-white/30 transition-colors group-hover/qa:text-[var(--theme-accent)]">
+                      view
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      downloadDoc(url, doc.label);
+                    }}
+                    aria-label={`Download ${doc.label}`}
+                    title={`Download ${doc.label}`}
+                    className="-mr-1 rounded-md p-1.5 text-white/60 transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] hover:text-[var(--theme-accent)] active:scale-90"
+                  >
+                    <DownloadIcon />
+                  </button>
+                </span>
+              </div>
+            );
+          }
+
+          return (
+            <button
+              key={label}
+              type="button"
+              onClick={run}
+              className={ROW_CLASS}
+            >
+              <RowDecor />
+              <span className="relative flex items-center justify-between text-white">
+                <span>
+                  <span className="text-white/50">$ </span>
+                  {label.toLowerCase()}
+                </span>
+                {icon === "game" && <GamepadIcon />}
               </span>
-              {icon === "download" && <DownloadIcon />}
-              {icon === "game" && <GamepadIcon />}
-            </span>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Fullscreen profile viewer (opens via avatar click or saffron dot) */}

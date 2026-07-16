@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { type Project } from "@/lib/portfolio-data";
 import { CMS_UPDATED_EVENT, getItems } from "@/lib/cms";
+import WindowDots from "@/components/WindowDots";
 
 /** Public projects from the CMS store (private entries excluded), mapped to the card shape. */
 function readPublicProjects(): Project[] {
@@ -279,14 +280,7 @@ const Projects: React.FC = () => {
               <div className="backdrop-blur-md bg-gray-900/30 border border-blue-500/20 rounded-lg sm:rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-[1.01] sm:hover:scale-[1.02] hover:border-cyan-400/40 hover:shadow-2xl hover:shadow-blue-500/10">
                 {/* Terminal header bar */}
                 <header className="bg-gray-800/50 px-3 sm:px-4 py-2 border-b border-blue-500/20 flex items-center space-x-2">
-                  <div
-                    className="flex space-x-1 sm:space-x-2"
-                    aria-hidden="true"
-                  >
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500/60"></div>
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500/60"></div>
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-500/60"></div>
-                  </div>
+                  <WindowDots size="h-2 w-2 sm:h-3 sm:w-3" gap="gap-1 sm:gap-2" />
                   <div className="flex-1 text-center overflow-hidden">
                     <span className="text-white/70 text-xs font-mono block truncate">
                       {project.name.toLowerCase().replace(/\s+/g, "-")}

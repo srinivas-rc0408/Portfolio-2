@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Download, X } from "lucide-react";
+import { Download, ExternalLink, FileText, X } from "lucide-react";
 
 /**
  * Fullscreen document viewer — a transparent glass popup that previews a PDF
@@ -84,19 +84,45 @@ export default function DocViewer() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <header className="flex shrink-0 items-center justify-between border-b border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-4 py-2.5">
-              <h2 className="text-sm font-bold text-white">
-                Srinivas RC&apos;s {doc.label}
-              </h2>
-              <button
-                type="button"
-                onClick={() => setDoc(null)}
-                aria-label="Close viewer"
-                title="Close (Esc)"
-                className="rounded-md p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-              >
-                <X size={17} strokeWidth={2.5} aria-hidden />
-              </button>
+            <header className="flex shrink-0 items-center justify-between gap-3 border-b border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-4 py-2.5">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[rgba(var(--theme-accent-rgb),0.35)] bg-[rgba(var(--theme-accent-rgb),0.1)]"
+                  style={{ color: "var(--theme-accent)" }}
+                  aria-hidden
+                >
+                  <FileText size={16} strokeWidth={2} />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="truncate text-sm font-bold text-white">
+                    Srinivas RC&apos;s {doc.label}
+                  </h2>
+                  <p className="text-[10px] uppercase tracking-wider text-white/40">
+                    PDF Document
+                  </p>
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <a
+                  href={doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open in new tab"
+                  title="Open in new tab"
+                  className="rounded-md p-1.5 text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <ExternalLink size={15} strokeWidth={2.2} aria-hidden />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setDoc(null)}
+                  aria-label="Close viewer"
+                  title="Close (Esc)"
+                  className="rounded-md p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <X size={17} strokeWidth={2.5} aria-hidden />
+                </button>
+              </div>
             </header>
 
             {/* Document */}
@@ -123,7 +149,13 @@ export default function DocViewer() {
             </div>
 
             {/* Footer — branded download */}
-            <footer className="flex shrink-0 items-center justify-center border-t border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-4 py-3">
+            <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-4 py-3">
+              <span className="hidden text-[11px] text-white/40 sm:inline">
+                Scroll to read · downloads as{" "}
+                <span className="text-white/60">
+                  Srinivas RC&apos;s {doc.label}.pdf
+                </span>
+              </span>
               <button
                 type="button"
                 onClick={download}

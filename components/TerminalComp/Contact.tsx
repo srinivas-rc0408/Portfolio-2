@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import WindowDots from "@/components/WindowDots";
 import {
   socialLinks as socialLinkData,
   CONTACT_EMAIL,
@@ -312,14 +313,11 @@ const Contact: React.FC = () => {
               : "opacity-0 -translate-x-4"
             }`}
         >
-          <div
-            className="flex space-x-1.5 sm:space-x-2 mr-3 sm:mr-4"
-            aria-hidden="true"
-          >
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-500 rounded-full"></div>
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full"></div>
-          </div>
+          <WindowDots
+            size="h-2.5 w-2.5 sm:h-3 sm:w-3"
+            gap="gap-1.5 sm:gap-2"
+            className="mr-3 sm:mr-4"
+          />
           <h2 className="text-lg sm:text-2xl font-mono text-white font-bold tracking-wider">
             <span className="text-gray-500">$</span> contact --connect
           </h2>
