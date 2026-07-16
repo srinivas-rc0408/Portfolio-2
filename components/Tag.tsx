@@ -156,7 +156,7 @@ export default function Tag() {
   const profileSrc = settings.profileImage ?? "/profile.jpg";
 
   return (
-    <div className="identity-container flex h-full w-full flex-col bg-black p-4 sm:p-6">
+    <div className="identity-container flex min-h-full w-full flex-col bg-black p-4 sm:p-6">
       {/* Top header bar */}
       <header className="flex w-full items-center justify-between">
         <BrandMark />
