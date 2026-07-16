@@ -11,7 +11,6 @@ import Skills from "./TerminalComp/Skills";
 import Contact from "./TerminalComp/Contact";
 import Experience from "./TerminalComp/Experience";
 import Blog from "./TerminalComp/Blog";
-import ArchMan from "./TerminalComp/ArchMan";
 import CmsSectionOutput from "./TerminalComp/CmsSection";
 import JerryChat from "./JerryChat";
 import type { CmsSection } from "@/lib/cms";
@@ -539,7 +538,6 @@ export default function Terminal({
   const [isFirstUserCommand, setIsFirstUserCommand] = useState<boolean>(true);
   const [jerryOpen, setJerryOpen] = useState<boolean>(false);
   const [jerryInitialQ, setJerryInitialQ] = useState<string | null>(null);
-  const [isGameActive, setIsGameActive] = useState<boolean>(false);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const savedInputRef = useRef<string>("");
@@ -704,21 +702,17 @@ export default function Terminal({
       return;
     }
 
-    // play <game> — mounts the game inside the terminal buffer (side effects:
-    // arrow keys are captured by the game and the input is disabled until quit)
+    // play <game> — opens the Arch-Man arcade popup (GameModal in AppShell)
     if (commandName === "play") {
       const game = (args[0] ?? "").toLowerCase();
       if (game === "archman") {
-        setIsGameActive(true);
+        window.dispatchEvent(new CustomEvent("game:open"));
         newHist.push({
           type: "output",
           content: (
-            <ArchMan
-              onExit={() => {
-                setIsGameActive(false);
-                setTimeout(() => inputRef.current?.focus(), 0);
-              }}
-            />
+            <span style={{ color: "var(--theme-accent)" }}>
+              Launching ARCH-MAN arcade… (Esc for menu, ✕ to exit)
+            </span>
           ),
         });
         setHistory(newHist);
@@ -905,7 +899,6 @@ export default function Terminal({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (isGameActive) return;
     setTabSuggestions(null);
     processCommand(input);
     setInput("");
@@ -1176,7 +1169,6 @@ export default function Terminal({
               autoComplete="off"
               spellCheck="false"
               aria-label="Terminal command input"
-              disabled={isGameActive}
             />
           </div>
         </form>
