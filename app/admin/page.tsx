@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Eye, EyeOff, X } from "lucide-react";
 import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
 import {
   CMS_SECTIONS,
@@ -60,6 +61,8 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  // Press-and-hold reveal: true only while the eye button is held down.
+  const [showPw, setShowPw] = useState(false);
 
   const [busy, setBusy] = useState(false);
 
@@ -87,6 +90,15 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
         onSubmit={submit}
         className="relative z-10 w-full max-w-md rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.28)] bg-black/50 p-6 font-mono shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.14)] backdrop-blur-xl"
       >
+        {/* Close — returns to the terminal */}
+        <Link
+          href="/"
+          aria-label="Close sign-in and return to the terminal"
+          title="Close"
+          className="absolute right-3 top-3 rounded-md p-1.5 text-white/50 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+        >
+          <X size={16} strokeWidth={2.5} aria-hidden />
+        </Link>
         <div className="mb-4 flex items-center gap-2" aria-hidden="true">
           <span
             className="h-3 w-3 rounded-full"
@@ -168,14 +180,42 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
         <label className="mb-1 block text-xs text-gray-400" htmlFor="admin-pass">
           PASSWORD
         </label>
-        <input
-          id="admin-pass"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete={mode === "login" ? "current-password" : "new-password"}
-          className={`mb-4 ${FIELD}`}
-        />
+        <div className="relative mb-4">
+          <input
+            id="admin-pass"
+            type={showPw ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete={mode === "login" ? "current-password" : "new-password"}
+            className={`pr-11 ${FIELD}`}
+          />
+          {/* Press & hold to reveal; releasing (or leaving) hides it again. */}
+          <button
+            type="button"
+            aria-label="Hold to show password"
+            title="Hold to show password"
+            aria-pressed={showPw}
+            onPointerDown={() => setShowPw(true)}
+            onPointerUp={() => setShowPw(false)}
+            onPointerLeave={() => setShowPw(false)}
+            onPointerCancel={() => setShowPw(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setShowPw(true);
+              }
+            }}
+            onKeyUp={() => setShowPw(false)}
+            onContextMenu={(e) => e.preventDefault()}
+            className="absolute right-2 top-1/2 -translate-y-1/2 select-none rounded-md p-1.5 text-white/40 transition-all duration-200 hover:bg-white/10 hover:text-[var(--theme-accent)] active:scale-90"
+          >
+            {showPw ? (
+              <Eye size={16} strokeWidth={2} aria-hidden />
+            ) : (
+              <EyeOff size={16} strokeWidth={2} aria-hidden />
+            )}
+          </button>
+        </div>
 
         {error && (
           <p className="mb-3 text-sm text-red-400" role="alert">
