@@ -237,9 +237,36 @@ const Projects: React.FC = () => {
           className="flex items-center space-x-2 text-white font-mono"
           aria-live="polite"
         >
+          {/* Compact prev/next beside the page indicator (mirrors the bottom nav) */}
+          <button
+            type="button"
+            onClick={prevPage}
+            disabled={currentPage === 0}
+            aria-label="Previous page"
+            className={`grid h-6 w-6 place-items-center rounded-md border transition-all duration-200 ${
+              currentPage === 0
+                ? "cursor-not-allowed border-gray-700/50 text-gray-600"
+                : "border-[rgba(var(--theme-accent-rgb),0.4)] text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-90"
+            }`}
+          >
+            <ChevronLeftIcon />
+          </button>
           <span className="text-xs sm:text-sm">
             Page {currentPage + 1} of {totalPages}
           </span>
+          <button
+            type="button"
+            onClick={nextPage}
+            disabled={currentPage === totalPages - 1}
+            aria-label="Next page"
+            className={`grid h-6 w-6 place-items-center rounded-md border transition-all duration-200 ${
+              currentPage === totalPages - 1
+                ? "cursor-not-allowed border-gray-700/50 text-gray-600"
+                : "border-[rgba(var(--theme-accent-rgb),0.4)] text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-90"
+            }`}
+          >
+            <ChevronRightIcon />
+          </button>
           <div
             className="flex space-x-1"
             role="tablist"
@@ -252,7 +279,7 @@ const Projects: React.FC = () => {
                 aria-selected={i === currentPage}
                 aria-label={`Page ${i + 1}`}
                 className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
-                  i === currentPage ? "bg-cyan-400" : "bg-gray-600"
+                  i === currentPage ? "bg-[var(--theme-accent)]" : "bg-gray-600"
                 }`}
               />
             ))}
