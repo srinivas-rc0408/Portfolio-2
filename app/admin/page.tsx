@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import SmartImage from "@/components/ui/SmartImage";
 import { Eye, EyeOff, X } from "lucide-react";
 import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
+import { CardSkeletonList, RowSkeletonList } from "@/components/ui/Skeleton";
 import {
   CMS_SECTIONS,
   SETTINGS_UPDATED_EVENT,
@@ -359,12 +360,11 @@ function GlobalSettingsPanel() {
         <h3 className="mb-4 text-sm font-bold text-white">$ profile picture</h3>
         <div className="flex items-center gap-5">
           <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-[rgba(var(--theme-accent-rgb),0.3)]">
-            <Image
+            <SmartImage
               src={settings.profileImage ?? "/profile.jpg"}
               alt="Current profile"
               fill
               sizes="96px"
-              unoptimized
               className="object-cover"
             />
           </div>
@@ -804,7 +804,7 @@ function Workspace({ section }: { section: CmsSection }) {
         )}
 
         {loading && items.length === 0 ? (
-          <p className="font-mono text-sm text-gray-500">loading…</p>
+          <CardSkeletonList count={3} />
         ) : items.length === 0 ? (
           <p className="font-mono text-sm text-gray-500">
             (no entries yet — add the first one)
@@ -1094,7 +1094,7 @@ function FeedbackPanel() {
         )}
 
         {loading ? (
-          <p className="font-mono text-sm text-gray-500">loading…</p>
+          <RowSkeletonList count={4} />
         ) : sorted.length === 0 ? (
           <p className="font-mono text-sm text-gray-500">
             {q ? "no feedback matches your search." : "no feedback yet — it will appear here when visitors send it."}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import SmartImage from "@/components/ui/SmartImage";
 import { AnimatePresence, motion } from "framer-motion";
 import { type Project } from "@/lib/portfolio-data";
 import { CMS_UPDATED_EVENT, getItems } from "@/lib/cms";
@@ -290,14 +290,11 @@ const Projects: React.FC = () => {
 
                 {/* Project Image with overlay */}
                 <div className="relative h-40 sm:h-56 overflow-hidden">
-                  <Image
+                  <SmartImage
                     src={project.imageUrl}
                     alt={`${project.name} project screenshot`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    // Admin-uploaded images arrive as data URLs, which the Next
-                    // optimizer can't process — serve those as-is.
-                    unoptimized={project.imageUrl.startsWith("data:")}
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div
@@ -533,12 +530,11 @@ const Projects: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative h-44 shrink-0 overflow-hidden">
-                <Image
+                <SmartImage
                   src={detailProject.imageUrl}
                   alt={`${detailProject.name} screenshot`}
                   fill
                   sizes="512px"
-                  unoptimized={detailProject.imageUrl.startsWith("data:")}
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />

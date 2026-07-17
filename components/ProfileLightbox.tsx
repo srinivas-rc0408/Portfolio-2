@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SmartImage from "@/components/ui/SmartImage";
 import { useEffect, useState } from "react";
 import {
   SETTINGS_UPDATED_EVENT,
@@ -49,12 +49,11 @@ export default function ProfileLightbox() {
         className="relative"
         style={{ animation: "lightbox-in 320ms cubic-bezier(0.22,1,0.36,1)" }}
       >
-        <Image
+        <SmartImage
           src={settings.profileImage ?? "/profile.jpg"}
           alt={settings.displayName}
           width={520}
           height={667}
-          unoptimized
           priority
           className="max-h-[85vh] w-auto rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] shadow-[0_0_60px_rgba(var(--theme-accent-rgb),0.25)]"
         />
