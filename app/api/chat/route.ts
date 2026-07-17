@@ -32,6 +32,10 @@ const WHY_CHOOSE_ANSWER =
 const FALLBACK_ERROR =
   "Jerry (System): I am currently experiencing network latency. Please use the manual terminal commands or the Left Panel to navigate the portfolio.";
 
+// Shown when a single IP exceeds 200 AI requests in an hour.
+const RATE_LIMIT_MESSAGE =
+  "Jerry is taking a quick break to cool his servers 🧊 — you've asked a lot of great questions! Please try again in a little while, or explore the portfolio with the terminal commands meanwhile.";
+
 // Jerry — persona + behavior rules + a factual grounding block for accuracy.
 const JERRY_SYSTEM = `You are Jerry, the personal and customized AI assistant built by Srinivas RC, an AI/ML Engineer. Your personality is sharp, lightning-fast, cool, and highly professional.
 
@@ -187,8 +191,9 @@ async function streamGemini(user: string, send: Send): Promise<void> {
 
 export async function POST(req: NextRequest) {
   // 20 questions / 5 min per IP — protects the upstream API keys from abuse.
-  if (!rateLimit(`chat:${clientIp(req)}`, 20, 5 * 60_000)) {
-    return new Response(FALLBACK_ERROR, { status: 429 });
+  // Max 200 AI requests per IP per hour — protects the upstream API quotas.
+  if (!rateLimit(`chat:${clientIp(req)}`, 200, 60 * 60_000)) {
+    return new Response(RATE_LIMIT_MESSAGE, { status: 429 });
   }
   const { message } = await req.json().catch(() => ({ message: "" }));
   const question =

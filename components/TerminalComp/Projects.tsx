@@ -295,6 +295,9 @@ const Projects: React.FC = () => {
                     alt={`${project.name} project screenshot`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    // Admin-uploaded images arrive as data URLs, which the Next
+                    // optimizer can't process — serve those as-is.
+                    unoptimized={project.imageUrl.startsWith("data:")}
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div
@@ -535,6 +538,7 @@ const Projects: React.FC = () => {
                   alt={`${detailProject.name} screenshot`}
                   fill
                   sizes="512px"
+                  unoptimized={detailProject.imageUrl.startsWith("data:")}
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />

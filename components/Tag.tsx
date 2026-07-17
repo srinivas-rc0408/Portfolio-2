@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { track } from "@vercel/analytics";
 import { Download, Gamepad2 } from "lucide-react";
 import ProfileLightbox from "@/components/ProfileLightbox";
 import {
@@ -27,6 +28,7 @@ function docLink(section: "resume" | "cv"): string {
 
 /** Direct download with a branded filename ("Srinivas RC's Resume.pdf"). */
 function downloadDoc(url: string, label: string): void {
+  track("document_downloaded", { document: label });
   const a = document.createElement("a");
   a.href = url;
   a.download = `Srinivas RC's ${label}.pdf`;

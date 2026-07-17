@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { track } from "@vercel/analytics";
 import { Download, ExternalLink, FileText, X } from "lucide-react";
 
 /**
@@ -52,6 +53,8 @@ export default function DocViewer() {
 
   const download = useCallback(() => {
     if (!doc) return;
+    // Analytics: which document a recruiter downloaded.
+    track("document_downloaded", { document: doc.label });
     const a = document.createElement("a");
     a.href = doc.url;
     // Branded filename: "Srinivas RC's Resume.pdf"

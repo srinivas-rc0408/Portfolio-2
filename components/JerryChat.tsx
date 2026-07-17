@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { track } from "@vercel/analytics";
 import { Send, Trash2, X } from "lucide-react";
 import { getItems } from "@/lib/cms";
 import { RESUME_URL } from "@/lib/portfolio-data";
@@ -198,6 +199,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
   // On open: fresh chip sample, focus, sync from cache; Esc closes.
   useEffect(() => {
     if (!open) return;
+    track("jerry_opened"); // analytics: recruiter engaged the AI assistant
     setMessages(chatCache);
     setChips(sampleChips());
     const t = window.setTimeout(() => inputRef.current?.focus(), 350);

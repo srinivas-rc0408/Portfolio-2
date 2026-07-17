@@ -372,9 +372,46 @@ export default function GameModal() {
                     );
                   })}
                 </div>
-                <p className="mt-2 text-center text-[10px] text-white/40">
+                <p className="mt-2 hidden text-center text-[10px] text-white/40 sm:block">
                   [arrows / WASD] move · [Esc] menu
                 </p>
+
+                {/* Touch D-pad — the only way to play on mobile (no keyboard).
+                    Shown on touch/small screens; harmless on desktop. */}
+                {screen === "playing" && (
+                  <div className="mx-auto mt-3 grid w-[150px] grid-cols-3 grid-rows-3 gap-1.5 sm:hidden">
+                    {(
+                      [
+                        [null, { r: -1, c: 0, k: "↑", a: "Up" }, null],
+                        [
+                          { r: 0, c: -1, k: "←", a: "Left" },
+                          null,
+                          { r: 0, c: 1, k: "→", a: "Right" },
+                        ],
+                        [null, { r: 1, c: 0, k: "↓", a: "Down" }, null],
+                      ] as ({ r: number; c: number; k: string; a: string } | null)[][]
+                    )
+                      .flat()
+                      .map((d, i) =>
+                        d ? (
+                          <button
+                            key={i}
+                            type="button"
+                            aria-label={`Move ${d.a}`}
+                            onPointerDown={(e) => {
+                              e.preventDefault();
+                              nextDir.current = { r: d.r, c: d.c };
+                            }}
+                            className="grid h-11 select-none place-items-center rounded-lg border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.1)] text-lg text-[var(--theme-accent)] active:scale-90 active:bg-[rgba(var(--theme-accent-rgb),0.25)]"
+                          >
+                            {d.k}
+                          </button>
+                        ) : (
+                          <span key={i} aria-hidden />
+                        )
+                      )}
+                  </div>
+                )}
 
                 {/* Win / lose overlay */}
                 {(screen === "won" || screen === "lost") && (
