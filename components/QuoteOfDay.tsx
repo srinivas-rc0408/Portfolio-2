@@ -42,10 +42,12 @@ const quotes: Quote[] = [
 ];
 
 /**
- * Floating "Quote of the Day" toast — fixed bottom-center, overlays the site
- * without affecting page scroll. Slides up on load, pulses gently, hover
- * reveals the author, click springs open the meaning, ✕ dismisses.
+ * Floating "Quote of the Day" toast — fixed bottom-right, overlays the site
+ * without affecting page scroll. Appears 10s after the site opens (lets the
+ * visitor take in the terminal first), slides up smoothly, hover reveals the
+ * author, click springs open the meaning, ✕ dismisses.
  */
+const APPEAR_AFTER_MS = 10_000; // delay before the toast slides in
 const VISIBLE_MS = 60_000; // stays fully visible for 1 minute, then fades
 
 export default function QuoteOfDay() {
@@ -60,13 +62,22 @@ export default function QuoteOfDay() {
   const holdRef = useRef(false);
 
   useEffect(() => {
-    // Pick client-side (avoids hydration mismatch); double-rAF lets the
-    // hidden state paint once so the slide-up transition actually runs.
-    const raf = requestAnimationFrame(() => {
-      setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-      requestAnimationFrame(() => setEntered(true));
-    });
-    return () => cancelAnimationFrame(raf);
+    // Wait 10s after the site opens, THEN pick client-side (avoids hydration
+    // mismatch); double-rAF lets the hidden state paint once so the slide-up
+    // transition actually runs.
+    let raf1 = 0;
+    let raf2 = 0;
+    const timer = window.setTimeout(() => {
+      raf1 = requestAnimationFrame(() => {
+        setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+        raf2 = requestAnimationFrame(() => setEntered(true));
+      });
+    }, APPEAR_AFTER_MS);
+    return () => {
+      window.clearTimeout(timer);
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
   }, []);
 
   // Countdown ticks only while not held; on reaching zero → gentle fade → unmount.
@@ -80,7 +91,7 @@ export default function QuoteOfDay() {
       if (remaining <= 0) {
         window.clearInterval(id);
         setLeaving(true);
-        window.setTimeout(() => setGone(true), 600);
+        window.setTimeout(() => setGone(true), 400); // matches the exit transition
       }
     }, TICK);
     return () => window.clearInterval(id);
@@ -103,10 +114,10 @@ export default function QuoteOfDay() {
           holdRef.current = expanded;
         }}
         style={{
-          transform: visible ? "translateY(0)" : "translateY(120%)",
+          transform: visible ? "translateY(0) scale(1)" : "translateY(120%) scale(0.98)",
           opacity: visible ? 1 : 0,
           transition:
-            "transform 600ms cubic-bezier(0.22, 1, 0.36, 1), opacity 600ms ease",
+            "transform 400ms cubic-bezier(0.22, 1, 0.36, 1), opacity 400ms ease",
           willChange: "transform, opacity",
         }}
       >
