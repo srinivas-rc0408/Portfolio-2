@@ -215,7 +215,7 @@ export default function GameModal() {
     if (screen === "playing" || screen === "won" || screen === "lost") {
       if (p.r === r && p.c === c) {
         return (
-          <span className="absolute inset-[12%] rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.9)]" />
+          <span className="absolute inset-[12%] rounded-full bg-yellow-400" />
         );
       }
       const gi = ghosts.current.findIndex((g) => g.r === r && g.c === c);
@@ -243,7 +243,7 @@ export default function GameModal() {
   };
 
   const menuButton =
-    "w-full rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.1)] px-4 py-2.5 font-mono text-sm font-semibold text-white transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] hover:shadow-[0_0_16px_rgba(var(--theme-accent-rgb),0.4)] active:scale-95";
+    "w-full rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.1)] px-4 py-2.5 font-mono text-sm font-semibold text-white transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-95";
 
   return (
     <AnimatePresence>
@@ -264,7 +264,7 @@ export default function GameModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-xl overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono shadow-[0_0_60px_rgba(var(--theme-accent-rgb),0.22)] backdrop-blur-xl"
+            className="w-full max-w-xl overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

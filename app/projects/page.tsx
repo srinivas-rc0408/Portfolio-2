@@ -346,7 +346,7 @@ export default function Projects() {
                         flexWrap: "wrap",
                       }}
                     >
-                      <span style={{ color: "#22d3ee" }} aria-hidden="true">
+                      <span style={{ color: "var(--accent)" }} aria-hidden="true">
                         $
                       </span>
                       <span style={{ color: "#9ca3af" }}>git clone</span>

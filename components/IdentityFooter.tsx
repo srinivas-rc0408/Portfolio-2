@@ -148,7 +148,7 @@ export default function IdentityFooter() {
             revealRef.current(); // restart the hide countdown
           }}
         >
-          <div className="pointer-events-auto flex items-center justify-center gap-2.5 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 px-3 py-2.5 backdrop-blur-xl shadow-[0_0_30px_rgba(var(--theme-accent-rgb),0.18)]">
+          <div className="pointer-events-auto flex items-center justify-center gap-2.5 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 px-3 py-2.5 backdrop-blur-xl">
             <nav className="flex items-center gap-2.5" aria-label="Social links">
               {footerLinks.map((link) => (
                 <a
@@ -158,7 +158,7 @@ export default function IdentityFooter() {
                   rel="noopener noreferrer"
                   aria-label={link.name}
                   title={link.name}
-                  className="grid h-9 w-9 place-items-center rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] text-[var(--theme-accent)] transition-all duration-200 hover:scale-110 hover:bg-[rgba(var(--theme-accent-rgb),0.14)] hover:shadow-[0_0_14px_rgba(var(--theme-accent-rgb),0.6)] active:scale-95"
+                  className="grid h-9 w-9 place-items-center rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] text-[var(--theme-accent)] transition-all duration-150 hover:scale-110 hover:bg-[rgba(var(--theme-accent-rgb),0.14)] active:scale-95"
                 >
                   {ICONS[link.name]}
                 </a>

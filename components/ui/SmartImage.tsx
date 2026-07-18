@@ -40,7 +40,7 @@ export default function SmartImage({
           setLoaded(true);
           onLoad?.(e);
         }}
-        className={`${className} transition-opacity duration-500 ease-out ${
+        className={`${className} transition-opacity duration-150 ease-out ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
       />

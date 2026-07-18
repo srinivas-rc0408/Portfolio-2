@@ -8,9 +8,10 @@ import { loadSettings } from "@/lib/cms";
 
 type Stage = "gradient" | "terminal" | "done";
 
-// Stage 1: 0–1.5s logo · Stage 2: 1.5–3.0s terminal · total 3.0s exactly.
-const BOOT_STAGE1_MS = 1500;
-const BOOT_TOTAL_MS = 3000;
+// Stage 1: 0–0.75s logo · Stage 2: 0.75–1.5s terminal · total 1.5s max.
+// Any key / click / tap skips straight to the site.
+const BOOT_STAGE1_MS = 750;
+const BOOT_TOTAL_MS = 1500;
 
 // Lightning "S" bolt path (exact). x spans 50–125 → optically centered in a
 // 175-wide viewBox; y spans the full 0–200.
@@ -35,10 +36,11 @@ function luminance(hex: string): number {
 const emptySubscribe = () => () => {};
 
 /**
- * Two-stage, 3-second boot overlay — runs on every mount/reload.
- *   0.0–1.5s → GradientTracing (Lightning S, traced in the admin theme accent)
- *   1.5–3.0s → TerminalLoader (accent-bound text/cursor/glow)
- *   3.0s+    → fade out, unmount → reveal the site underneath.
+ * Two-stage, 1.5-second boot overlay — runs on every mount/reload.
+ *   0.00–0.75s → GradientTracing (Lightning S, traced in the admin theme accent)
+ *   0.75–1.50s → TerminalLoader (accent-bound text/cursor)
+ *   1.50s max  → fade out, unmount → reveal the site underneath.
+ * Any key / click / tap skips instantly.
  * The accent comes from the last-known admin settings (localStorage-cached in
  * lib/cms), so the boot paints in the chosen color with no default flash.
  * Near-black accents flip the backdrop light so the bolt stays visible.
@@ -55,9 +57,15 @@ export default function BootSequence() {
   useEffect(() => {
     const t1 = window.setTimeout(() => setStage("terminal"), BOOT_STAGE1_MS);
     const t2 = window.setTimeout(() => setStage("done"), BOOT_TOTAL_MS);
+    // Skip on any key, click, or tap.
+    const skip = () => setStage("done");
+    window.addEventListener("keydown", skip);
+    window.addEventListener("pointerdown", skip);
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
+      window.removeEventListener("keydown", skip);
+      window.removeEventListener("pointerdown", skip);
     };
   }, []);
 
@@ -80,7 +88,7 @@ export default function BootSequence() {
           .trim()
       : "";
   const accentRaw = cssAccent || loadSettings().themeAccent;
-  const accent = /^#[0-9a-fA-F]{3,8}$/.test(accentRaw) ? accentRaw : "#22d3ee";
+  const accent = /^#[0-9a-fA-F]{3,8}$/.test(accentRaw) ? accentRaw : "#22c55e";
   const darkAccent = luminance(accent) < 0.09; // near-black → light backdrop
   const backdrop = darkAccent ? "#ececec" : "#000000";
   const baseOutline = darkAccent ? "#64748b" : "#94a3b8";
@@ -92,7 +100,7 @@ export default function BootSequence() {
           key="boot"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className="fixed inset-0 z-[999] flex items-center justify-center"
           style={
             {
@@ -107,23 +115,12 @@ export default function BootSequence() {
             {stage === "gradient" ? (
               <motion.div
                 key="gradient"
-                initial={{ opacity: 0, scale: 0.82 }}
+                initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.12 }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="relative flex w-3/4 max-w-[320px] items-center justify-center sm:max-w-[420px]"
               >
-                {/* Cinematic accent glow — breathes behind the bolt */}
-                <motion.div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0"
-                  style={{
-                    background: `radial-gradient(circle, ${accent}66 0%, transparent 68%)`,
-                    filter: "blur(34px)",
-                  }}
-                  animate={{ opacity: [0.4, 0.95, 0.4], scale: [0.82, 1.12, 0.82] }}
-                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                />
                 <GradientTracing
                   width={BOLT_W}
                   height={BOLT_H}
@@ -131,7 +128,7 @@ export default function BootSequence() {
                   strokeWidth={3.5}
                   baseColor={baseOutline}
                   gradientColors={[accent, accent, accent]}
-                  animationDuration={1.5}
+                  animationDuration={0.75}
                   className="relative"
                 />
               </motion.div>
@@ -141,13 +138,21 @@ export default function BootSequence() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 className="flex w-full items-center justify-center"
               >
                 <TerminalLoader />
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Skip hint — works via the global keydown/pointerdown listeners */}
+          <p
+            className="absolute bottom-8 left-0 right-0 text-center font-mono text-[11px]"
+            style={{ color: darkAccent ? "#525252" : "#737373" }}
+          >
+            press any key to skip
+          </p>
         </motion.div>
       )}
     </AnimatePresence>

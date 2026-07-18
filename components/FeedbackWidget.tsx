@@ -126,7 +126,7 @@ export default function FeedbackWidget() {
               armIdleTimer();
             }}
             aria-label="Send feedback"
-            className="fixed bottom-5 right-4 z-40 flex items-center gap-2 rounded-full border border-[rgba(var(--theme-accent-rgb),0.5)] bg-black/75 px-4 py-2.5 font-mono text-xs font-semibold text-[var(--theme-accent)] shadow-[0_0_24px_rgba(var(--theme-accent-rgb),0.3)] backdrop-blur-xl transition-all duration-200 hover:scale-105 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] hover:shadow-[0_0_30px_rgba(var(--theme-accent-rgb),0.5)] active:scale-95 min-[1025px]:left-[calc(30%+1rem)] min-[1025px]:right-auto"
+            className="fixed bottom-5 right-4 z-40 flex items-center gap-2 rounded-full border border-[rgba(var(--theme-accent-rgb),0.5)] bg-black/75 px-4 py-2.5 font-mono text-xs font-semibold text-[var(--theme-accent)] backdrop-blur-xl transition-all duration-150 hover:scale-105 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95 min-[1025px]:left-[calc(30%+1rem)] min-[1025px]:right-auto"
           >
             <MessageSquare size={15} strokeWidth={2.2} aria-hidden />
             Feedback
@@ -156,7 +156,7 @@ export default function FeedbackWidget() {
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
               onSubmit={submit}
-              className="w-full max-w-md rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/75 p-5 font-mono shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.2)] backdrop-blur-xl"
+              className="w-full max-w-md rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/75 p-5 font-mono backdrop-blur-xl"
             >
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-sm font-bold text-white">
@@ -202,7 +202,7 @@ export default function FeedbackWidget() {
                     maxLength={100}
                     placeholder="Your name"
                     aria-label="Your name (required)"
-                    className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)] focus:shadow-[0_0_0_3px_rgba(var(--theme-accent-rgb),0.15)]"
+                    className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
                   />
                   <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-500">
                     Email <span className="text-white/30">(optional)</span>
@@ -214,7 +214,7 @@ export default function FeedbackWidget() {
                     type="email"
                     placeholder="you@example.com"
                     aria-label="Your email (optional)"
-                    className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)] focus:shadow-[0_0_0_3px_rgba(var(--theme-accent-rgb),0.15)]"
+                    className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
                   />
                   <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-500">
                     Feedback <span className="text-[var(--theme-accent)]">*</span>
@@ -226,7 +226,7 @@ export default function FeedbackWidget() {
                     rows={4}
                     placeholder="What did you like? Any bugs or ideas?"
                     aria-label="Your feedback (required)"
-                    className="w-full resize-y rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)] focus:shadow-[0_0_0_3px_rgba(var(--theme-accent-rgb),0.15)]"
+                    className="w-full resize-y rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
                   />
 
                   {error && (
@@ -242,7 +242,7 @@ export default function FeedbackWidget() {
                   <button
                     type="submit"
                     disabled={sending}
-                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-4 py-2.5 text-sm font-semibold text-[var(--theme-accent)] transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] hover:shadow-[0_0_16px_rgba(var(--theme-accent-rgb),0.4)] active:scale-[0.98] disabled:opacity-50"
+                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-4 py-2.5 text-sm font-semibold text-[var(--theme-accent)] transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-[0.98] disabled:opacity-50"
                   >
                     {sending ? (
                       <Loader2 size={15} className="animate-spin" aria-hidden />

@@ -49,7 +49,7 @@ const BrandMark: React.FC = () => (
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label="S.RC"
-      className="shrink-0 transition-transform duration-300 group-hover/logo:scale-110 group-hover/logo:[filter:drop-shadow(0_0_6px_rgba(var(--theme-accent-rgb),0.8))]"
+      className="shrink-0 transition-transform duration-150 ease-out group-hover/logo:scale-105"
     >
       <title>S.RC</title>
       {/* Bolt stroke follows the admin theme accent (universal site color) */}
@@ -63,7 +63,7 @@ const BrandMark: React.FC = () => (
     </svg>
     <span
       aria-hidden="true"
-      className="font-mono text-xl font-black tracking-tight text-white transition-all duration-300 group-hover/logo:[text-shadow:0_0_12px_rgba(var(--theme-accent-rgb),0.9)]"
+      className="font-mono text-xl font-black tracking-tight text-[var(--text)] transition-colors duration-150 ease-out group-hover/logo:text-[var(--accent)]"
     >
       <span className="text-[var(--theme-accent)]">.</span>RC
     </span>
@@ -71,7 +71,7 @@ const BrandMark: React.FC = () => (
     {/* Tooltip: Srinivas RC's Portfolio */}
     <span
       role="tooltip"
-      className="pointer-events-none absolute left-0 top-full z-30 mt-2 w-max translate-y-1 rounded-md border border-[rgba(var(--theme-accent-rgb),0.4)] bg-black/85 px-3 py-1.5 font-mono text-xs text-white opacity-0 shadow-[0_0_16px_rgba(var(--theme-accent-rgb),0.25)] backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/logo:translate-y-0 group-hover/logo:opacity-100"
+      className="pointer-events-none absolute left-0 top-full z-30 mt-2 w-max translate-y-1 rounded-md border border-[var(--border)] bg-black/85 px-3 py-1.5 font-mono text-xs text-[var(--text)] opacity-0 backdrop-blur-md transition-all duration-150 ease-out group-hover/logo:translate-y-0 group-hover/logo:opacity-100"
     >
       Srinivas RC&apos;s Portfolio
     </span>
@@ -93,7 +93,7 @@ const DownloadIcon: React.FC = () => (
   <Download
     size={14}
     aria-hidden="true"
-    className="opacity-60 transition-all duration-300 group-hover/qa:translate-y-[1px] group-hover/qa:opacity-100"
+    className="opacity-60 transition-opacity duration-150 ease-out group-hover/qa:opacity-100"
   />
 );
 
@@ -101,7 +101,7 @@ const GamepadIcon: React.FC = () => (
   <Gamepad2
     size={14}
     aria-hidden="true"
-    className="opacity-60 transition-opacity duration-300 group-hover/qa:opacity-100"
+    className="opacity-60 transition-opacity duration-150 ease-out group-hover/qa:opacity-100"
   />
 );
 
@@ -114,33 +114,28 @@ interface QuickAction {
 }
 
 const QUICK_ACTIONS: QuickAction[] = [
+  { label: "Projects", run: () => execInTerminal("cd projects") },
   { label: "Resume", doc: { label: "Resume", section: "resume" } },
-  { label: "CV", doc: { label: "CV", section: "cv" } },
+  { label: "Skills", run: () => execInTerminal("cd skills") },
+  { label: "Education", run: () => execInTerminal("education") },
   {
     label: "Certificates",
     run: () => execInTerminal("certificates"),
   },
-  { label: "Education", run: () => execInTerminal("education") },
-  { label: "Skills", run: () => execInTerminal("cd skills") },
-  { label: "Projects", run: () => execInTerminal("cd projects") },
+  { label: "CV", doc: { label: "CV", section: "cv" } },
   { label: "Games", icon: "game", run: () => execInTerminal("play archman") },
 ];
 
 // Shared row chrome (hover strip + sheen) so doc rows and plain rows match.
 const ROW_CLASS =
-  "group/qa relative w-full overflow-hidden rounded-md bg-gradient-to-r from-white/[0.03] to-white/[0.06] px-4 py-2.5 text-left font-mono text-sm text-gray-300 transition-all duration-300 hover:text-white active:scale-95";
+  "group/qa relative w-full overflow-hidden rounded-md border border-transparent bg-white/[0.04] px-4 py-2.5 min-h-[44px] text-left font-mono text-sm text-[var(--text)] transition-colors duration-150 ease-out hover:border-[var(--border)] hover:bg-white/[0.07]";
 
+/* Restrained hover mark: a `$` prompt symbol in the single accent. */
 const RowDecor: React.FC = () => (
-  <>
-    <span
-      aria-hidden="true"
-      className="absolute left-0 top-0 h-full w-[3px] -translate-x-full bg-[var(--theme-accent)] transition-transform duration-300 ease-out group-hover/qa:translate-x-0"
-    />
-    <span
-      aria-hidden="true"
-      className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[rgba(var(--theme-accent-rgb),0.1)] to-transparent transition-transform duration-500 ease-out group-hover/qa:translate-x-full"
-    />
-  </>
+  <span
+    aria-hidden="true"
+    className="absolute left-0 top-0 h-full w-[2px] -translate-x-full bg-[var(--accent)] transition-transform duration-150 ease-out group-hover/qa:translate-x-0"
+  />
 );
 
 /** Opens the fullscreen profile-picture viewer. */
@@ -190,7 +185,7 @@ export default function Tag() {
               onClick={() => setMenuOpen((o) => !o)}
               aria-expanded={menuOpen}
               aria-label={`Account menu for ${user.name}`}
-              className="flex items-center gap-2 rounded-full border border-[rgba(var(--theme-accent-rgb),0.5)] bg-white/[0.04] py-1 pl-1 pr-3 font-mono text-xs text-white transition-all duration-300 hover:border-[var(--theme-accent)] hover:shadow-[0_0_12px_rgba(var(--theme-accent-rgb),0.35)] active:scale-95"
+              className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-white/[0.04] py-1 pl-1 pr-3 font-mono text-xs text-[var(--text)] transition-colors duration-150 ease-out hover:border-[var(--accent)]"
             >
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(var(--theme-accent-rgb),0.2)] text-[11px]">
                 👤
@@ -240,7 +235,7 @@ export default function Tag() {
           type="button"
           onClick={viewProfile}
           aria-label="View profile picture"
-          className="group relative h-36 w-36 cursor-pointer overflow-hidden rounded-xl shadow-[0_0_24px_rgba(var(--theme-accent-rgb),0.15),0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-300 active:scale-[0.98] sm:h-[290px] sm:w-[232px]"
+          className="group relative h-36 w-36 cursor-pointer overflow-hidden rounded-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-150 ease-out active:scale-[0.98] sm:h-[290px] sm:w-[232px]"
         >
           <Image
             src={profileSrc}
@@ -249,26 +244,30 @@ export default function Tag() {
             sizes="232px"
             priority
             unoptimized
-            className="object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+            className="object-cover transition-transform duration-150 ease-out group-hover:scale-[1.02]"
           />
-          {/* Frosted overlay + greeting, fades/slides in on hover */}
-          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/55 opacity-0 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100">
-            <span className="translate-y-3 rounded-full border border-white/40 px-3 py-1 font-mono text-[11px] text-white/80 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100">
+          {/* Overlay hint, fades in on hover */}
+          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/55 opacity-0 backdrop-blur-md transition-opacity duration-150 ease-out group-hover:opacity-100">
+            <span className="rounded-full border border-white/40 px-3 py-1 font-mono text-[11px] text-white/80">
               click to view ↗
             </span>
           </div>
         </button>
       </div>
 
-      {/* Identity text — dynamic from Global Settings */}
-      <div className="mt-3 text-center sm:mt-6">
-        <h1 className="font-mono text-xl font-bold tracking-wide text-white sm:text-2xl">
-          {settings.displayName}
+      {/* Identity text — typewriter reveal (once, ~1s total; instant when
+          prefers-reduced-motion). Block cursor blinks after the tagline. */}
+      <div className="mt-4 text-center sm:mt-6">
+        <h1 className="font-mono text-xl font-bold tracking-wide text-[var(--text)] sm:text-2xl">
+          <span className="type-line">{settings.displayName}</span>
         </h1>
-        <p className="mt-1 font-mono text-sm text-white/70">{settings.title}</p>
+        <p className="mt-1 font-mono text-sm text-[var(--text-secondary)]">
+          <span className="type-line delay">{settings.title}</span>
+          <span className="block-cursor" aria-hidden="true" />
+        </p>
       </div>
 
-      {/* Quick action menu — Indian-flag tricolor reveal on hover */}
+      {/* Quick action menu — flat rows, single accent on prompt + hover bar */}
       <nav
         className="mx-auto mt-4 flex w-full max-w-[280px] flex-col gap-2 sm:mt-8 sm:gap-2.5"
         aria-label="Quick actions"
@@ -278,15 +277,11 @@ export default function Tag() {
           type="button"
           onClick={() => execInTerminal("jerry")}
           aria-label="Ask Jerry, the AI assistant"
-          className="group/jerry relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg border border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.1)] px-4 py-2.5 font-mono text-sm font-semibold text-[var(--theme-accent)] shadow-[0_0_18px_rgba(var(--theme-accent-rgb),0.2)] transition-all duration-300 hover:bg-[rgba(var(--theme-accent-rgb),0.2)] hover:shadow-[0_0_26px_rgba(var(--theme-accent-rgb),0.45)] active:scale-95"
+          className="group/jerry relative flex w-full min-h-[44px] items-center justify-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.5)] bg-[rgba(var(--accent-rgb),0.08)] px-4 py-2.5 font-mono text-sm font-semibold text-[var(--accent)] transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:bg-[rgba(var(--accent-rgb),0.14)]"
         >
-          <span
-            aria-hidden
-            className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[rgba(var(--theme-accent-rgb),0.25)] to-transparent transition-transform duration-700 ease-out group-hover/jerry:translate-x-full"
-          />
-          <Sparkles size={15} strokeWidth={2.2} className="relative animate-pulse" aria-hidden />
+          <Sparkles size={15} strokeWidth={2.2} className="relative" aria-hidden />
           <span className="relative">Ask Jerry</span>
-          <span className="relative rounded-full border border-[rgba(var(--theme-accent-rgb),0.5)] px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-white/80">
+          <span className="relative rounded-full border border-[rgba(var(--accent-rgb),0.5)] px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-[var(--text-secondary)]">
             AI
           </span>
         </button>
@@ -314,11 +309,11 @@ export default function Tag() {
                 aria-label={`View ${doc.label}`}
               >
                 <RowDecor />
-                <span className="relative flex items-center justify-between text-white">
+                <span className="relative flex items-center justify-between text-[var(--text)]">
                   <span>
-                    <span className="text-white/50">$ </span>
+                    <span className="text-[var(--accent)]">$ </span>
                     {label.toLowerCase()}
-                    <span className="ml-2 text-[10px] text-white/30 transition-colors group-hover/qa:text-[var(--theme-accent)]">
+                    <span className="ml-2 text-[10px] text-[var(--text-secondary)] transition-colors duration-150 ease-out group-hover/qa:text-[var(--accent)]">
                       view
                     </span>
                   </span>
@@ -330,7 +325,7 @@ export default function Tag() {
                     }}
                     aria-label={`Download ${doc.label}`}
                     title={`Download ${doc.label}`}
-                    className="-mr-1 rounded-md p-1.5 text-white/60 transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] hover:text-[var(--theme-accent)] active:scale-90"
+                    className="-my-2 -mr-2 grid min-h-[44px] min-w-[44px] place-items-center rounded-md text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:text-[var(--accent)]"
                   >
                     <DownloadIcon />
                   </button>
@@ -347,9 +342,9 @@ export default function Tag() {
               className={ROW_CLASS}
             >
               <RowDecor />
-              <span className="relative flex items-center justify-between text-white">
+              <span className="relative flex items-center justify-between text-[var(--text)]">
                 <span>
-                  <span className="text-white/50">$ </span>
+                  <span className="text-[var(--accent)]">$ </span>
                   {label.toLowerCase()}
                 </span>
                 {icon === "game" && <GamepadIcon />}
@@ -367,14 +362,9 @@ export default function Tag() {
           onClick={() => window.dispatchEvent(new CustomEvent("footer:reveal"))}
           aria-label="Show contact & social links"
           title="Contact & social links"
-          className="group/handle flex items-center gap-1.5 rounded-full border border-[rgba(var(--theme-accent-rgb),0.35)] bg-[rgba(var(--theme-accent-rgb),0.06)] px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-white/50 transition-all duration-300 hover:border-[rgba(var(--theme-accent-rgb),0.7)] hover:text-[var(--theme-accent)] hover:shadow-[0_0_14px_rgba(var(--theme-accent-rgb),0.3)] active:scale-95"
+          className="group/handle flex min-h-[44px] items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-1 text-[10px] font-mono uppercase tracking-wider text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)]"
         >
-          <ChevronUp
-            size={13}
-            strokeWidth={2.5}
-            className="animate-bounce [animation-duration:1.6s] group-hover/handle:animate-none"
-            aria-hidden
-          />
+          <ChevronUp size={13} strokeWidth={2.5} aria-hidden />
           connect
         </button>
       </div>

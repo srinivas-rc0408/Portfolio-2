@@ -83,7 +83,7 @@ export default function DocViewer() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 10 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="flex h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/60 font-mono shadow-[0_0_60px_rgba(var(--theme-accent-rgb),0.2)] backdrop-blur-xl"
+            className="flex h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/60 font-mono backdrop-blur-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -145,7 +145,7 @@ export default function DocViewer() {
                 src={doc.url}
                 title={`Srinivas RC's ${doc.label}`}
                 onLoad={() => setLoaded(true)}
-                className={`h-full w-full transition-opacity duration-300 ${
+                className={`h-full w-full transition-opacity duration-150 ${
                   loaded ? "opacity-100" : "opacity-0"
                 }`}
               />
@@ -162,7 +162,7 @@ export default function DocViewer() {
               <button
                 type="button"
                 onClick={download}
-                className="flex items-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-5 py-2 text-sm font-semibold text-[var(--theme-accent)] transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] hover:shadow-[0_0_16px_rgba(var(--theme-accent-rgb),0.4)] active:scale-95"
+                className="flex items-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-5 py-2 text-sm font-semibold text-[var(--theme-accent)] transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-95"
                 aria-label={`Download Srinivas RC's ${doc.label}`}
               >
                 <Download size={15} strokeWidth={2.2} aria-hidden />

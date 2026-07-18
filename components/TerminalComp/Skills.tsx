@@ -125,16 +125,16 @@ const TerminalWindow: React.FC<TerminalWindowProps> = ({
           onClick();
         }
       }}
-      className={`relative overflow-hidden rounded-lg transition-all duration-500 cursor-pointer transform hover:scale-[1.02] ${
+      className={`relative overflow-hidden rounded-lg transition-all duration-150 cursor-pointer transform hover:scale-[1.02] ${
         isActive
-          ? "bg-black/40 backdrop-blur-xl border border-cyan-400/50 shadow-lg shadow-cyan-400/20"
-          : "bg-black/20 backdrop-blur-md border border-cyan-400/20 hover:border-cyan-400/40"
+          ? "bg-black/40 backdrop-blur-xl border border-[var(--border)] shadow-lg"
+          : "bg-black/20 backdrop-blur-md border border-[var(--border)] hover:border-[var(--accent)]"
       }`}
       aria-label={`${title} skills terminal ${isActive ? "active" : ""}`}
       aria-pressed={isActive}
     >
       {/* Terminal header */}
-      <div className="flex items-center justify-between p-3 bg-black/30 border-b border-cyan-400/20">
+      <div className="flex items-center justify-between p-3 bg-black/30 border-b border-[var(--border)]">
         <div className="flex items-center space-x-2">
           {/* Glossy R·G·B window dots — matches the main terminal header */}
           <div className="flex space-x-1.5" aria-hidden="true">
@@ -227,12 +227,12 @@ const SkillBadge: React.FC<SkillBadgeProps> = ({ skill, delay = 0 }) => {
 
   return (
     <span
-      className={`inline-block transition-all duration-500 transform ${
+      className={`inline-block transition-all duration-150 transform ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
       } bg-gradient-to-r from-cyan-400/20 to-cyan-400/20 backdrop-blur-sm 
-      text-white text-xs font-mono py-1.5 px-3 rounded-md border border-cyan-400/30
-      hover:border-cyan-400/60 hover:bg-cyan-400/10 hover:text-white cursor-pointer
-      hover:shadow-md hover:shadow-cyan-400/20`}
+      text-white text-xs font-mono py-1.5 px-3 rounded-md border border-[var(--border)]
+      hover:border-[var(--accent)] hover:bg-cyan-400/10 hover:text-white cursor-pointer
+      hover:shadow-md`}
       role="listitem"
     >
       {skill}
@@ -323,7 +323,7 @@ const Skills: React.FC = () => {
         {/* Header */}
         <header className="text-center mb-12">
           <h1
-            className={`text-4xl md:text-6xl font-bold font-mono transition-all duration-1000 ${
+            className={`text-4xl md:text-6xl font-bold font-mono transition-all duration-150 ${
               terminalStarted
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 -translate-y-8"
@@ -338,7 +338,7 @@ const Skills: React.FC = () => {
             </span>
           </h1>
           <div
-            className={`mt-4 text-white/80 font-mono transition-all duration-1000 delay-300 ${
+            className={`mt-4 text-white/80 font-mono transition-all duration-150 delay-300 ${
               terminalStarted
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
@@ -360,7 +360,7 @@ const Skills: React.FC = () => {
           {categories.map((category, index) => (
             <div
               key={category.key}
-              className={`transition-all duration-500 ${
+              className={`transition-all duration-150 ${
                 terminalStarted
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-8"
@@ -400,7 +400,7 @@ const Skills: React.FC = () => {
         </div>
 
         <footer
-          className={`text-center mt-12 transition-all duration-1000 delay-1000 ${
+          className={`text-center mt-12 transition-all duration-150 delay-1000 ${
             terminalStarted
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4"

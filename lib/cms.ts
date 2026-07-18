@@ -58,7 +58,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   displayName: "Srinivas RC",
   title: "AI / ML Engineer",
   profileImage: null,
-  themeAccent: "#22d3ee",
+  themeAccent: "#22c55e",
   summary: DEFAULT_SUMMARY,
 };
 

@@ -124,7 +124,7 @@ export default function QuoteOfDay() {
             (e.key === "Enter" || e.key === " ") && setExpanded((x) => !x)
           }
           aria-expanded={expanded}
-          className="qotd-pulse relative w-full cursor-pointer rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 px-5 py-4 text-left shadow-[0_8px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-colors duration-300 hover:border-[rgba(var(--theme-accent-rgb),0.7)] active:scale-[0.99]"
+          className="qotd-pulse relative w-full cursor-pointer rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 px-5 py-4 text-left shadow-[0_8px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-colors duration-150 hover:border-[rgba(var(--theme-accent-rgb),0.7)] active:scale-[0.99]"
         >
           {/* Dismiss — pointer-events-auto + high stack so the click always lands */}
           <button

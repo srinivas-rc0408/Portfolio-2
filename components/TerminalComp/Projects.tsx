@@ -243,7 +243,7 @@ const Projects: React.FC = () => {
             onClick={prevPage}
             disabled={currentPage === 0}
             aria-label="Previous page"
-            className={`grid h-6 w-6 place-items-center rounded-md border transition-all duration-200 ${
+            className={`grid h-6 w-6 place-items-center rounded-md border transition-all duration-150 ${
               currentPage === 0
                 ? "cursor-not-allowed border-gray-700/50 text-gray-600"
                 : "border-[rgba(var(--theme-accent-rgb),0.4)] text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-90"
@@ -259,7 +259,7 @@ const Projects: React.FC = () => {
             onClick={nextPage}
             disabled={currentPage === totalPages - 1}
             aria-label="Next page"
-            className={`grid h-6 w-6 place-items-center rounded-md border transition-all duration-200 ${
+            className={`grid h-6 w-6 place-items-center rounded-md border transition-all duration-150 ${
               currentPage === totalPages - 1
                 ? "cursor-not-allowed border-gray-700/50 text-gray-600"
                 : "border-[rgba(var(--theme-accent-rgb),0.4)] text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-90"
@@ -278,7 +278,7 @@ const Projects: React.FC = () => {
                 role="tab"
                 aria-selected={i === currentPage}
                 aria-label={`Page ${i + 1}`}
-                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
+                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-150 ${
                   i === currentPage ? "bg-[var(--theme-accent)]" : "bg-gray-600"
                 }`}
               />
@@ -304,9 +304,9 @@ const Projects: React.FC = () => {
               onMouseLeave={() => setHoveredIndex(null)}
             >
               {/* Glassmorphism card */}
-              <div className="backdrop-blur-md bg-gray-900/30 border border-blue-500/20 rounded-lg sm:rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-[1.01] sm:hover:scale-[1.02] hover:border-cyan-400/40 hover:shadow-2xl hover:shadow-blue-500/10">
+              <div className="backdrop-blur-md bg-gray-900/30 border border-[var(--border)] rounded-lg sm:rounded-xl overflow-hidden transform transition-all duration-150 hover:scale-[1.01] sm:hover:scale-[1.02] hover:border-[var(--accent)] hover:shadow-2xl">
                 {/* Terminal header bar */}
-                <header className="bg-gray-800/50 px-3 sm:px-4 py-2 border-b border-blue-500/20 flex items-center space-x-2">
+                <header className="bg-gray-800/50 px-3 sm:px-4 py-2 border-b border-[var(--border)] flex items-center space-x-2">
                   <WindowDots size="h-2 w-2 sm:h-3 sm:w-3" gap="gap-1 sm:gap-2" />
                   <div className="flex-1 text-center overflow-hidden">
                     <span className="text-white/70 text-xs font-mono block truncate">
@@ -322,7 +322,7 @@ const Projects: React.FC = () => {
                     alt={`${project.name} project screenshot`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="object-cover transition-transform duration-150 group-hover:scale-110"
                   />
                   <div
                     className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"
@@ -331,7 +331,7 @@ const Projects: React.FC = () => {
 
                   {/* Hover overlay with glitch effect */}
                   <div
-                    className={`absolute inset-0 bg-blue-500/5 transition-all duration-300 ${
+                    className={`absolute inset-0 bg-blue-500/5 transition-all duration-150 ${
                       hoveredIndex === globalIndex ? "opacity-100" : "opacity-0"
                     }`}
                     aria-hidden="true"
@@ -358,7 +358,7 @@ const Projects: React.FC = () => {
                       <span
                         key={techIndex}
                         role="listitem"
-                        className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-blue-500/20 text-white rounded-full border border-blue-500/30 font-mono"
+                        className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-blue-500/20 text-white rounded-full border border-[var(--border)] font-mono"
                       >
                         {tech}
                       </span>
@@ -371,7 +371,7 @@ const Projects: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setDetailProject(project)}
-                    className="inline-flex items-center gap-1 font-mono text-xs sm:text-sm text-[var(--theme-accent)] transition-all duration-200 hover:gap-2 hover:brightness-125"
+                    className="inline-flex items-center gap-1 font-mono text-xs sm:text-sm text-[var(--theme-accent)] transition-all duration-150 hover:gap-2 hover:brightness-125"
                     aria-label={`View full details for ${project.name}`}
                   >
                     view details <span aria-hidden="true">→</span>
@@ -379,7 +379,7 @@ const Projects: React.FC = () => {
 
                   {/* Terminal-style command line - Mobile responsive */}
                   <div
-                    className="bg-gray-800/50 rounded-md p-2 sm:p-4 font-mono text-xs sm:text-sm border border-gray-700/50 overflow-hidden cursor-pointer select-none hover:border-cyan-400/40 transition-colors"
+                    className="bg-gray-800/50 rounded-md p-2 sm:p-4 font-mono text-xs sm:text-sm border border-gray-700/50 overflow-hidden cursor-pointer select-none hover:border-[var(--accent)] transition-colors"
                     role="code"
                     tabIndex={0}
                     aria-label={`Copy git clone command for ${project.name}`}
@@ -429,7 +429,7 @@ const Projects: React.FC = () => {
                         href={project.liveUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center space-x-1 sm:space-x-2 text-gray-400 hover:text-white transition-all duration-200 hover:scale-105 font-mono text-sm sm:text-base"
+                        className="flex items-center space-x-1 sm:space-x-2 text-gray-400 hover:text-white transition-all duration-150 hover:scale-105 font-mono text-sm sm:text-base"
                         aria-label={`View ${project.name} live demo`}
                       >
                         <ExternalLinkIcon />
@@ -439,7 +439,7 @@ const Projects: React.FC = () => {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center space-x-1 sm:space-x-2 text-gray-400 hover:text-white transition-all duration-200 hover:scale-105 font-mono text-sm sm:text-base"
+                        className="flex items-center space-x-1 sm:space-x-2 text-gray-400 hover:text-white transition-all duration-150 hover:scale-105 font-mono text-sm sm:text-base"
                         aria-label={`View ${project.name} source code on GitHub`}
                       >
                         <GitHubIcon />
@@ -450,7 +450,7 @@ const Projects: React.FC = () => {
                     {/* Status indicator */}
                     <div className="flex items-center space-x-2">
                       <div
-                        className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full animate-pulse"
+                        className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full"
                         aria-hidden="true"
                       ></div>
                       <span className="text-white text-xs font-mono">
@@ -463,9 +463,9 @@ const Projects: React.FC = () => {
 
               {/* Glow effect on hover */}
               <div
-                className={`absolute inset-0 rounded-lg sm:rounded-xl transition-all duration-300 pointer-events-none ${
+                className={`absolute inset-0 rounded-lg sm:rounded-xl transition-all duration-150 pointer-events-none ${
                   hoveredIndex === globalIndex
-                    ? "shadow-xl sm:shadow-2xl shadow-blue-500/20 ring-1 ring-blue-500/20"
+                    ? "shadow-xl sm:shadow-2xl ring-1 ring-blue-500/20"
                     : ""
                 }`}
                 aria-hidden="true"
@@ -483,10 +483,10 @@ const Projects: React.FC = () => {
         <button
           onClick={prevPage}
           disabled={currentPage === 0}
-          className={`flex items-center space-x-2 px-3 py-2 sm:px-4 rounded-lg border font-mono text-xs sm:text-sm transition-all duration-300 w-full sm:w-auto justify-center sm:justify-start ${
+          className={`flex items-center space-x-2 px-3 py-2 sm:px-4 rounded-lg border font-mono text-xs sm:text-sm transition-all duration-150 w-full sm:w-auto justify-center sm:justify-start ${
             currentPage === 0
               ? "border-gray-700/50 text-gray-600 cursor-not-allowed"
-              : "border-blue-500/30 text-white hover:border-cyan-400 hover:bg-blue-500/10 hover:scale-105"
+              : "border-[var(--border)] text-white hover:border-[var(--accent)] hover:bg-blue-500/10 hover:scale-105"
           }`}
           aria-label="Previous page"
         >
@@ -496,7 +496,7 @@ const Projects: React.FC = () => {
 
         {/* Terminal-style page info - Mobile responsive */}
         <div
-          className="px-3 py-2 sm:px-6 sm:py-3 bg-gray-900/30 backdrop-blur-sm border border-blue-500/20 rounded-lg w-full sm:w-auto"
+          className="px-3 py-2 sm:px-6 sm:py-3 bg-gray-900/30 backdrop-blur-sm border border-[var(--border)] rounded-lg w-full sm:w-auto"
           role="status"
           aria-live="polite"
         >
@@ -522,10 +522,10 @@ const Projects: React.FC = () => {
         <button
           onClick={nextPage}
           disabled={currentPage === totalPages - 1}
-          className={`flex items-center space-x-2 px-3 py-2 sm:px-4 rounded-lg border font-mono text-xs sm:text-sm transition-all duration-300 w-full sm:w-auto justify-center sm:justify-start ${
+          className={`flex items-center space-x-2 px-3 py-2 sm:px-4 rounded-lg border font-mono text-xs sm:text-sm transition-all duration-150 w-full sm:w-auto justify-center sm:justify-start ${
             currentPage === totalPages - 1
               ? "border-gray-700/50 text-gray-600 cursor-not-allowed"
-              : "border-blue-500/30 text-white hover:border-cyan-400 hover:bg-blue-500/10 hover:scale-105"
+              : "border-[var(--border)] text-white hover:border-[var(--accent)] hover:bg-blue-500/10 hover:scale-105"
           }`}
           aria-label="Next page"
         >
@@ -553,7 +553,7 @@ const Projects: React.FC = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 12 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono shadow-[0_0_60px_rgba(var(--theme-accent-rgb),0.18)] backdrop-blur-xl"
+              className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative h-44 shrink-0 overflow-hidden">

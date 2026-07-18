@@ -121,7 +121,7 @@ export default function AdminUpload({
             inputRef.current?.click();
           }
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition-all duration-200 ${
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition-all duration-150 ${
           dragging
             ? "border-[var(--theme-accent)] bg-[rgba(var(--theme-accent-rgb),0.1)]"
             : "border-white/15 hover:border-[rgba(var(--theme-accent-rgb),0.55)] hover:bg-white/[0.02]"

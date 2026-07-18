@@ -55,7 +55,7 @@ export default function ProfileLightbox() {
           width={520}
           height={667}
           priority
-          className="max-h-[85vh] w-auto rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] shadow-[0_0_60px_rgba(var(--theme-accent-rgb),0.25)]"
+          className="max-h-[85vh] w-auto rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)]"
         />
         <p className="mt-3 text-center font-mono text-sm text-white">
           {settings.displayName}

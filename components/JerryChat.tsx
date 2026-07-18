@@ -251,7 +251,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             style={{ willChange: "transform, opacity" }}
-            className="flex h-[78vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 font-mono shadow-[0_0_60px_rgba(var(--theme-accent-rgb),0.18),0_24px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl sm:h-[600px] sm:max-h-[85vh]"
+            className="flex h-[78vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 font-mono backdrop-blur-xl sm:h-[600px] sm:max-h-[85vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -372,7 +372,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                   type="button"
                   disabled={busy}
                   onClick={() => void send(c)}
-                  className="shrink-0 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.06)] px-3 py-1.5 text-[11px] text-white/90 transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.16)] hover:shadow-[0_0_12px_rgba(var(--theme-accent-rgb),0.3)] active:scale-95 disabled:opacity-40"
+                  className="shrink-0 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.06)] px-3 py-1.5 text-[11px] text-white/90 transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.16)] active:scale-95 disabled:opacity-40"
                 >
                   {c}
                 </button>
@@ -396,7 +396,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                 aria-label="Message Jerry"
                 autoComplete="off"
                 spellCheck={false}
-                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-[13px] text-white placeholder-white/30 outline-none transition-all duration-200 [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)] focus:shadow-[0_0_0_3px_rgba(var(--theme-accent-rgb),0.15)]"
+                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-[13px] text-white placeholder-white/30 outline-none transition-all duration-150 [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
               />
               <motion.button
                 type="submit"
@@ -409,7 +409,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                 whileHover={input.trim() && !busy ? { scale: 1.08 } : undefined}
                 whileTap={{ scale: 0.82 }}
                 transition={{ duration: 0.18, ease: "easeOut" }}
-                className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] p-2 text-[var(--theme-accent)] transition-shadow duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.25)] hover:shadow-[0_0_14px_rgba(var(--theme-accent-rgb),0.4)] disabled:hover:shadow-none"
+                className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] p-2 text-[var(--theme-accent)] transition-shadow duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.25)] disabled:hover:shadow-none"
               >
                 <Send size={15} strokeWidth={2.2} aria-hidden />
               </motion.button>

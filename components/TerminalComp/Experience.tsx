@@ -16,7 +16,7 @@ const Experience: React.FC = () => {
       <MatrixRain />
 
       <div
-        className={`relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-1000 ${
+        className={`relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-150 ${
           isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
       >
@@ -31,14 +31,14 @@ const Experience: React.FC = () => {
 
         <div className="space-y-8 sm:space-y-12">
           {/* Experience Section */}
-          <section className="border border-cyan-800/30 bg-gradient-to-br from-cyan-900/10 to-black/50 backdrop-blur-sm rounded-xl p-4 sm:p-6 lg:p-8 shadow-2xl shadow-cyan-900/20 hover:shadow-cyan-900/40 transition-all duration-500">
+          <section className="border border-cyan-800/30 bg-gradient-to-br from-cyan-900/10 to-black/50 backdrop-blur-sm rounded-xl p-4 sm:p-6 lg:p-8 shadow-2xl transition-all duration-150">
             <div className="flex items-center mb-4 sm:mb-6">
               <span className="text-white font-mono mr-2 sm:mr-4"></span>
               <h2 className="text-lg sm:text-2xl text-white font-bold font-mono tracking-wider">
                 EXPERIENCE.log
               </h2>
               <div className="ml-auto">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
               </div>
             </div>
 
@@ -66,7 +66,7 @@ const Experience: React.FC = () => {
                   <li className="pl-4 sm:pl-5 relative">
                     <span
                       aria-hidden="true"
-                      className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-cyan-400 ring-2 ring-black shadow-[0_0_0_2px_rgba(56,189,248,0.35)]"
+                      className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-cyan-400 ring-2 ring-black"
                     />
                     <h4 className="text-white font-semibold text-sm sm:text-base font-mono">
                       Archagent — Autonomous AI Agent
@@ -149,7 +149,7 @@ const Experience: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-white/70 font-mono text-xs sm:text-sm space-y-2 sm:space-y-0">
               <span>Status: Ready for new challenges</span>
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                 <span>Online</span>
               </div>
             </div>

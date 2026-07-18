@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-black p-4 font-mono">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 shadow-[0_0_60px_rgba(var(--theme-accent-rgb),0.18)] backdrop-blur-xl">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 backdrop-blur-xl">
         {/* window header */}
         <div className="flex items-center gap-2 border-b border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-4 py-2.5">
           <span
@@ -51,7 +51,7 @@ export default function NotFound() {
           <div className="pt-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-5 py-2.5 text-sm font-semibold text-[var(--theme-accent)] transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] hover:shadow-[0_0_18px_rgba(var(--theme-accent-rgb),0.4)] active:scale-95"
+              className="inline-flex items-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-5 py-2.5 text-sm font-semibold text-[var(--theme-accent)] transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-95"
             >
               ← Return to terminal
             </Link>

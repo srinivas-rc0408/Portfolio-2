@@ -34,7 +34,7 @@ export default function BlogSearchResults({
           <li key={p.slug}>
             <Link
               href={`/blog/${p.slug}`}
-              className="block border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-cyan-400/60 rounded-lg p-3 transition-colors group"
+              className="block border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-[var(--accent)] rounded-lg p-3 transition-colors group"
             >
               <span className="text-white font-semibold group-hover:text-white">
                 {formatBlogPostLabel(p.title)}

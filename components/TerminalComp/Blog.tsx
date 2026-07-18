@@ -131,7 +131,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({
         <span className="text-white font-mono text-sm sm:text-base">
           $ ls ./read-next/
         </span>
-        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
+        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
       </div>
       <p className="text-gray-500 font-mono text-xs sm:text-sm mb-3">
         Continue reading — pick another post:
@@ -142,7 +142,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({
             {syncUrls ? (
               <Link
                 href={`/blog/${p.slug}`}
-                className="block w-full h-full text-left border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-cyan-400/60 transition-colors rounded-lg p-3 cursor-pointer group"
+                className="block w-full h-full text-left border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-[var(--accent)] transition-colors rounded-lg p-3 cursor-pointer group"
               >
                 <PostCardContent post={p} />
               </Link>
@@ -150,7 +150,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({
               <button
                 type="button"
                 onClick={() => onSelect(p.slug)}
-                className="w-full h-full text-left border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-cyan-400/60 transition-colors rounded-lg p-3 cursor-pointer group"
+                className="w-full h-full text-left border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-[var(--accent)] transition-colors rounded-lg p-3 cursor-pointer group"
               >
                 <PostCardContent post={p} />
               </button>
@@ -436,7 +436,7 @@ const Blog: React.FC<BlogProps> = ({
     <div className="terminal-blog">
       <div className="mb-3 flex items-center gap-3">
         <span className="text-white font-mono text-sm">BLOG.log</span>
-        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+        <div className="w-2 h-2 bg-cyan-400 rounded-full" />
       </div>
 
       {listState === "loading" && (
@@ -461,7 +461,7 @@ const Blog: React.FC<BlogProps> = ({
                 {syncUrls ? (
                   <Link
                     href={`/blog/${p.slug}`}
-                    className="block h-full text-left border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-cyan-400/60 transition-colors rounded-lg p-3 sm:p-4 cursor-pointer group"
+                    className="block h-full text-left border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-[var(--accent)] transition-colors rounded-lg p-3 sm:p-4 cursor-pointer group"
                   >
                     <ListPostContent post={p} />
                   </Link>
@@ -469,7 +469,7 @@ const Blog: React.FC<BlogProps> = ({
                   <button
                     type="button"
                     onClick={() => goToSlug(p.slug)}
-                    className="w-full h-full text-left border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-cyan-400/60 transition-colors rounded-lg p-3 sm:p-4 cursor-pointer group"
+                    className="w-full h-full text-left border border-cyan-800/40 bg-gradient-to-br from-cyan-900/10 to-black/40 hover:border-[var(--accent)] transition-colors rounded-lg p-3 sm:p-4 cursor-pointer group"
                   >
                     <ListPostContent post={p} />
                   </button>

@@ -50,9 +50,9 @@ type FormState = typeof EMPTY_FORM;
 
 // Shared field styling: glassmorphism + theme-accent focus glow + accent caret.
 const FIELD =
-  "w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none transition-all duration-300 " +
+  "w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none transition-all duration-150 " +
   "[caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.7)] focus:bg-[rgba(var(--theme-accent-rgb),0.06)] " +
-  "focus:shadow-[0_0_0_3px_rgba(var(--theme-accent-rgb),0.18)]";
+  "";
 
 // --- Auth gate: Login / Register toggle ---
 
@@ -89,14 +89,14 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
     <div className="relative flex min-h-screen items-center justify-center bg-black p-4 before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_at_center,rgba(var(--theme-accent-rgb),0.1),transparent_60%)] before:content-['']">
       <form
         onSubmit={submit}
-        className="relative z-10 w-full max-w-md rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.28)] bg-black/50 p-6 font-mono shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.14)] backdrop-blur-xl"
+        className="relative z-10 w-full max-w-md rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.28)] bg-black/50 p-6 font-mono backdrop-blur-xl"
       >
         {/* Close — returns to the terminal */}
         <Link
           href="/"
           aria-label="Close sign-in and return to the terminal"
           title="Close"
-          className="absolute right-3 top-3 rounded-md p-1.5 text-white/50 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+          className="absolute right-3 top-3 rounded-md p-1.5 text-white/50 transition-colors duration-150 hover:bg-white/10 hover:text-white"
         >
           <X size={16} strokeWidth={2.5} aria-hidden />
         </Link>
@@ -141,9 +141,9 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
                 setMode(m);
                 setError(null);
               }}
-              className={`flex-1 rounded-md py-1.5 text-sm capitalize transition-all duration-300 ${
+              className={`flex-1 rounded-md py-1.5 text-sm capitalize transition-all duration-150 ${
                 mode === m
-                  ? "bg-[rgba(var(--theme-accent-rgb),0.15)] text-white shadow-[0_0_12px_rgba(var(--theme-accent-rgb),0.25)]"
+                  ? "bg-[rgba(var(--theme-accent-rgb),0.15)] text-white"
                   : "text-gray-400 hover:text-white"
               }`}
             >
@@ -208,7 +208,7 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
             }}
             onKeyUp={() => setShowPw(false)}
             onContextMenu={(e) => e.preventDefault()}
-            className="absolute right-2 top-1/2 -translate-y-1/2 select-none rounded-md p-1.5 text-white/40 transition-all duration-200 hover:bg-white/10 hover:text-[var(--theme-accent)] active:scale-90"
+            className="absolute right-2 top-1/2 -translate-y-1/2 select-none rounded-md p-1.5 text-white/40 transition-all duration-150 hover:bg-white/10 hover:text-[var(--theme-accent)] active:scale-90"
           >
             {showPw ? (
               <Eye size={16} strokeWidth={2} aria-hidden />
@@ -228,7 +228,7 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
           <button
             type="submit"
             disabled={busy}
-            className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] px-4 py-2 text-sm text-white transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] hover:shadow-[0_0_16px_rgba(var(--theme-accent-rgb),0.35)] active:scale-95 disabled:opacity-50"
+            className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] px-4 py-2 text-sm text-white transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95 disabled:opacity-50"
           >
             {busy ? "…" : mode === "login" ? "authenticate →" : "create account →"}
           </button>
@@ -385,7 +385,7 @@ function GlobalSettingsPanel() {
             onKeyDown={(e) =>
               (e.key === "Enter" || e.key === " ") && fileRef.current?.click()
             }
-            className={`flex flex-1 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-6 text-center text-xs transition-all duration-300 ${
+            className={`flex flex-1 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-6 text-center text-xs transition-all duration-150 ${
               dragging
                 ? "border-[var(--theme-accent)] bg-[rgba(var(--theme-accent-rgb),0.08)] text-white"
                 : "border-white/15 text-gray-400 hover:border-[rgba(var(--theme-accent-rgb),0.5)] hover:text-white"
@@ -425,9 +425,9 @@ function GlobalSettingsPanel() {
               key={p.name}
               type="button"
               onClick={() => patch({ themeAccent: p.color })}
-              className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition-all duration-200 ${
+              className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition-all duration-150 ${
                 settings.themeAccent.toLowerCase() === p.color.toLowerCase()
-                  ? "border-white text-white shadow-[0_0_14px_rgba(var(--theme-accent-rgb),0.4)]"
+                  ? "border-white text-white"
                   : "border-white/15 text-gray-400 hover:text-white"
               }`}
             >
@@ -456,7 +456,7 @@ function GlobalSettingsPanel() {
       </section>
 
       <p
-        className={`text-xs text-[var(--theme-accent)] transition-opacity duration-300 ${
+        className={`text-xs text-[var(--theme-accent)] transition-opacity duration-150 ${
           saved ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -1204,7 +1204,7 @@ export default function AdminPage() {
     <div className="flex min-h-screen bg-[radial-gradient(ellipse_at_top_left,rgba(var(--theme-accent-rgb),0.06),transparent_55%)] bg-black font-mono text-white">
       {/* Collapsible sidebar */}
       <aside
-        className={`shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md transition-all duration-200 ${
+        className={`shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md transition-all duration-150 ${
           sidebarOpen ? "w-52" : "w-14"
         }`}
       >
