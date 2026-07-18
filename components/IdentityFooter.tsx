@@ -84,6 +84,10 @@ export default function IdentityFooter() {
     };
     revealRef.current = reveal;
 
+    // Explicit reveal from the arrow handle in the identity panel (any device).
+    const onExternalReveal = () => reveal();
+    window.addEventListener("footer:reveal", onExternalReveal);
+
     const tryReveal = () => {
       if (atBottom() && gesturesRef.current >= SCROLL_GESTURES_REQUIRED) reveal();
     };
@@ -118,6 +122,7 @@ export default function IdentityFooter() {
       pane.removeEventListener("wheel", onWheel);
       pane.removeEventListener("scroll", onScroll);
       pane.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("footer:reveal", onExternalReveal);
       window.clearTimeout(hideTimerRef.current);
     };
   }, []);
@@ -126,12 +131,12 @@ export default function IdentityFooter() {
     <AnimatePresence>
       {visible && (
         <motion.footer
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 24 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          // Desktop side-by-side only (pane is 30% at >1024px); matches its width.
-          className="pointer-events-none fixed bottom-0 left-0 z-40 hidden w-[30%] p-3 min-[1025px]:block"
+          initial={{ opacity: 0, y: 30, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 30, scale: 0.97 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          // Full-width on mobile; matches the 30% identity pane on desktop.
+          className="pointer-events-none fixed bottom-0 left-0 z-40 w-full p-3 min-[1025px]:w-[30%]"
           style={{ willChange: "transform, opacity" }}
           aria-label="Quick links"
           onMouseEnter={() => {

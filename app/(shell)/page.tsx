@@ -57,28 +57,7 @@ export default function Home() {
     ],
   };
 
-  const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "@id": `${SITE_URL}/#website`,
-    name: "Srinivas RC",
-    alternateName: "Srinivas RC Portfolio",
-    url: SITE_URL,
-    description:
-      "AI / ML Engineer portfolio showcasing projects, skills, experience, and a developer blog.",
-    inLanguage: "en-IN",
-    creator: { "@type": "Person", name: "Srinivas RC", url: SITE_URL },
-    publisher: { "@type": "Person", name: "Srinivas RC", url: SITE_URL },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/blog?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
-  };
-
+  // WebSite schema lives site-wide in the root layout — not duplicated here.
   return (
     <>
       <script
@@ -88,10 +67,6 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
       <HomeTerminal />
     </>

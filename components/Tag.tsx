@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { track } from "@vercel/analytics";
-import { Download, Gamepad2, Sparkles } from "lucide-react";
+import { ChevronUp, Download, Gamepad2, Sparkles } from "lucide-react";
 import ProfileLightbox from "@/components/ProfileLightbox";
 import {
   AUTH_UPDATED_EVENT,
@@ -231,9 +231,13 @@ export default function Tag() {
             )}
           </div>
         ) : (
-          // Admin login is intentionally not linked publicly — reach it at /admin.
-          // (Recruiters shouldn't see a CMS login on the hero.)
-          <span aria-hidden />
+          <Link
+            href="/admin"
+            className="rounded-md border border-[rgba(var(--theme-accent-rgb),0.5)] bg-transparent px-3 py-1.5 font-mono text-xs text-white/80 transition-all duration-300 hover:border-[var(--theme-accent)] hover:bg-[rgba(var(--theme-accent-rgb),0.1)] hover:text-white hover:[text-shadow:0_0_10px_rgba(var(--theme-accent-rgb),0.9)] active:scale-95"
+            aria-label="Sign up"
+          >
+            Sign Up
+          </Link>
         )}
       </header>
 
@@ -367,6 +371,26 @@ export default function Tag() {
           );
         })}
       </nav>
+
+      {/* Footer-reveal handle — sits in the space below the actions. Tap to
+          slide up the social/contact footer (buttery framer-motion). */}
+      <div className="mx-auto mt-3 flex w-full max-w-[280px] justify-center">
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent("footer:reveal"))}
+          aria-label="Show contact & social links"
+          title="Contact & social links"
+          className="group/handle flex items-center gap-1.5 rounded-full border border-[rgba(var(--theme-accent-rgb),0.35)] bg-[rgba(var(--theme-accent-rgb),0.06)] px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-white/50 transition-all duration-300 hover:border-[rgba(var(--theme-accent-rgb),0.7)] hover:text-[var(--theme-accent)] hover:shadow-[0_0_14px_rgba(var(--theme-accent-rgb),0.3)] active:scale-95"
+        >
+          <ChevronUp
+            size={13}
+            strokeWidth={2.5}
+            className="animate-bounce [animation-duration:1.6s] group-hover/handle:animate-none"
+            aria-hidden
+          />
+          connect
+        </button>
+      </div>
 
       {/* Fullscreen profile viewer (opens via avatar click or saffron dot) */}
       <ProfileLightbox />

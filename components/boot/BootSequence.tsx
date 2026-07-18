@@ -68,7 +68,16 @@ export default function BootSequence() {
     return <div className="fixed inset-0 z-[999] bg-black" aria-hidden />;
   }
 
-  const accentRaw = loadSettings().themeAccent;
+  // Prefer the live CSS var (set by the pre-paint <head> script from the same
+  // cache) so the boot always matches the site's actual theme — no cyan flash
+  // when the admin has picked another color. Falls back to the cached setting.
+  const cssAccent =
+    typeof window !== "undefined"
+      ? getComputedStyle(document.documentElement)
+          .getPropertyValue("--theme-accent")
+          .trim()
+      : "";
+  const accentRaw = cssAccent || loadSettings().themeAccent;
   const accent = /^#[0-9a-fA-F]{3,8}$/.test(accentRaw) ? accentRaw : "#22d3ee";
   const darkAccent = luminance(accent) < 0.09; // near-black → light backdrop
   const backdrop = darkAccent ? "#ececec" : "#000000";
