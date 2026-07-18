@@ -38,7 +38,7 @@ Changes propagate to every open visitor session within ~10 seconds (visible-tab 
 - Signed httpOnly JWT sessions; **the app refuses to boot in production without `AUTH_SECRET`**
 - bcrypt-hashed passwords, constant-time admin credential comparison
 - Per-IP rate limiting on login, registration, and the AI endpoint (plus a 10/day client cap)
-- Parameterized SQL everywhere (Neon serverless driver)
+- Injection-safe SQL — every interpolated value is dollar-quoted with a collision-proof tag before it reaches the Fluxbase REST endpoint
 - Security headers: HSTS (preload), `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'`, COOP, `nosniff`; `X-Powered-By` disabled
 - Upload size caps enforced client-side **and** server-side (HTTP 413)
 
@@ -46,9 +46,9 @@ Changes propagate to every open visitor session within ~10 seconds (visible-tab 
 
 | Layer | Tech |
 |---|---|
-| Framework | Next.js 16 (App Router, standalone output) |
+| Framework | Next.js 16 (App Router) |
 | UI | React 19, Tailwind CSS 4, Framer Motion |
-| Data | Neon Postgres (serverless), lazy schema + seed |
+| Data | Fluxbase (REST SQL API, AWS Postgres), lazy schema + seed |
 | AI | Three-tier fallback: NVIDIA (Llama) → NVIDIA → Google Gemini, streaming over an Edge route |
 | Auth | jose (JWT), bcryptjs |
 
@@ -66,7 +66,7 @@ npm run dev                  # http://localhost:3000
 
 All documented in [`.env.example`](.env.example):
 
-- `DATABASE_URL` — Neon Postgres connection string (schema auto-creates + seeds on first run)
+- `FLUXBASE_API_KEY` / `FLUXBASE_PROJECT_ID` — Fluxbase project credentials (schema auto-creates + seeds on first run); `FLUXBASE_URL` is optional and defaults to the hosted endpoint
 - `ADMIN_EMAIL` / `ADMIN_PASSWORD` — admin panel credentials (server-side only)
 - `AUTH_SECRET` — session signing secret (`openssl rand -base64 48`); **required in production**
 - `NVIDIA_API_KEY_1` / `NVIDIA_API_KEY_2` / `GEMINI_API_KEY` — AI fallback tiers (any subset works)
@@ -82,11 +82,11 @@ npm run lint    # eslint
 
 ## ☁️ Deployment
 
-Built for Vercel (or any Node host via `output: "standalone"`):
+Built for Vercel (or any Node host):
 
 1. Import the repo into Vercel
 2. Add the environment variables above
-3. Deploy — the Neon schema creates and seeds itself on first request
+3. Deploy — the Fluxbase schema creates and seeds itself on first request
 
 The AI chat route runs on the **Edge runtime** for minimal cold-start latency; all content APIs send `Cache-Control: no-store` so admin edits are never stale behind a CDN.
 

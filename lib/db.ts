@@ -1,13 +1,96 @@
 import "server-only";
-import { neon } from "@neondatabase/serverless";
 import { projects as seedProjects } from "@/lib/portfolio-data";
 
 /**
- * Neon Postgres data layer. Server-only — never imported by client code.
- * Schema is created + seeded lazily on first use (idempotent).
+ * Fluxbase data layer (REST POST /api/execute-sql). Server-only — never
+ * imported by client code. Schema is created + seeded lazily on first use
+ * (idempotent).
+ *
+ * The Fluxbase endpoint executes a raw SQL string (no bind parameters), so the
+ * tagged-template `sql` below inlines interpolated values as SQL literals. To
+ * stay injection-safe it single-quote-escapes every string (doubling `'`).
+ * This is safe because the Fluxbase Postgres runs with
+ * standard_conforming_strings = on (verified), so a backslash is a literal
+ * character and cannot be used to break out of a string. `sql` keeps the exact
+ * shape of the old neon() template, so every query call-site below is unchanged.
  */
 
-const sql = neon(process.env.DATABASE_URL ?? "");
+const FLUXBASE_URL =
+  process.env.FLUXBASE_URL || "https://fluxbase.vercel.app/api/execute-sql";
+const FLUXBASE_API_KEY = process.env.FLUXBASE_API_KEY ?? "";
+const FLUXBASE_PROJECT_ID = process.env.FLUXBASE_PROJECT_ID ?? "";
+
+/** Render a JS value as a safe SQL literal. */
+function lit(v: unknown): string {
+  if (v === null || v === undefined) return "NULL";
+  if (typeof v === "number") return Number.isFinite(v) ? String(v) : "NULL";
+  if (typeof v === "boolean") return v ? "TRUE" : "FALSE";
+  const s = typeof v === "string" ? v : String(v);
+  if (s === "") return "''";
+  // Fluxbase's SQL parser mangles a few substrings even INSIDE quoted literals:
+  // `--` (read as a line comment → truncates the string) and `//host.` (a stray
+  // comment/URL regex that deletes `//<text>.`). Values hitting those — the
+  // GitHub repo URLs, anything with an embedded URL — are hex-encoded and
+  // rebuilt server-side, so the wire SQL is pure hex and no value content can
+  // affect parsing. Everything else uses a plain single-quote literal: safe
+  // because standard_conforming_strings is on (verified), so doubling `'` is
+  // sufficient — and it keeps large values (e.g. image data URLs) compact and
+  // under the request-body size limit.
+  if (/--|\/\/[^/]*\.|\/\*|\*\//.test(s)) {
+    const hex = Array.from(new TextEncoder().encode(s))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return `convert_from(decode('${hex}', 'hex'), 'UTF8')`;
+  }
+  return `'${s.replace(/'/g, "''")}'`;
+}
+
+interface FluxResponse {
+  success: boolean;
+  result?: { rows?: unknown[] };
+  error?: { message?: string; code?: string };
+}
+
+/**
+ * POST a raw SQL string to Fluxbase and return result.rows. Retries a few times
+ * on HTTP 429 — the project rate limit is 30 requests / 10 seconds.
+ */
+async function exec<T = Record<string, unknown>>(query: string): Promise<T[]> {
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(FLUXBASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${FLUXBASE_API_KEY}`,
+      },
+      body: JSON.stringify({ projectId: FLUXBASE_PROJECT_ID, query }),
+      cache: "no-store",
+    });
+    if (res.status === 429 && attempt < 3) {
+      await new Promise((r) => setTimeout(r, 1200));
+      continue;
+    }
+    const json = (await res.json().catch(() => null)) as FluxResponse | null;
+    if (!res.ok || !json?.success) {
+      throw new Error(
+        json?.error?.message || `Fluxbase request failed (${res.status})`
+      );
+    }
+    return (json.result?.rows ?? []) as T[];
+  }
+}
+
+/** Tagged-template drop-in for the old neon `sql` — safely inlines values. */
+function sql<T = Record<string, unknown>>(
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+): Promise<T[]> {
+  let query = "";
+  strings.forEach((str, i) => {
+    query += str + (i < values.length ? lit(values[i]) : "");
+  });
+  return exec<T>(query);
+}
 
 export interface DbCmsEntry {
   id: string;
@@ -194,13 +277,19 @@ async function seed(): Promise<void> {
     sortOrder: 2,
   });
 
-  for (const r of rows) {
-    await sql`INSERT INTO cms_entry
+  // One multi-row INSERT (not 30+ separate calls) so seeding a fresh project
+  // never trips the 30-requests / 10-seconds Fluxbase rate limit.
+  const valuesSql = rows
+    .map(
+      (r) =>
+        `(${lit(id())}, ${lit(r.section)}, ${lit(r.title)}, ${lit(r.description)}, ${lit(r.link)}, ${lit(r.githubUrl)}, ${lit(r.date)}, ${lit(JSON.stringify(r.tech))}::jsonb, ${lit(r.imageUrl)}, ${lit(r.isPrivate)}, ${lit(r.sortOrder)})`
+    )
+    .join(",\n");
+  await exec(
+    `INSERT INTO cms_entry
       (id, section, title, description, link, github_url, date, tech, image_url, is_private, sort_order)
-      VALUES (${id()}, ${r.section}, ${r.title}, ${r.description}, ${r.link},
-        ${r.githubUrl}, ${r.date}, ${JSON.stringify(r.tech)}, ${r.imageUrl},
-        ${r.isPrivate}, ${r.sortOrder})`;
-  }
+      VALUES ${valuesSql}`
+  );
 }
 
 // --- CMS queries ---
@@ -255,7 +344,7 @@ export async function createEntry(
   await sql`INSERT INTO cms_entry
     (id, section, title, description, link, github_url, date, tech, image_url, is_private, sort_order)
     VALUES (${newId}, ${e.section}, ${e.title}, ${e.description}, ${e.link},
-      ${e.githubUrl}, ${e.date}, ${JSON.stringify(e.tech)}, ${e.imageUrl},
+      ${e.githubUrl}, ${e.date}, ${JSON.stringify(e.tech)}::jsonb, ${e.imageUrl},
       ${e.isPrivate}, ${e.sortOrder})`;
   return { ...e, id: newId };
 }
@@ -264,7 +353,7 @@ export async function updateEntry(e: DbCmsEntry): Promise<void> {
   await ensureDb();
   await sql`UPDATE cms_entry SET
     title = ${e.title}, description = ${e.description}, link = ${e.link},
-    github_url = ${e.githubUrl}, date = ${e.date}, tech = ${JSON.stringify(e.tech)},
+    github_url = ${e.githubUrl}, date = ${e.date}, tech = ${JSON.stringify(e.tech)}::jsonb,
     image_url = ${e.imageUrl}, is_private = ${e.isPrivate}, sort_order = ${e.sortOrder}
     WHERE id = ${e.id}`;
 }
