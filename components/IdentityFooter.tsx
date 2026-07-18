@@ -54,7 +54,7 @@ const ICONS: Record<string, React.ReactNode> = {
   Steam: <SteamGlyph />,
 };
 
-const HIDE_AFTER_MS = 10_000;
+const HIDE_AFTER_MS = 60_000; // auto-hide 1 minute after it's revealed / last used
 const SCROLL_GESTURES_REQUIRED = 2;
 
 export default function IdentityFooter() {

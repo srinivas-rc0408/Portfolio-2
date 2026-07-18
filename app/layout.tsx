@@ -34,10 +34,10 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Computer Science Engineering undergraduate and Software Developer and aspiring AI Engineer from Bengaluru, India. Building and deploying web applications powered by Large Language Models (LLMs) and agentic systems. Passionate about Linux system optimization with CachyOS.",
+    "Srinivas RC — AI / ML Engineer from Bengaluru, India. Builds and ships LLM-powered web applications and agentic systems (Google Gemini, prompt pipelines, React/Next.js), with a strong grounding in machine learning, MLOps, and Linux.",
   keywords: [
     "AI Engineer",
-    "Software Developer & AI Engineer",
+    "AI / ML Engineer",
     "AI Engineer Bengaluru",
     "AI Engineer India",
     "Machine Learning",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     description:
-      "Software Developer & AI Engineer building web applications powered by LLMs and agentic systems. Based in Bengaluru, Karnataka, India.",
+      "AI / ML Engineer building web applications powered by LLMs and agentic systems. Based in Bengaluru, Karnataka, India.",
     images: [
       {
         url: "/images/logo.jpg",
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     description:
-      "Software Developer & AI Engineer building web applications powered by LLMs and agentic systems.",
+      "AI / ML Engineer building web applications powered by LLMs and agentic systems.",
     images: ["/images/logo.jpg"],
   },
   robots: {

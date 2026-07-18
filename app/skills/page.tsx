@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/seo-config";
 import { Metadata } from "next";
 import type { ReactNode } from "react";
 import {
@@ -8,10 +9,10 @@ import {
 
 // Enhanced SEO Metadata
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
-  title: "Skills & Tech Stack | Software Developer & AI Engineer",
+  metadataBase: new URL(SITE_URL),
+  title: "Skills & Tech Stack | AI / ML Engineer",
   description:
-    "Technical skills of Srinivas RC: Python, Machine Learning, Large Language Models (LLMs), Agentic Frameworks (CrewAI), Prompt Engineering, and Linux Administration. Software Developer & AI Engineer from Bengaluru, India.",
+    "Technical skills of Srinivas RC: Python, Machine Learning, Large Language Models (LLMs), Agentic Frameworks (CrewAI), Prompt Engineering, and Linux Administration. AI / ML Engineer from Bengaluru, India.",
   keywords: [
     "AI Engineering Skills",
     "JavaScript Developer",
@@ -34,20 +35,20 @@ export const metadata: Metadata = {
     "AI ML Developer",
     "Machine Learning Skills",
   ],
-  authors: [{ name: "Srinivas RC", url: "http://localhost:3000" }],
+  authors: [{ name: "Srinivas RC", url: SITE_URL }],
   creator: "Srinivas RC",
   publisher: "Srinivas RC",
   openGraph: {
-    title: "Skills & Tech Stack | Software Developer & AI Engineer",
+    title: "Skills & Tech Stack | AI / ML Engineer",
     description:
-      "Python, Machine Learning, LLMs, agentic frameworks (CrewAI), prompt engineering, and Linux administration. Software Developer & AI Engineer from Bengaluru, India.",
+      "Python, Machine Learning, LLMs, agentic frameworks (CrewAI), prompt engineering, and Linux administration. AI / ML Engineer from Bengaluru, India.",
     type: "website",
-    url: "http://localhost:3000/skills",
+    url: `${SITE_URL}/skills`,
     siteName: "Srinivas RC - Developer Portfolio",
     locale: "en_IN",
     images: [
       {
-        url: "http://localhost:3000/images/logo.jpg",
+        url: `${SITE_URL}/images/logo.jpg`,
         width: 1200,
         height: 630,
         alt: "Srinivas RC - Skills & Tech Stack",
@@ -57,10 +58,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-        title: "Skills & Tech Stack | Software Developer & AI Engineer",
+        title: "Skills & Tech Stack | AI / ML Engineer",
     description:
       "Python, machine learning, LLMs, agentic systems, and Linux. Comprehensive technical skills portfolio.",
-    images: ["http://localhost:3000/images/logo.jpg"],
+    images: [`${SITE_URL}/images/logo.jpg`],
   },
   robots: {
     index: true,
@@ -75,9 +76,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "http://localhost:3000/skills",
+    canonical: `${SITE_URL}/skills`,
     languages: {
-      en: "http://localhost:3000/skills",
+      en: `${SITE_URL}/skills`,
     },
   },
   category: "Technology",
@@ -141,15 +142,15 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "Srinivas RC",
-  url: "http://localhost:3000",
-  image: "http://localhost:3000/images/logo.jpg",
+  url: SITE_URL,
+  image: `${SITE_URL}/images/logo.jpg`,
   knowsAbout: [
     ...skillsData.languages,
     ...skillsData.ai_ml,
     ...skillsData.frameworks,
     ...skillsData.tools,
   ],
-  jobTitle: "Software Developer & AI Engineer",
+  jobTitle: "AI / ML Engineer",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Bengaluru",
@@ -187,13 +188,13 @@ const breadcrumbStructuredData = {
       "@type": "ListItem",
       position: 1,
       name: "Home",
-      item: "http://localhost:3000",
+      item: SITE_URL,
     },
     {
       "@type": "ListItem",
       position: 2,
       name: "Skills",
-      item: "http://localhost:3000/skills",
+      item: `${SITE_URL}/skills`,
     },
   ],
 };

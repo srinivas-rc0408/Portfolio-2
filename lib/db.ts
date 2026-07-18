@@ -159,16 +159,16 @@ async function seed(): Promise<void> {
     push("education", { title, description, date })
   );
   push("experience", {
-    title: "Core Member & Head of Media — Yantra IoT Club, REVA University",
+    title: "AI/ML Engineer — Independent Projects & Open-Source",
     description:
-      "Lead digital outreach and technical branding for university-wide events. Organised 2 hands-on technical workshops and coordinated career panels for 100+ students, working end-to-end from planning to delivery.",
-    date: "Ongoing",
+      "Design, build, and ship full-stack AI products end to end — from a 4-stage Gemini prompt-chaining platform (ArchAgent) to MLOps pipelines and LLM-powered web apps (11+ shipped). Integrate real production stacks (Google Gemini, Hugging Face, Firebase, Supabase, Three.js), and continuously explore the open-source ecosystem on GitHub — evaluating new frameworks, plugins, and tooling and turning them into production-grade builds. Open to AI/ML internships and placements.",
+    date: "2025 – Present",
   });
   push("experience", {
-    title: "Independent AI/ML Engineering & Open-Source Exploration",
+    title: "Core Member & Head of Media — Yantra IoT Club, REVA University",
     description:
-      "Design and ship full-stack AI products end to end — agentic frameworks, ML pipelines, and LLM-powered web apps (11+ projects). Actively explore the open-source ecosystem on GitHub: evaluating new frameworks, plugins, and developer tooling, and turning what I learn into production-grade builds. Open to AI/ML internships and placements.",
-    date: "Ongoing",
+      "Lead digital outreach and technical branding for university-wide events. Organised 2 hands-on technical workshops and coordinated career panels for 100+ students, owning everything from planning to delivery.",
+    date: "2024 – Present",
     sortOrder: 1,
   });
   push("achievements", {

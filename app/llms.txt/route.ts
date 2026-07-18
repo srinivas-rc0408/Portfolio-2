@@ -22,7 +22,7 @@ export async function GET() {
     "",
     `Site: ${SITE_URL}`,
     `Author: ${SITE_NAME}`,
-    "Title: Software Developer & AI Engineer Portfolio",
+    "Title: AI / ML Engineer Portfolio",
     "Summary: Portfolio covering AI engineering projects, skills, developer blog, and contact details.",
     "User-agent: *",
     "Allow: /",

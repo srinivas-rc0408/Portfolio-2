@@ -1,46 +1,20 @@
-"use client";
-
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import Script from "next/script";
-import TerminalComp from "@/components/TerminalComp";
-import { useShell } from "@/context/ShellContext";
 import { SITE_URL } from "@/lib/seo-config";
 import { CONTACT_EMAIL } from "@/lib/portfolio-data";
+import HomeTerminal from "@/components/HomeTerminal";
 
-function HomeTerminal() {
-  const searchParams = useSearchParams();
-  const { setHideIdentityOnMobile } = useShell();
-  const section = searchParams.get("section");
-  const cmd = searchParams.get("cmd");
-
-  const handleFirstCommand = (): void => {
-    setHideIdentityOnMobile(true);
-  };
-
-  // `clear` returns to the landing view — bring the profile pane back on mobile.
-  const handleClear = (): void => {
-    setHideIdentityOnMobile(false);
-  };
-
-  return (
-    <TerminalComp
-      onFirstCommand={handleFirstCommand}
-      onClear={handleClear}
-      initialSection={section}
-      initialCommand={cmd}
-    />
-  );
-}
-
+/**
+ * Home page — a server component so the JSON-LD is in the initial HTML (best
+ * for crawlers, and no client "script tag in a component" warning). The
+ * interactive terminal is a client child (HomeTerminal).
+ */
 export default function Home() {
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Srinivas RC",
-    jobTitle: "Software Developer & AI Engineer",
+    jobTitle: "AI / ML Engineer",
     description:
-      "Computer Science Engineering undergraduate building web applications powered by Large Language Models and agentic systems",
+      "AI / ML Engineer building web applications powered by Large Language Models and agentic systems",
     image: `${SITE_URL}/images/logo.jpg`,
     email: CONTACT_EMAIL,
     address: {
@@ -54,7 +28,6 @@ export default function Home() {
       "Machine Learning",
       "Large Language Models",
       "Agentic Frameworks",
-      "CrewAI",
       "Prompt Engineering",
       "Linux Administration",
       "AI Engineering",
@@ -80,12 +53,7 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: SITE_URL,
-      },
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
     ],
   };
 
@@ -97,18 +65,10 @@ export default function Home() {
     alternateName: "Srinivas RC Portfolio",
     url: SITE_URL,
     description:
-      "Software Developer & AI Engineer portfolio showcasing projects, skills, experience, and a developer blog.",
+      "AI / ML Engineer portfolio showcasing projects, skills, experience, and a developer blog.",
     inLanguage: "en-IN",
-    creator: {
-      "@type": "Person",
-      name: "Srinivas RC",
-      url: SITE_URL,
-    },
-    publisher: {
-      "@type": "Person",
-      name: "Srinivas RC",
-      url: SITE_URL,
-    },
+    creator: { "@type": "Person", name: "Srinivas RC", url: SITE_URL },
+    publisher: { "@type": "Person", name: "Srinivas RC", url: SITE_URL },
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -121,44 +81,19 @@ export default function Home() {
 
   return (
     <>
-      <Script
-        id="person-schema"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
-        strategy="afterInteractive"
       />
-      <Script
-        id="breadcrumb-schema"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-        strategy="afterInteractive"
       />
-      <Script
-        id="website-schema"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-        strategy="afterInteractive"
       />
-      <Suspense fallback={null}>
-        <HomeTerminal />
-      </Suspense>
-      <Script
-        id="seo-meta-tags"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            if (typeof window !== 'undefined') {
-              const metaDescription = document.querySelector('meta[name="description"]');
-              if (!metaDescription) {
-                const meta = document.createElement('meta');
-                meta.name = 'description';
-                meta.content = 'Software Developer & AI Engineer from Bengaluru, India. Building web applications powered by Large Language Models (LLMs) and agentic systems.';
-                document.head.appendChild(meta);
-              }
-            }
-          `,
-        }}
-      />
+      <HomeTerminal />
     </>
   );
 }

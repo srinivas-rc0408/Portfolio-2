@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { track } from "@vercel/analytics";
-import { Download, Gamepad2 } from "lucide-react";
+import { Download, Gamepad2, Sparkles } from "lucide-react";
 import ProfileLightbox from "@/components/ProfileLightbox";
 import {
   AUTH_UPDATED_EVENT,
@@ -231,13 +231,9 @@ export default function Tag() {
             )}
           </div>
         ) : (
-          <Link
-            href="/admin"
-            className="rounded-md border border-[rgba(var(--theme-accent-rgb),0.5)] bg-transparent px-3 py-1.5 font-mono text-xs text-white/80 transition-all duration-300 hover:border-[var(--theme-accent)] hover:bg-[rgba(var(--theme-accent-rgb),0.1)] hover:text-white hover:[text-shadow:0_0_10px_rgba(var(--theme-accent-rgb),0.9)] active:scale-95"
-            aria-label="Sign up or open admin login"
-          >
-            Sign Up / Admin
-          </Link>
+          // Admin login is intentionally not linked publicly — reach it at /admin.
+          // (Recruiters shouldn't see a CMS login on the hero.)
+          <span aria-hidden />
         )}
       </header>
 
@@ -262,11 +258,9 @@ export default function Tag() {
           {/* Frosted overlay + greeting, fades/slides in on hover */}
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/55 opacity-0 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100">
             <p className="translate-y-3 px-3 text-center font-mono text-base font-bold text-white opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [text-shadow:0_0_14px_rgba(var(--theme-accent-rgb),0.6)] group-hover:translate-y-0 group-hover:opacity-100 sm:text-lg">
-              Yes, it&apos;s me —
+              Yes, it&apos;s me.
               <br />
-              <span className="text-[var(--theme-accent)]">
-                believe it or not.
-              </span>
+              <span className="text-[var(--theme-accent)]">I am him.</span>
             </p>
             <span className="mt-3 translate-y-3 rounded-full border border-white/40 px-3 py-1 font-mono text-[11px] text-white/80 opacity-0 transition-all delay-100 duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100">
               click to view ↗
@@ -288,6 +282,24 @@ export default function Tag() {
         className="mx-auto mt-4 flex w-full max-w-[280px] flex-col gap-2 sm:mt-8 sm:gap-2.5"
         aria-label="Quick actions"
       >
+        {/* Ask Jerry — flagship AI action, sits above the resume and stands out */}
+        <button
+          type="button"
+          onClick={() => execInTerminal("jerry")}
+          aria-label="Ask Jerry, the AI assistant"
+          className="group/jerry relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg border border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.1)] px-4 py-2.5 font-mono text-sm font-semibold text-[var(--theme-accent)] shadow-[0_0_18px_rgba(var(--theme-accent-rgb),0.2)] transition-all duration-300 hover:bg-[rgba(var(--theme-accent-rgb),0.2)] hover:shadow-[0_0_26px_rgba(var(--theme-accent-rgb),0.45)] active:scale-95"
+        >
+          <span
+            aria-hidden
+            className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[rgba(var(--theme-accent-rgb),0.25)] to-transparent transition-transform duration-700 ease-out group-hover/jerry:translate-x-full"
+          />
+          <Sparkles size={15} strokeWidth={2.2} className="relative animate-pulse" aria-hidden />
+          <span className="relative">Ask Jerry</span>
+          <span className="relative rounded-full border border-[rgba(var(--theme-accent-rgb),0.5)] px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-white/80">
+            AI
+          </span>
+        </button>
+
         {QUICK_ACTIONS.map((action) => {
           const { label, run, icon, doc } = action;
 

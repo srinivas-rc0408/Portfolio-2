@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/seo-config";
 import { Metadata } from "next";
 import {
   socialLinks as socialLinkData,
@@ -7,7 +8,7 @@ import {
 
 // Enhanced SEO Metadata
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
   title: "Contact | Get in Touch with Software Developer",
   description:
     "Connect with Srinivas RC for collaboration opportunities, project inquiries, and technical discussions. Software developer based in Bengaluru, Karnataka, India. Available for development projects, API development, and machine learning collaborations. Response time less than 24 hours.",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     "Machine Learning Developer Contact",
     "Developer Portfolio Contact",
   ],
-  authors: [{ name: "Srinivas RC", url: "http://localhost:3000" }],
+  authors: [{ name: "Srinivas RC", url: SITE_URL }],
   creator: "Srinivas RC",
   publisher: "Srinivas RC",
   openGraph: {
@@ -37,12 +38,12 @@ export const metadata: Metadata = {
     description:
       "Connect with Srinivas RC for collaboration opportunities. Available for full-stack development, API development, and machine learning projects. Based in Bengaluru, Karnataka, India.",
     type: "website",
-    url: "http://localhost:3000/contact",
+    url: `${SITE_URL}/contact`,
     siteName: "Srinivas RC - Developer Portfolio",
     locale: "en_IN",
     images: [
       {
-        url: "http://localhost:3000/images/logo.jpg",
+        url: `${SITE_URL}/images/logo.jpg`,
         width: 1200,
         height: 630,
         alt: "Srinivas RC - Contact Software Developer",
@@ -55,7 +56,7 @@ export const metadata: Metadata = {
         title: "Contact | Get in Touch with Software Developer",
     description:
       "Connect with Srinivas RC for project collaborations and development opportunities. Available for hire.",
-    images: ["http://localhost:3000/images/logo.jpg"],
+    images: [`${SITE_URL}/images/logo.jpg`],
   },
   robots: {
     index: true,
@@ -70,9 +71,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "http://localhost:3000/contact",
+    canonical: `${SITE_URL}/contact`,
     languages: {
-      en: "http://localhost:3000/contact",
+      en: `${SITE_URL}/contact`,
     },
   },
   category: "Technology",
@@ -277,8 +278,8 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "Srinivas RC",
-  url: "http://localhost:3000",
-  image: "http://localhost:3000/images/logo.jpg",
+  url: SITE_URL,
+  image: `${SITE_URL}/images/logo.jpg`,
   email: CONTACT_EMAIL,
   address: {
     "@type": "PostalAddress",
@@ -289,9 +290,9 @@ const structuredData = {
   sameAs: [
     "https://github.com/srinivas-rc0408",
   ],
-  jobTitle: "Software Developer",
+  jobTitle: "AI / ML Engineer",
   description:
-    "Software Developer & AI Engineer from Bengaluru, India building web applications powered by LLMs and agentic systems. Open to internships and placements.",
+    "AI / ML Engineer from Bengaluru, India building web applications powered by LLMs and agentic systems. Open to internships and placements.",
   availability: "Available for hire",
   workLocation: {
     "@type": "Place",
@@ -320,13 +321,13 @@ const breadcrumbStructuredData = {
       "@type": "ListItem",
       position: 1,
       name: "Home",
-      item: "http://localhost:3000",
+      item: SITE_URL,
     },
     {
       "@type": "ListItem",
       position: 2,
       name: "Contact",
-      item: "http://localhost:3000/contact",
+      item: `${SITE_URL}/contact`,
     },
   ],
 };

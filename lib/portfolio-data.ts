@@ -142,21 +142,34 @@ export interface SkillsCategory {
 }
 
 export const skills: SkillsCategory = {
-  languages: ["Python", "JavaScript / TypeScript", "C / C++"],
+  languages: ["Python", "TypeScript", "JavaScript", "Java", "C++", "SQL"],
   ai_ml: [
-    "Large Language Models (LLMs)",
     "Machine Learning",
+    "Deep Learning",
+    "LLMs (Gemini · Hugging Face)",
     "Prompt Engineering",
+    "Agentic AI",
+    "NLP",
+    "MLOps",
   ],
   frameworks: [
-    "CrewAI (Agentic Frameworks)",
     "React",
     "Next.js",
+    "Tailwind CSS",
+    "Three.js",
+    "TensorFlow",
+    "Scikit-learn",
+    "Pandas / NumPy",
+    "Streamlit",
   ],
   tools: [
-    "Linux Administration (Arch / CachyOS)",
-    "Git",
-    "Web Applications",
+    "Linux (Arch / Ubuntu)",
+    "Git / GitHub",
+    "Firebase",
+    "Supabase",
+    "Prisma",
+    "REST APIs",
+    "MLflow",
   ],
 };
 

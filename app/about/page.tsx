@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: `About Me | ${SITE_TAGLINE}`,
   description:
-    "Computer Science Engineering undergraduate and Software Developer and aspiring AI Engineer from Bengaluru, India. Building and deploying web applications powered by Large Language Models (LLMs) and agentic systems. Passionate about Linux system optimization with CachyOS. Pursuing B.Tech in AI & ML at REVA University.",
+    "AI / ML Engineer from Bengaluru, India. Building and deploying web applications powered by Large Language Models (LLMs) and agentic systems. Passionate about Linux system optimization with CachyOS. Pursuing B.Tech in AI & ML at REVA University.",
   keywords: [
     "AI Engineer",
-    "Software Developer & AI Engineer",
+    "AI / ML Engineer",
     "AI Engineer Bengaluru",
     "AI Engineer India",
     "Machine Learning",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `About Me | ${SITE_TAGLINE}`,
     description:
-      "Software Developer & AI Engineer building web applications powered by LLMs and agentic systems. Pursuing B.Tech in AI & ML at REVA University, Bengaluru.",
+      "AI / ML Engineer building web applications powered by LLMs and agentic systems. Pursuing B.Tech in AI & ML at REVA University, Bengaluru.",
     type: "profile",
     url: `${SITE_URL}/about`,
     siteName: `${SITE_NAME} - Developer Portfolio`,
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `About Me | ${SITE_TAGLINE}`,
     description:
-      "Software Developer & AI Engineer building LLM-powered web applications and agentic systems. Pursuing B.Tech in AI & ML at REVA University.",
+      "AI / ML Engineer building LLM-powered web applications and agentic systems. Pursuing B.Tech in AI & ML at REVA University.",
     images: [`${SITE_URL}/images/logo.jpg`],
   },
   robots: {
@@ -125,9 +125,9 @@ const structuredData = {
   mainEntityOfPage: `${SITE_URL}/about`,
   image: `${SITE_URL}/images/logo.jpg`,
   email: `mailto:${CONTACT_EMAIL}`,
-  jobTitle: "Software Developer & AI Engineer",
+  jobTitle: "AI / ML Engineer",
   description:
-    "Computer Science Engineering undergraduate and Software Developer and aspiring AI Engineer building web applications powered by Large Language Models and agentic systems. Passionate about Linux system optimization with CachyOS. Based in Bengaluru, India.",
+    "AI / ML Engineer building web applications powered by Large Language Models and agentic systems. Passionate about Linux system optimization with CachyOS. Based in Bengaluru, India.",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Bengaluru",
@@ -180,7 +180,7 @@ const aboutPageStructuredData = {
   "@id": `${SITE_URL}/about#aboutpage`,
   url: `${SITE_URL}/about`,
   name: `About ${SITE_NAME}`,
-  description: `About ${SITE_NAME} — Software Developer and aspiring AI Engineer building web applications powered by LLMs and agentic systems, and optimizing Linux (CachyOS).`,
+  description: `About ${SITE_NAME} — AI / ML Engineer building web applications powered by LLMs and agentic systems, and optimizing Linux (CachyOS).`,
   inLanguage: "en-IN",
   mainEntity: { "@id": `${SITE_URL}/#person` },
   author: { "@id": `${SITE_URL}/#person` },
@@ -255,7 +255,7 @@ export default function About() {
                 <span itemProp="name">{SITE_NAME}</span>
               </a>
               {" · "}
-              <span itemProp="jobTitle">Software Developer & AI Engineer</span>
+              <span itemProp="jobTitle">AI / ML Engineer</span>
               {" · "}
               <a href={`mailto:${CONTACT_EMAIL}`} rel="me">
                 {CONTACT_EMAIL}
@@ -274,7 +274,7 @@ export default function About() {
               <div>
                 <p>
                   I am a Computer Science Engineering undergraduate and an{" "}
-                  <strong>Software Developer and aspiring AI Engineer</strong>. I specialize in
+                  <strong>AI / ML Engineer</strong>. I specialize in
                   building and deploying web applications powered by{" "}
                   <strong>Large Language Models (LLMs)</strong> and{" "}
                   <strong>agentic systems</strong>. I am passionate about Linux

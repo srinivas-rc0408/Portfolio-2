@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: `Experience of ${SITE_NAME}: independent project work building agentic AI systems (Archagent — an autonomous agent for architecture and interior design tasks) and machine learning web applications (Language Detector). Open to internships and university placements in AI engineering.`,
   keywords: [
     `${SITE_NAME} Experience`,
-    "Software Developer & AI Engineer",
+    "AI / ML Engineer",
     "AI Engineer Bengaluru",
     "Agentic Systems",
     "Autonomous AI Agent",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
         url: `${SITE_URL}/images/logo.jpg`,
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} — Software Developer & AI Engineer experience`,
+        alt: `${SITE_NAME} — AI / ML Engineer experience`,
         type: "image/jpeg",
       },
     ],
@@ -83,7 +83,7 @@ function buildStructuredData() {
     url: SITE_URL,
     mainEntityOfPage: `${SITE_URL}/experience`,
     image: `${SITE_URL}/images/logo.jpg`,
-    jobTitle: "Software Developer & AI Engineer",
+    jobTitle: "AI / ML Engineer",
     seeks: {
       "@type": "Demand",
       name: "AI Engineering internships and university placements",
@@ -140,7 +140,7 @@ export default function Experience() {
               Experience
             </h1>
             <p>
-              Independent project work as a Software Developer and aspiring AI Engineer — building
+              Independent project work as a AI / ML Engineer — building
               agentic AI systems and machine learning web applications. Open to
               internships and university placements.
             </p>

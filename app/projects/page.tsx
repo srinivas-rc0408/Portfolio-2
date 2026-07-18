@@ -1,10 +1,11 @@
+import { SITE_URL } from "@/lib/seo-config";
 import { Metadata } from "next";
 import Image from "next/image";
 import { projects as projectsData } from "@/lib/portfolio-data";
 
 // Enhanced SEO Metadata
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
   title: "Projects | Software Developer Portfolio",
   description:
     "Explore Srinivas RC's portfolio: Archagent, an autonomous AI agent for architecture and interior design tasks, and Language Detector, a minimalist single-page ML web application. Built with Python, LLMs, and agentic frameworks.",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     "Open Source Projects",
     "GitHub Portfolio",
   ],
-  authors: [{ name: "Srinivas RC", url: "http://localhost:3000" }],
+  authors: [{ name: "Srinivas RC", url: SITE_URL }],
   creator: "Srinivas RC",
   publisher: "Srinivas RC",
   openGraph: {
@@ -36,12 +37,12 @@ export const metadata: Metadata = {
     description:
       "Portfolio showcasing web applications, AI projects, and machine learning implementations by Srinivas RC. Built with TypeScript, Python, and modern web technologies. All projects open-source on GitHub.",
     type: "website",
-    url: "http://localhost:3000/projects",
+    url: `${SITE_URL}/projects`,
     siteName: "Srinivas RC - Developer Portfolio",
     locale: "en_IN",
     images: [
       {
-        url: "http://localhost:3000/images/logo.jpg",
+        url: `${SITE_URL}/images/logo.jpg`,
         width: 1200,
         height: 630,
         alt: "Srinivas RC - Software Developer Projects Portfolio",
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
         title: "Projects | Software Developer Portfolio",
     description:
       "Agentic AI systems and machine learning web applications. Projects by a Software Developer and aspiring AI Engineer.",
-    images: ["http://localhost:3000/images/logo.jpg"],
+    images: [`${SITE_URL}/images/logo.jpg`],
   },
   robots: {
     index: true,
@@ -69,9 +70,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "http://localhost:3000/projects",
+    canonical: `${SITE_URL}/projects`,
     languages: {
-      en: "http://localhost:3000/projects",
+      en: `${SITE_URL}/projects`,
     },
   },
   category: "Technology",
@@ -139,7 +140,7 @@ const structuredData = {
   author: {
     "@type": "Person",
     name: "Srinivas RC",
-    url: "http://localhost:3000",
+    url: SITE_URL,
   },
   itemListElement: projectsData.map((project, index) => ({
     "@type": "ListItem",
@@ -175,13 +176,13 @@ const breadcrumbStructuredData = {
       "@type": "ListItem",
       position: 1,
       name: "Home",
-      item: "http://localhost:3000",
+      item: SITE_URL,
     },
     {
       "@type": "ListItem",
       position: 2,
       name: "Projects",
-      item: "http://localhost:3000/projects",
+      item: `${SITE_URL}/projects`,
     },
   ],
 };
