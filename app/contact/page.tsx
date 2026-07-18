@@ -9,9 +9,9 @@ import {
 // Enhanced SEO Metadata
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Contact | Get in Touch with Software Developer",
+  title: "Contact | Get in Touch with an AI / ML Engineer",
   description:
-    "Connect with Srinivas RC for collaboration opportunities, project inquiries, and technical discussions. Software developer based in Bengaluru, Karnataka, India. Available for development projects, API development, and machine learning collaborations. Response time less than 24 hours.",
+    "Connect with Srinivas RC for collaboration opportunities, project inquiries, and technical discussions. AI / ML Engineer based in Bengaluru, Karnataka, India. Available for development projects, API development, and machine learning collaborations. Response time less than 24 hours.",
   keywords: [
     "Contact Software Developer",
     "Hire Software Developer",
@@ -34,26 +34,26 @@ export const metadata: Metadata = {
   creator: "Srinivas RC",
   publisher: "Srinivas RC",
   openGraph: {
-    title: "Contact | Get in Touch with Software Developer",
+    title: "Contact | Get in Touch with an AI / ML Engineer",
     description:
       "Connect with Srinivas RC for collaboration opportunities. Available for full-stack development, API development, and machine learning projects. Based in Bengaluru, Karnataka, India.",
     type: "website",
     url: `${SITE_URL}/contact`,
-    siteName: "Srinivas RC - Developer Portfolio",
+    siteName: "Srinivas RC — AI / ML Engineer",
     locale: "en_IN",
     images: [
       {
         url: `${SITE_URL}/images/logo.jpg`,
         width: 1200,
         height: 630,
-        alt: "Srinivas RC - Contact Software Developer",
+        alt: "Srinivas RC — Contact",
         type: "image/jpeg",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-        title: "Contact | Get in Touch with Software Developer",
+        title: "Contact | Get in Touch with an AI / ML Engineer",
     description:
       "Connect with Srinivas RC for project collaborations and development opportunities. Available for hire.",
     images: [`${SITE_URL}/images/logo.jpg`],

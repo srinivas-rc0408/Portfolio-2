@@ -6,7 +6,7 @@ import { projects as projectsData } from "@/lib/portfolio-data";
 // Enhanced SEO Metadata
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Projects | Software Developer Portfolio",
+  title: "Projects | AI / ML Engineer Portfolio",
   description:
     "Explore Srinivas RC's portfolio: Archagent, an autonomous AI agent for architecture and interior design tasks, and Language Detector, a minimalist single-page ML web application. Built with Python, LLMs, and agentic frameworks.",
   keywords: [
@@ -33,28 +33,28 @@ export const metadata: Metadata = {
   creator: "Srinivas RC",
   publisher: "Srinivas RC",
   openGraph: {
-    title: "Projects | Software Developer Portfolio",
+    title: "Projects | AI / ML Engineer Portfolio",
     description:
       "Portfolio showcasing web applications, AI projects, and machine learning implementations by Srinivas RC. Built with TypeScript, Python, and modern web technologies. All projects open-source on GitHub.",
     type: "website",
     url: `${SITE_URL}/projects`,
-    siteName: "Srinivas RC - Developer Portfolio",
+    siteName: "Srinivas RC — AI / ML Engineer",
     locale: "en_IN",
     images: [
       {
         url: `${SITE_URL}/images/logo.jpg`,
         width: 1200,
         height: 630,
-        alt: "Srinivas RC - Software Developer Projects Portfolio",
+        alt: "Srinivas RC — AI / ML Engineer Projects",
         type: "image/jpeg",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-        title: "Projects | Software Developer Portfolio",
+        title: "Projects | AI / ML Engineer Portfolio",
     description:
-      "Agentic AI systems and machine learning web applications. Projects by a Software Developer and aspiring AI Engineer.",
+      "Agentic AI systems and machine learning web applications by an AI / ML Engineer.",
     images: [`${SITE_URL}/images/logo.jpg`],
   },
   robots: {

@@ -46,13 +46,13 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/", "/llms.txt"],
-        disallow: ["/api/", "/.next/"],
+        disallow: ["/api/", "/.next/", "/admin"],
       },
       // Explicit allow-list (clarifies intent for crawlers that respect named rules)
       ...ALLOWED_USER_AGENTS.map((userAgent) => ({
         userAgent,
         allow: ["/", "/blog", "/blog/", "/llms.txt"],
-        disallow: ["/api/", "/.next/"],
+        disallow: ["/api/", "/.next/", "/admin"],
       })),
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

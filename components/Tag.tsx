@@ -230,15 +230,7 @@ export default function Tag() {
               </div>
             )}
           </div>
-        ) : (
-          <Link
-            href="/admin"
-            className="rounded-md border border-[rgba(var(--theme-accent-rgb),0.5)] bg-transparent px-3 py-1.5 font-mono text-xs text-white/80 transition-all duration-300 hover:border-[var(--theme-accent)] hover:bg-[rgba(var(--theme-accent-rgb),0.1)] hover:text-white hover:[text-shadow:0_0_10px_rgba(var(--theme-accent-rgb),0.9)] active:scale-95"
-            aria-label="Sign up"
-          >
-            Sign Up
-          </Link>
-        )}
+        ) : null}
       </header>
 
       {/* Profile image — click to view fullscreen; hover shows greeting.
@@ -261,12 +253,7 @@ export default function Tag() {
           />
           {/* Frosted overlay + greeting, fades/slides in on hover */}
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/55 opacity-0 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100">
-            <p className="translate-y-3 px-3 text-center font-mono text-base font-bold text-white opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [text-shadow:0_0_14px_rgba(var(--theme-accent-rgb),0.6)] group-hover:translate-y-0 group-hover:opacity-100 sm:text-lg">
-              Yes, it&apos;s me.
-              <br />
-              <span className="text-[var(--theme-accent)]">I am him.</span>
-            </p>
-            <span className="mt-3 translate-y-3 rounded-full border border-white/40 px-3 py-1 font-mono text-[11px] text-white/80 opacity-0 transition-all delay-100 duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100">
+            <span className="translate-y-3 rounded-full border border-white/40 px-3 py-1 font-mono text-[11px] text-white/80 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100">
               click to view ↗
             </span>
           </div>
