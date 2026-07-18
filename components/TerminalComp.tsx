@@ -14,8 +14,7 @@ import Blog from "./TerminalComp/Blog";
 import CmsSectionOutput from "./TerminalComp/CmsSection";
 import JerryChat from "./JerryChat";
 import type { CmsSection } from "@/lib/cms";
-import { getItems } from "@/lib/cms";
-import { RESUME_URL } from "@/lib/portfolio-data";
+import { docUrl } from "@/lib/cms";
 import {
   HOME_DIR,
   FILE_CONTENTS,
@@ -747,10 +746,8 @@ export default function Terminal({
     // resume / cv — open the in-page document viewer (CMS link first, static fallback)
     if (commandName === "resume" || commandName === "cv") {
       const label = commandName === "cv" ? "CV" : "Resume";
-      const cmsLink = getItems(commandName).find(
-        (i) => i.link && i.link !== "#"
-      )?.link;
-      const url = cmsLink ?? RESUME_URL;
+      // Single shared resolver — same source the admin upload writes to.
+      const url = docUrl(commandName);
       window.dispatchEvent(
         new CustomEvent("doc:view", { detail: { label, url } })
       );

@@ -164,6 +164,13 @@ export default function IdentityFooter() {
                 </a>
               ))}
             </nav>
+            {/* Quiet owner entrance — low-contrast by design, accent on hover */}
+            <a
+              href="/admin"
+              className="ml-1 border-l border-white/10 pl-3 font-mono text-[11px] text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--accent)]"
+            >
+              Sign in
+            </a>
           </div>
         </motion.footer>
       )}

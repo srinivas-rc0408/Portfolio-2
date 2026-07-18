@@ -29,18 +29,30 @@ export function openDoc(detail: DocViewDetail): void {
 export default function DocViewer() {
   const [doc, setDoc] = useState<DocViewDetail | null>(null);
   const [loaded, setLoaded] = useState(false);
+  // Error state: iframes don't fire onError for failed PDFs, so a load that
+  // hasn't completed after the timeout is treated as failed — the viewer then
+  // offers a direct download instead of spinning forever.
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     const onView = (e: Event) => {
       const d = (e as CustomEvent<DocViewDetail>).detail;
       if (d?.url) {
         setLoaded(false);
+        setFailed(false);
         setDoc(d);
       }
     };
     window.addEventListener("doc:view", onView);
     return () => window.removeEventListener("doc:view", onView);
   }, []);
+
+  // Slow-load watchdog — 10s covers slow mobile networks without racing them.
+  useEffect(() => {
+    if (!doc || loaded) return;
+    const t = window.setTimeout(() => setFailed(true), 10_000);
+    return () => window.clearTimeout(t);
+  }, [doc, loaded]);
 
   useEffect(() => {
     if (!doc) return;
@@ -130,7 +142,7 @@ export default function DocViewer() {
 
             {/* Document */}
             <div className="relative flex-1 bg-white/[0.02]">
-              {!loaded && (
+              {!loaded && !failed && (
                 <div
                   className="absolute inset-0 flex flex-col items-center justify-center gap-3"
                   aria-live="polite"
@@ -139,6 +151,24 @@ export default function DocViewer() {
                   <p className="text-xs text-white/50">
                     Loading {doc.label.toLowerCase()}…
                   </p>
+                </div>
+              )}
+              {!loaded && failed && (
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center"
+                  aria-live="polite"
+                >
+                  <p className="text-sm text-[var(--text)]">
+                    {doc.label} preview is temporarily unavailable.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={download}
+                    className="flex items-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] px-4 py-2 text-sm font-semibold text-[var(--theme-accent)] transition-colors duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.12)]"
+                  >
+                    <Download size={14} strokeWidth={2.2} aria-hidden />
+                    Download {doc.label} directly
+                  </button>
                 </div>
               )}
               <iframe

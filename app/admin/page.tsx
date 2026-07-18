@@ -19,7 +19,6 @@ import {
   updateItem,
   deleteItem,
   login,
-  register,
   logout,
   currentUser,
   hydrate,
@@ -57,8 +56,6 @@ const FIELD =
 // --- Auth gate: Login / Register toggle ---
 
 function AuthGate({ onSuccess }: { onSuccess: () => void }) {
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -72,14 +69,8 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
     setError(null);
     setBusy(true);
     try {
-      if (mode === "login") {
-        if (await login(email, password)) onSuccess();
-        else setError("Access denied: invalid credentials.");
-      } else {
-        const err = await register(name, email, password);
-        if (err) setError(err);
-        else onSuccess();
-      }
+      if (await login(email, password)) onSuccess();
+      else setError("Access denied: invalid credentials.");
     } finally {
       setBusy(false);
     }
@@ -128,44 +119,8 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
           <span className="ml-2 text-sm text-white">admin@login:~$</span>
         </div>
         <h1 className="mb-4 text-lg font-bold text-white">
-          $ sudo access --{mode === "login" ? "admin" : "register"}
+          $ sudo access --admin
         </h1>
-
-        {/* Login / Register toggle */}
-        <div className="mb-5 flex rounded-lg border border-white/10 bg-white/[0.03] p-1">
-          {(["login", "register"] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => {
-                setMode(m);
-                setError(null);
-              }}
-              className={`flex-1 rounded-md py-1.5 text-sm capitalize transition-all duration-150 ${
-                mode === m
-                  ? "bg-[rgba(var(--theme-accent-rgb),0.15)] text-white"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              {m}
-            </button>
-          ))}
-        </div>
-
-        {mode === "register" && (
-          <>
-            <label className="mb-1 block text-xs text-gray-400" htmlFor="reg-name">
-              NAME
-            </label>
-            <input
-              id="reg-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoComplete="name"
-              className={`mb-3 ${FIELD}`}
-            />
-          </>
-        )}
 
         <label className="mb-1 block text-xs text-gray-400" htmlFor="admin-email">
           EMAIL
@@ -187,7 +142,7 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
             type={showPw ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete={mode === "login" ? "current-password" : "new-password"}
+            autoComplete="current-password"
             className={`pr-11 ${FIELD}`}
           />
           {/* Press & hold to reveal; releasing (or leaving) hides it again. */}
@@ -230,19 +185,13 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
             disabled={busy}
             className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] px-4 py-2 text-sm text-white transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95 disabled:opacity-50"
           >
-            {busy ? "…" : mode === "login" ? "authenticate →" : "create account →"}
+            {busy ? "…" : "authenticate →"}
           </button>
           <Link href="/" className="text-xs text-gray-500 hover:text-white">
             ← back to terminal
           </Link>
         </div>
 
-        {mode === "register" && (
-          <p className="mt-4 text-[11px] leading-relaxed text-gray-500">
-            Visitor accounts are for demo sign-in only. Content management stays
-            admin-only.
-          </p>
-        )}
       </form>
     </div>
   );

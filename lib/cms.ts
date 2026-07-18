@@ -159,6 +159,20 @@ export function getItems(
   return opts.includePrivate ? list : list.filter((i) => !i.private);
 }
 
+/** Static fallback shipped in /public — always exists even if the CMS is down. */
+export const STATIC_RESUME_URL = "/srinivas-rc-resume.pdf";
+
+/**
+ * Single source of truth for the resume/CV URL — admin uploads write the CMS
+ * entry's `link` (a data URL), and every viewer resolves through here.
+ * Data URLs are self-cache-busting (new upload = new URL); the static
+ * fallback only changes with a redeploy, which busts via a fresh ETag.
+ */
+export function docUrl(section: "resume" | "cv"): string {
+  const linked = getItems(section).find((i) => i.link && i.link !== "#");
+  return linked?.link ?? STATIC_RESUME_URL;
+}
+
 export function loadSettings(): SiteSettings {
   return cacheSettings;
 }

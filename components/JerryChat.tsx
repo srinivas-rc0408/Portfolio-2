@@ -4,8 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@vercel/analytics";
 import { Send, Trash2, X } from "lucide-react";
-import { getItems } from "@/lib/cms";
-import { RESUME_URL } from "@/lib/portfolio-data";
+import { docUrl } from "@/lib/cms";
 
 /**
  * Jerry — dedicated floating AI chat interface.
@@ -123,9 +122,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
           : null;
       if (docAsk) {
         const section = docAsk === "CV" ? "cv" : "resume";
-        const url =
-          getItems(section).find((i) => i.link && i.link !== "#")?.link ??
-          RESUME_URL;
+        const url = docUrl(section);
         window.dispatchEvent(
           new CustomEvent("doc:view", { detail: { label: docAsk, url } })
         );

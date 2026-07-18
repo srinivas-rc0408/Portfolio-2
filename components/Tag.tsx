@@ -13,18 +13,11 @@ import {
   type SiteSettings,
   DEFAULT_SETTINGS,
   currentUser,
-  getItems,
+  docUrl,
   loadSettings,
   logout,
 } from "@/lib/cms";
 import { openDoc } from "@/components/DocViewer";
-import { RESUME_URL } from "@/lib/portfolio-data";
-
-/** CMS-backed doc link for a section (resume/cv), static PDF as fallback. */
-function docLink(section: "resume" | "cv"): string {
-  const linked = getItems(section).find((i) => i.link && i.link !== "#");
-  return linked?.link ?? RESUME_URL;
-}
 
 /** Direct download with a branded filename ("Srinivas RC's Resume.pdf"). */
 function downloadDoc(url: string, label: string): void {
@@ -291,7 +284,7 @@ export default function Tag() {
 
           // Document rows: label click → view; download icon → direct download.
           if (doc) {
-            const url = docLink(doc.section);
+            const url = docUrl(doc.section);
             const view = () => openDoc({ label: doc.label, url });
             return (
               <div
