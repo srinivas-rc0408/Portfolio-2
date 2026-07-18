@@ -19,7 +19,7 @@ export type HomeDirEntry = (typeof HOME_DIR)[number];
 
 export const FILE_CONTENTS: Record<string, string> = {
   about:
-    "About Srinivas RC — Software Developer and aspiring AI Engineer. CSE undergraduate building web applications powered by LLMs and agentic systems. Passionate about Linux (CachyOS). Type 'cd about' to open the full section.",
+    "About Srinivas RC — AI / ML Engineer. B.Tech AI & ML undergraduate building web applications powered by LLMs and agentic systems. Passionate about Linux (CachyOS). Type 'cd about' to open the full section.",
   projects:
     "Recent projects: Archagent (autonomous AI agent for architecture & interior design) and Language Detector (single-page ML web app). Type 'cd projects' to browse with links and descriptions.",
   skills:

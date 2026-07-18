@@ -273,8 +273,8 @@ export default function About() {
 
               <div>
                 <p>
-                  I am a Computer Science Engineering undergraduate and an{" "}
-                  <strong>AI / ML Engineer</strong>. I specialize in
+                  I am a B.Tech Artificial Intelligence &amp; Machine Learning
+                  undergraduate and an <strong>AI / ML Engineer</strong>. I specialize in
                   building and deploying web applications powered by{" "}
                   <strong>Large Language Models (LLMs)</strong> and{" "}
                   <strong>agentic systems</strong>. I am passionate about Linux

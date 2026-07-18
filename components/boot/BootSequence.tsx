@@ -65,7 +65,9 @@ export default function BootSequence() {
   // (no useId / framer-motion / localStorage), so there's zero hydration
   // mismatch. The animated boot mounts client-only right after.
   if (!mounted) {
-    return <div className="fixed inset-0 z-[999] bg-black" aria-hidden />;
+    return (
+      <div className="boot-failsafe fixed inset-0 z-[999] bg-black" aria-hidden />
+    );
   }
 
   // Prefer the live CSS var (set by the pre-paint <head> script from the same

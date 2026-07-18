@@ -47,7 +47,7 @@ export async function GET() {
     "",
     "# Core technical profile",
     "Skills: Python, Machine Learning, Large Language Models (LLMs), Agentic Frameworks (CrewAI), Prompt Engineering, Linux Administration.",
-    "Current status: Computer Science Engineering undergraduate (B.Tech AI & ML, REVA University) seeking internships and university placements in AI engineering.",
+    "Current status: B.Tech Artificial Intelligence & Machine Learning undergraduate (REVA University) seeking internships and university placements in AI engineering.",
     "",
     "# Blog posts",
     `Index: ${SITE_URL}/blog`,

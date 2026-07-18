@@ -17,7 +17,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   poweredByHeader: false, // don't advertise "X-Powered-By: Next.js"
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

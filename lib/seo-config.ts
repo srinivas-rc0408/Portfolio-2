@@ -1,14 +1,22 @@
 /** Shared site SEO constants — single source of truth for URLs and author. */
-// Canonical/OG URL. Resolves to the production domain automatically:
-//   1. NEXT_PUBLIC_SITE_URL  — set this to your custom domain when you have one
-//   2. NEXT_PUBLIC_VERCEL_URL — auto-provided by Vercel for every deployment
-//   3. localhost             — dev only
-// This fixes canonical + og:url pointing at localhost in production.
+// Canonical/OG URL. Resolves to the STABLE production domain automatically:
+//   1. NEXT_PUBLIC_SITE_URL          — your custom domain, once you have one
+//   2. VERCEL_PROJECT_PRODUCTION_URL — Vercel's stable prod domain (e.g.
+//        my-app.vercel.app). Auto-set on every build, incl. previews. This is
+//        what canonical/og MUST use — never the per-deployment URL below.
+//   3. VERCEL_URL / NEXT_PUBLIC_VERCEL_URL — per-deployment URL (ephemeral,
+//        auth-protected). Last-resort only, so previews still self-reference.
+//   4. localhost                     — dev only
+// (Consumers are all server components, so the non-public vars resolve fine.)
 const RESOLVED_SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    : "http://localhost:3000");
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "") ||
+  (process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL}`
+    : "") ||
+  "http://localhost:3000";
 
 export const SITE_URL = RESOLVED_SITE_URL.replace(/\/+$/, "");
 export const SITE_NAME = "Srinivas RC";

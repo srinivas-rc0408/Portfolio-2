@@ -19,12 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : SITE_URL)
-  ),
+  // Single source of truth — SITE_URL already resolves the stable prod domain.
+  metadataBase: new URL(SITE_URL),
   icons: {
     icon: "/images/logo.jpg",
     apple: "/images/logo.jpg",
