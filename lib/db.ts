@@ -131,58 +131,74 @@ let ready: Promise<void> | null = null;
 
 /** Create tables + seed once per server process. */
 export function ensureDb(): Promise<void> {
-  if (!ready) ready = init();
+  if (!ready) {
+    // Don't memoize a rejected promise — a one-off network blip during init
+    // must not poison every later request for the life of the process.
+    ready = init().catch((e) => {
+      ready = null;
+      throw e;
+    });
+  }
   return ready;
 }
 
 async function init(): Promise<void> {
-  await sql`CREATE TABLE IF NOT EXISTS app_user (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT now()
-  )`;
-  await sql`CREATE TABLE IF NOT EXISTS site_setting (
-    id INT PRIMARY KEY,
-    display_name TEXT NOT NULL DEFAULT 'Srinivas RC',
-    title TEXT NOT NULL DEFAULT 'AI / ML Engineer',
-    theme_accent TEXT NOT NULL DEFAULT '#22c55e',
-    profile_image TEXT,
-    summary TEXT,
-    updated_at TIMESTAMPTZ DEFAULT now()
-  )`;
-  // Migrate existing tables that predate the summary column.
-  await sql`ALTER TABLE site_setting ADD COLUMN IF NOT EXISTS summary TEXT`;
-  await sql`CREATE TABLE IF NOT EXISTS feedback (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT,
-    message TEXT NOT NULL,
-    starred BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMPTZ DEFAULT now()
-  )`;
-  await sql`CREATE TABLE IF NOT EXISTS cms_entry (
-    id TEXT PRIMARY KEY,
-    section TEXT NOT NULL,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL DEFAULT '',
-    link TEXT,
-    github_url TEXT,
-    date TEXT,
-    tech JSONB NOT NULL DEFAULT '[]',
-    image_url TEXT,
-    is_private BOOLEAN NOT NULL DEFAULT false,
-    sort_order INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMPTZ DEFAULT now()
-  )`;
+  // Fast path — after the very first deploy the schema always exists, so a
+  // cold start pays ONE probe round-trip instead of the full 8-call setup.
+  try {
+    const [{ count }] = (await sql`SELECT COUNT(*)::int AS count FROM cms_entry`) as {
+      count: number;
+    }[];
+    if (count === 0) await seed();
+    return;
+  } catch {
+    /* table missing — first run against a fresh project; create schema below */
+  }
+
+  // First run only: create independent tables in parallel (4 round-trips → 1).
+  await Promise.all([
+    sql`CREATE TABLE IF NOT EXISTS app_user (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT now()
+    )`,
+    sql`CREATE TABLE IF NOT EXISTS site_setting (
+      id INT PRIMARY KEY,
+      display_name TEXT NOT NULL DEFAULT 'Srinivas RC',
+      title TEXT NOT NULL DEFAULT 'AI / ML Engineer',
+      theme_accent TEXT NOT NULL DEFAULT '#22c55e',
+      profile_image TEXT,
+      summary TEXT,
+      updated_at TIMESTAMPTZ DEFAULT now()
+    )`,
+    sql`CREATE TABLE IF NOT EXISTS feedback (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT,
+      message TEXT NOT NULL,
+      starred BOOLEAN NOT NULL DEFAULT false,
+      created_at TIMESTAMPTZ DEFAULT now()
+    )`,
+    sql`CREATE TABLE IF NOT EXISTS cms_entry (
+      id TEXT PRIMARY KEY,
+      section TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL DEFAULT '',
+      link TEXT,
+      github_url TEXT,
+      date TEXT,
+      tech JSONB NOT NULL DEFAULT '[]',
+      image_url TEXT,
+      is_private BOOLEAN NOT NULL DEFAULT false,
+      sort_order INT NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ DEFAULT now()
+    )`,
+  ]);
 
   await sql`INSERT INTO site_setting (id) VALUES (1) ON CONFLICT (id) DO NOTHING`;
-
-  const [{ count }] = (await sql`SELECT COUNT(*)::int AS count FROM cms_entry`) as {
-    count: number;
-  }[];
-  if (count === 0) await seed();
+  await seed();
 }
 
 async function seed(): Promise<void> {
