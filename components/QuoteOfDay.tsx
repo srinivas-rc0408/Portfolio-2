@@ -60,11 +60,16 @@ export default function QuoteOfDay() {
   const [gone, setGone] = useState(false);
   // Pause the countdown while the user is hovering or has it expanded.
   const holdRef = useRef(false);
+  // Reduced-motion users get instant appearance/disappearance (no slide).
+  const reducedRef = useRef(false);
 
   useEffect(() => {
     // Wait 10s after the site opens, THEN pick client-side (avoids hydration
     // mismatch); double-rAF lets the hidden state paint once so the slide-up
     // transition actually runs.
+    reducedRef.current = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
     let raf1 = 0;
     let raf2 = 0;
     const timer = window.setTimeout(() => {
@@ -116,8 +121,9 @@ export default function QuoteOfDay() {
         style={{
           transform: visible ? "translateY(0) scale(1)" : "translateY(120%) scale(0.98)",
           opacity: visible ? 1 : 0,
-          transition:
-            "transform 400ms cubic-bezier(0.22, 1, 0.36, 1), opacity 400ms ease",
+          transition: reducedRef.current
+            ? "none"
+            : "transform 400ms cubic-bezier(0.22, 1, 0.36, 1), opacity 400ms ease",
           willChange: "transform, opacity",
         }}
       >

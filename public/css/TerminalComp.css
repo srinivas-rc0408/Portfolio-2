@@ -154,6 +154,14 @@
   will-change: transform;
 }
 
+/* Touch devices & phones: comfortable ≥44px tap targets (desktop compact). */
+@media (pointer: coarse), (max-width: 480px) {
+  .nav-button {
+    min-height: 44px;
+    padding: 0.55rem 0.8rem;
+  }
+}
+
 .nav-button:hover {
   background: rgba(var(--theme-accent-rgb), 0.12);
   border-color: rgba(var(--theme-accent-rgb), 0.5);
