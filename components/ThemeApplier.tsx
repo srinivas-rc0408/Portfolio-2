@@ -20,8 +20,14 @@ export default function ThemeApplier() {
     const apply = () => {
       const { themeAccent } = loadSettings();
       const root = document.documentElement;
+      const rgb = hexToRgb(themeAccent);
+      // Set BOTH the primary (--accent, used by the redesigned components) and
+      // its legacy alias (--theme-accent) so the WHOLE site follows the admin
+      // color — otherwise --accent stays the default green.
+      root.style.setProperty("--accent", themeAccent);
+      root.style.setProperty("--accent-rgb", rgb);
       root.style.setProperty("--theme-accent", themeAccent);
-      root.style.setProperty("--theme-accent-rgb", hexToRgb(themeAccent));
+      root.style.setProperty("--theme-accent-rgb", rgb);
     };
     apply();
     window.addEventListener(SETTINGS_UPDATED_EVENT, apply);

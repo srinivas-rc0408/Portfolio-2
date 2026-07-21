@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Tag from "@/components/Tag";
 import QuoteOfDay from "@/components/QuoteOfDay";
-import IdentityFooter from "@/components/IdentityFooter";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import GameModal from "@/components/GameModal";
 import DocViewer from "@/components/DocViewer";
@@ -63,8 +62,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </main>
       {/* Floating quote toast — overlays the site, never affects layout/scroll */}
       <QuoteOfDay />
-      {/* Left-pane footer — reveals on scroll-to-bottom, desktop only */}
-      {!isBlog && <IdentityFooter />}
       {/* Document viewer — resume/CV/certificates popup (view + download) */}
       <DocViewer />
       {/* Floating feedback button + popup (saved to the admin Feedback tab) */}

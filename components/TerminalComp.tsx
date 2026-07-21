@@ -213,7 +213,7 @@ const HELP_GROUPS: HelpGroup[] = [
       { command: "history", description: "List recent commands." },
       { command: "neofetch", description: "Display system info and my ASCII logo." },
       { command: "whoami", description: "Print current user." },
-      { command: "admin", description: "Access the secure admin panel." },
+      { command: "signin", description: "Open the secure sign-in gate (admin only)." },
     ],
   },
 ];
@@ -255,6 +255,8 @@ const TAB_COMPLETIONS: string[] = [
   "jerry",
   "play archman",
   "admin",
+  "signin",
+  "login",
   "clear",
   "history",
   "neofetch",
@@ -300,6 +302,8 @@ const COMMAND_NAMES = [
   "ai",
   "play",
   "admin",
+  "signin",
+  "login",
   "clear",
   "history",
   "neofetch",
@@ -732,12 +736,14 @@ export default function Terminal({
       return;
     }
 
-    // admin / sudo login — open the Admin Login Gate
+    // admin / signin / login / sudo login — open the Admin Login Gate
     if (
       commandName === "admin" ||
+      commandName === "signin" ||
+      commandName === "login" ||
       (commandName === "sudo" && args[0]?.toLowerCase() === "login")
     ) {
-      newHist.push({ type: "output", content: "Opening secure admin gate…" });
+      newHist.push({ type: "output", content: "Opening secure sign-in gate…" });
       setHistory(newHist);
       router.push("/admin");
       return;

@@ -126,7 +126,7 @@ export default function FeedbackWidget() {
               armIdleTimer();
             }}
             aria-label="Send feedback"
-            className="fixed bottom-5 right-4 z-40 flex items-center gap-2 rounded-full border border-[rgba(var(--theme-accent-rgb),0.5)] bg-black/75 px-4 py-2.5 font-mono text-xs font-semibold text-[var(--theme-accent)] backdrop-blur-xl transition-all duration-150 hover:scale-105 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95 min-[1025px]:left-[calc(30%+1rem)] min-[1025px]:right-auto"
+            className="fixed bottom-5 left-4 z-40 flex min-h-[44px] items-center gap-2 rounded-full border border-[rgba(var(--theme-accent-rgb),0.5)] bg-black/75 px-4 py-2.5 font-mono text-xs font-semibold text-[var(--theme-accent)] backdrop-blur-xl transition-all duration-150 hover:scale-105 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95 min-[1025px]:left-[calc(30%+1rem)]"
           >
             <MessageSquare size={15} strokeWidth={2.2} aria-hidden />
             Feedback

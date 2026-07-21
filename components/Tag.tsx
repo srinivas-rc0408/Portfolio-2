@@ -3,9 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@vercel/analytics";
-import { ChevronUp, Download, Gamepad2, Sparkles } from "lucide-react";
+import { ChevronUp, Download, Gamepad2, Mail, Sparkles } from "lucide-react";
 import ProfileLightbox from "@/components/ProfileLightbox";
+import { footerLinks } from "@/lib/portfolio-data";
 import {
   AUTH_UPDATED_EVENT,
   SETTINGS_UPDATED_EVENT,
@@ -136,11 +138,53 @@ function viewProfile(): void {
   window.dispatchEvent(new CustomEvent("profile:view"));
 }
 
+// Inline social icons (lucide dropped its brand glyphs, so these are hand-rolled).
+const svgIcon = (children: React.ReactNode) => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {children}
+  </svg>
+);
+const SOCIAL_ICONS: Record<string, React.ReactNode> = {
+  GitHub: svgIcon(<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />),
+  LinkedIn: svgIcon(<><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></>),
+  Email: <Mail size={17} strokeWidth={2} aria-hidden />,
+  Instagram: svgIcon(<><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></>),
+  Steam: svgIcon(<><circle cx="12" cy="12" r="10" /><circle cx="15.5" cy="8.5" r="2.5" /><circle cx="8.5" cy="15" r="2" /><path d="m13.7 10.5-4 3.2" /></>),
+};
+
 export default function Tag() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  // Profile pic: desktop shows "I am Him" on hover; mobile shows it on a
+  // >2s long-press (a quick tap opens the fullscreen image instead).
+  const [greet, setGreet] = useState(false);
+  const pressTimer = useRef<number | undefined>(undefined);
+  const longPressed = useRef(false);
+  // CONNECT toggles the inline social/contact panel (anchored to this pane).
+  const [connectOpen, setConnectOpen] = useState(false);
+
+  const onPicClick = () => {
+    // A long-press already handled this interaction — don't also open the image.
+    if (longPressed.current) {
+      longPressed.current = false;
+      return;
+    }
+    viewProfile();
+  };
+  const onPicPressStart = () => {
+    longPressed.current = false;
+    pressTimer.current = window.setTimeout(() => {
+      longPressed.current = true;
+      setGreet(true);
+      navigator.vibrate?.(15);
+    }, 2000);
+  };
+  const onPicPressEnd = () => {
+    window.clearTimeout(pressTimer.current);
+    if (greet) window.setTimeout(() => setGreet(false), 1600);
+  };
 
   useEffect(() => {
     const readAuth = () => setUser(currentUser());
@@ -226,9 +270,13 @@ export default function Tag() {
       <div className="mt-3 flex justify-center sm:mt-8">
         <button
           type="button"
-          onClick={viewProfile}
+          onClick={onPicClick}
+          onTouchStart={onPicPressStart}
+          onTouchEnd={onPicPressEnd}
+          onTouchCancel={onPicPressEnd}
+          onContextMenu={(e) => e.preventDefault()}
           aria-label="View profile picture"
-          className="group relative h-36 w-36 cursor-pointer overflow-hidden rounded-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-150 ease-out active:scale-[0.98] sm:h-[290px] sm:w-[232px]"
+          className="group relative h-36 w-36 cursor-pointer select-none overflow-hidden rounded-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-150 ease-out active:scale-[0.98] sm:h-[290px] sm:w-[232px]"
         >
           <Image
             src={profileSrc}
@@ -237,12 +285,26 @@ export default function Tag() {
             sizes="232px"
             priority
             unoptimized
-            className="object-cover transition-transform duration-150 ease-out group-hover:scale-[1.02]"
+            draggable={false}
+            className="object-cover transition-transform duration-150 ease-out group-hover:scale-[1.03]"
           />
-          {/* Overlay hint, fades in on hover */}
-          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/55 opacity-0 backdrop-blur-md transition-opacity duration-150 ease-out group-hover:opacity-100">
-            <span className="rounded-full border border-white/40 px-3 py-1 font-mono text-[11px] text-white/80">
-              click to view ↗
+          {/* Greeting — "I am Him" on hover (desktop) or long-press (mobile) */}
+          <div
+            className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 backdrop-blur-md transition-opacity duration-200 ease-out ${
+              greet ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            }`}
+          >
+            <span
+              className={`font-mono text-lg font-bold tracking-wide text-white transition-all duration-300 ease-out sm:text-xl ${
+                greet
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+              }`}
+            >
+              I am Him
+            </span>
+            <span className="rounded-full border border-white/40 px-3 py-1 font-mono text-[10px] text-white/75">
+              tap to view ↗
             </span>
           </div>
         </button>
@@ -347,25 +409,64 @@ export default function Tag() {
         })}
       </nav>
 
-      {/* Footer-reveal handle — sits in the space below the actions. Tap to
-          slide up the social/contact footer (buttery framer-motion). */}
-      <div className="mx-auto mt-3 flex w-full max-w-[280px] justify-center">
+      {/* CONNECT — toggles an inline social/contact panel, anchored right here
+          in the identity pane (no fixed overlay → no overlap with the quote or
+          feedback button). Press again to close. */}
+      <div className="mx-auto mt-3 flex w-full max-w-[280px] flex-col items-center">
         <button
           type="button"
-          onClick={() => window.dispatchEvent(new CustomEvent("footer:reveal"))}
-          aria-label="Show contact & social links"
+          onClick={() => setConnectOpen((o) => !o)}
+          aria-expanded={connectOpen}
+          aria-label={connectOpen ? "Hide contact & social links" : "Show contact & social links"}
           title="Contact & social links"
-          className="group/handle flex min-h-[44px] items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-1 text-[10px] font-mono uppercase tracking-wider text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          className="group/handle flex min-h-[44px] items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-1 text-[10px] font-mono uppercase tracking-wider text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)] aria-expanded:border-[var(--accent)] aria-expanded:text-[var(--accent)]"
         >
-          <ChevronUp size={13} strokeWidth={2.5} aria-hidden />
-          connect
+          <ChevronUp
+            size={13}
+            strokeWidth={2.5}
+            aria-hidden
+            className={`transition-transform duration-300 ease-out ${connectOpen ? "rotate-180" : ""}`}
+          />
+          {connectOpen ? "close" : "connect"}
         </button>
+
+        <AnimatePresence initial={false}>
+          {connectOpen && (
+            <motion.div
+              key="socials"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full overflow-hidden"
+            >
+              <nav
+                className="mt-3 flex items-center justify-center gap-2.5"
+                aria-label="Social links"
+              >
+                {footerLinks.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    target={link.href.startsWith("http") ? "_blank" : undefined}
+                    rel="noopener noreferrer"
+                    aria-label={link.name}
+                    title={link.name}
+                    className="grid h-11 w-11 place-items-center rounded-full border border-[var(--border)] text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                  >
+                    {SOCIAL_ICONS[link.name]}
+                  </a>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Persistent, low-key owner entrance — always visible when signed out
           (signed-in users get the account menu in the header instead). */}
       {!user && (
-        <div className="mt-auto pt-5 text-center">
+        <div className="mt-auto pt-6 text-center">
           <Link
             href="/admin"
             className="inline-flex min-h-[44px] items-center font-mono text-[11px] text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
 import { Eye, EyeOff, X } from "lucide-react";
 import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
@@ -78,8 +79,11 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-black p-4 before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_at_center,rgba(var(--theme-accent-rgb),0.1),transparent_60%)] before:content-['']">
-      <form
+      <motion.form
         onSubmit={submit}
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 w-full max-w-md rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.28)] bg-black/50 p-6 font-mono backdrop-blur-xl"
       >
         {/* Close — returns to the terminal */}
@@ -192,7 +196,7 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
           </Link>
         </div>
 
-      </form>
+      </motion.form>
     </div>
   );
 }

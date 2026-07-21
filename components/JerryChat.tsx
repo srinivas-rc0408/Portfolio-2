@@ -7,6 +7,44 @@ import { Send, Trash2, X } from "lucide-react";
 import { docUrl } from "@/lib/cms";
 
 /**
+ * Jerry's logo — a rounded accent badge with a chat bubble + spark (an AI
+ * assistant mark), plus a live "online" pulse. Follows the site theme accent.
+ */
+function JerryLogo({ size = 30, live = true }: { size?: number; live?: boolean }) {
+  return (
+    <span
+      className="relative grid shrink-0 place-items-center rounded-xl border border-[rgba(var(--theme-accent-rgb),0.45)] bg-[rgba(var(--theme-accent-rgb),0.12)]"
+      style={{ width: size, height: size }}
+      aria-hidden
+    >
+      <svg
+        width={size * 0.56}
+        height={size * 0.56}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="var(--theme-accent)"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M20 15.5A2.5 2.5 0 0 1 17.5 18H8l-4 3.5V6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5z" />
+        <path
+          d="M12 7.4l.85 2.35L15.2 10.6l-2.35.85L12 13.8l-.85-2.35L8.8 10.6l2.35-.85z"
+          fill="var(--theme-accent)"
+          stroke="none"
+        />
+      </svg>
+      {live && (
+        <span className="absolute -right-1 -top-1 flex h-3 w-3">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--theme-accent)] opacity-60" />
+          <span className="relative inline-flex h-3 w-3 rounded-full bg-[var(--theme-accent)] ring-2 ring-black" />
+        </span>
+      )}
+    </span>
+  );
+}
+
+/**
  * Jerry — dedicated floating AI chat interface.
  *   · Opened by the `jerry` terminal command (or legacy `ai …`).
  *   · Glassmorphism panel, framer-motion fade/scale, accent-themed.
@@ -253,14 +291,14 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
           >
             {/* Header */}
             <header className="flex shrink-0 items-center justify-between border-b border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-4 py-3">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--theme-accent)] opacity-60" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[var(--theme-accent)]" />
-                </span>
-                <h2 className="text-sm font-bold text-white">
-                  Jerry <span className="font-normal text-white/50">— AI Assistant</span>
-                </h2>
+              <div className="flex items-center gap-2.5">
+                <JerryLogo size={32} />
+                <div className="leading-tight">
+                  <h2 className="text-sm font-bold text-white">Jerry</h2>
+                  <p className="text-[10px] text-[var(--theme-accent)]">
+                    Srinivas&apos;s AI Assistant · online
+                  </p>
+                </div>
               </div>
               <div className="flex items-center gap-1">
                 <button

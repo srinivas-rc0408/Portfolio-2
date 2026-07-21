@@ -112,7 +112,7 @@ export default function QuoteOfDay() {
   return (
     /* pointer-events-none wrapper: the page scrolls/clicks straight through
        everywhere except the card itself. Anchored bottom-right. */
-    <div className="pointer-events-none fixed bottom-4 right-4 z-50 w-[92vw] max-w-sm sm:bottom-10 sm:right-10">
+    <div className="pointer-events-none fixed inset-x-3 bottom-4 z-50 mx-auto max-w-[400px] sm:inset-x-auto sm:right-10 sm:bottom-10 sm:mx-0 sm:w-[92vw] sm:max-w-sm">
       <div
         className="qotd group pointer-events-auto"
         onMouseEnter={() => {

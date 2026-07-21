@@ -116,7 +116,7 @@ export default function RootLayout({
           id="theme-accent-prepaint"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: `try{var s=JSON.parse(localStorage.getItem("portfolio:settings")||"{}");var a=s.themeAccent;if(typeof a==="string"&&/^#[0-9a-fA-F]{3,8}$/.test(a)){var r=document.documentElement;r.style.setProperty("--theme-accent",a);var h=a.slice(1);if(h.length===3)h=h.split("").map(function(c){return c+c}).join("");var n=parseInt(h.slice(0,6),16);if(!isNaN(n))r.style.setProperty("--theme-accent-rgb",((n>>16)&255)+", "+((n>>8)&255)+", "+(n&255));}}catch(e){}`,
+            __html: `try{var s=JSON.parse(localStorage.getItem("portfolio:settings")||"{}");var a=s.themeAccent;if(typeof a==="string"&&/^#[0-9a-fA-F]{3,8}$/.test(a)){var r=document.documentElement;r.style.setProperty("--accent",a);r.style.setProperty("--theme-accent",a);var h=a.slice(1);if(h.length===3)h=h.split("").map(function(c){return c+c}).join("");var n=parseInt(h.slice(0,6),16);if(!isNaN(n)){var rgb=((n>>16)&255)+", "+((n>>8)&255)+", "+(n&255);r.style.setProperty("--accent-rgb",rgb);r.style.setProperty("--theme-accent-rgb",rgb);}}}catch(e){}`,
           }}
         />
         <meta
