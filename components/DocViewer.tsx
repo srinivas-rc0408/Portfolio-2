@@ -33,6 +33,15 @@ export default function DocViewer() {
   // hasn't completed after the timeout is treated as failed — the viewer then
   // offers a direct download instead of spinning forever.
   const [failed, setFailed] = useState(false);
+  // Mobile browsers don't render PDFs inline in an <iframe> (they blank out),
+  // so on coarse-pointer devices we skip the frame and show a tap-to-open card.
+  // Lazy init (not an effect): the viewer only mounts on a user action, well
+  // after hydration, so there's no SSR/client mismatch to worry about.
+  const [isTouch] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(pointer: coarse)").matches
+  );
 
   useEffect(() => {
     const onView = (e: Event) => {
@@ -47,12 +56,13 @@ export default function DocViewer() {
     return () => window.removeEventListener("doc:view", onView);
   }, []);
 
-  // Slow-load watchdog — 10s covers slow mobile networks without racing them.
+  // Slow-load watchdog — only for the desktop iframe path. 8s covers slow
+  // networks without racing them; touch devices use the tap-to-open card.
   useEffect(() => {
-    if (!doc || loaded) return;
-    const t = window.setTimeout(() => setFailed(true), 10_000);
+    if (!doc || loaded || isTouch) return;
+    const t = window.setTimeout(() => setFailed(true), 8_000);
     return () => window.clearTimeout(t);
-  }, [doc, loaded]);
+  }, [doc, loaded, isTouch]);
 
   useEffect(() => {
     if (!doc) return;
@@ -142,43 +152,93 @@ export default function DocViewer() {
 
             {/* Document */}
             <div className="relative flex-1 bg-white/[0.02]">
-              {!loaded && !failed && (
-                <div
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-                  aria-live="polite"
-                >
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-[rgba(var(--theme-accent-rgb),0.25)] border-t-[var(--theme-accent)]" />
-                  <p className="text-xs text-white/50">
-                    Loading {doc.label.toLowerCase()}…
-                  </p>
-                </div>
-              )}
-              {!loaded && failed && (
-                <div
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center"
-                  aria-live="polite"
-                >
-                  <p className="text-sm text-[var(--text)]">
-                    {doc.label} preview is temporarily unavailable.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={download}
-                    className="flex items-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] px-4 py-2 text-sm font-semibold text-[var(--theme-accent)] transition-colors duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.12)]"
+              {isTouch ? (
+                /* Mobile: browsers can't inline PDFs, so open in a new tab
+                   (native PDF viewer) or download. */
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
+                  <span
+                    className="grid h-16 w-16 place-items-center rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-[rgba(var(--theme-accent-rgb),0.1)]"
+                    style={{ color: "var(--theme-accent)" }}
+                    aria-hidden
                   >
-                    <Download size={14} strokeWidth={2.2} aria-hidden />
-                    Download {doc.label} directly
-                  </button>
+                    <FileText size={30} strokeWidth={1.8} />
+                  </span>
+                  <p className="max-w-xs text-sm leading-relaxed text-[var(--text)]">
+                    Open Srinivas RC&apos;s {doc.label} in your browser&apos;s
+                    PDF viewer, or download it.
+                  </p>
+                  <div className="flex flex-col items-stretch gap-2">
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.14)] px-6 py-3 text-sm font-semibold text-[var(--theme-accent)] transition-colors duration-150 active:scale-95"
+                    >
+                      <ExternalLink size={15} strokeWidth={2.2} aria-hidden />
+                      Open {doc.label}
+                    </a>
+                    <button
+                      type="button"
+                      onClick={download}
+                      className="flex items-center justify-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white/80 transition-colors duration-150 hover:text-white active:scale-95"
+                    >
+                      <Download size={15} strokeWidth={2.2} aria-hidden />
+                      Download
+                    </button>
+                  </div>
                 </div>
+              ) : (
+                <>
+                  {!loaded && !failed && (
+                    <div
+                      className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+                      aria-live="polite"
+                    >
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[rgba(var(--theme-accent-rgb),0.25)] border-t-[var(--theme-accent)]" />
+                      <p className="text-xs text-white/50">
+                        Loading {doc.label.toLowerCase()}…
+                      </p>
+                    </div>
+                  )}
+                  {!loaded && failed && (
+                    <div
+                      className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center"
+                      aria-live="polite"
+                    >
+                      <p className="text-sm text-[var(--text)]">
+                        {doc.label} preview is temporarily unavailable.
+                      </p>
+                      <div className="flex gap-2">
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-white/80 transition-colors duration-150 hover:text-white"
+                        >
+                          <ExternalLink size={14} strokeWidth={2.2} aria-hidden />
+                          Open in new tab
+                        </a>
+                        <button
+                          type="button"
+                          onClick={download}
+                          className="flex items-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] px-4 py-2 text-sm font-semibold text-[var(--theme-accent)] transition-colors duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.12)]"
+                        >
+                          <Download size={14} strokeWidth={2.2} aria-hidden />
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  <iframe
+                    src={doc.url}
+                    title={`Srinivas RC's ${doc.label}`}
+                    onLoad={() => setLoaded(true)}
+                    className={`h-full w-full transition-opacity duration-150 ${
+                      loaded ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                </>
               )}
-              <iframe
-                src={doc.url}
-                title={`Srinivas RC's ${doc.label}`}
-                onLoad={() => setLoaded(true)}
-                className={`h-full w-full transition-opacity duration-150 ${
-                  loaded ? "opacity-100" : "opacity-0"
-                }`}
-              />
             </div>
 
             {/* Footer — branded download */}

@@ -362,6 +362,20 @@ export default function Tag() {
         </button>
       </div>
 
+      {/* Persistent, low-key owner entrance — always visible when signed out
+          (signed-in users get the account menu in the header instead). */}
+      {!user && (
+        <div className="mt-auto pt-5 text-center">
+          <Link
+            href="/admin"
+            className="inline-flex min-h-[44px] items-center font-mono text-[11px] text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"
+          >
+            <span className="text-[var(--accent)]">$</span>
+            <span className="ml-1.5">sign in</span>
+          </Link>
+        </div>
+      )}
+
       {/* Fullscreen profile viewer (opens via avatar click or saffron dot) */}
       <ProfileLightbox />
     </div>

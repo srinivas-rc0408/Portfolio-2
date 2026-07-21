@@ -61,15 +61,18 @@ export default function QuoteOfDay() {
   // Pause the countdown while the user is hovering or has it expanded.
   const holdRef = useRef(false);
   // Reduced-motion users get instant appearance/disappearance (no slide).
-  const reducedRef = useRef(false);
+  // Lazy init (read once at mount) — the card only renders after a 10s delay,
+  // so there's no SSR/client mismatch, and it avoids reading a ref in render.
+  const [reduced] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 
   useEffect(() => {
     // Wait 10s after the site opens, THEN pick client-side (avoids hydration
     // mismatch); double-rAF lets the hidden state paint once so the slide-up
     // transition actually runs.
-    reducedRef.current = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
     let raf1 = 0;
     let raf2 = 0;
     const timer = window.setTimeout(() => {
@@ -121,7 +124,7 @@ export default function QuoteOfDay() {
         style={{
           transform: visible ? "translateY(0) scale(1)" : "translateY(120%) scale(0.98)",
           opacity: visible ? 1 : 0,
-          transition: reducedRef.current
+          transition: reduced
             ? "none"
             : "transform 400ms cubic-bezier(0.22, 1, 0.36, 1), opacity 400ms ease",
           willChange: "transform, opacity",
