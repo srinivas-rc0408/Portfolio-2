@@ -458,24 +458,24 @@ export default function Tag() {
                   </a>
                 ))}
               </nav>
+
+              {/* Owner entrance — lives in the footer only, shown when signed
+                  out (signed-in users get the header account menu instead). */}
+              {!user && (
+                <div className="mt-3 flex items-center justify-center gap-2 border-t border-[var(--border)] pt-3">
+                  <Link
+                    href="/admin"
+                    className="inline-flex min-h-[36px] items-center gap-1.5 rounded-full px-3 font-mono text-[11px] text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"
+                  >
+                    <span className="text-[var(--accent)]">$</span>
+                    <span>sign in</span>
+                  </Link>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      {/* Persistent, low-key owner entrance — always visible when signed out
-          (signed-in users get the account menu in the header instead). */}
-      {!user && (
-        <div className="mt-auto pt-6 text-center">
-          <Link
-            href="/admin"
-            className="inline-flex min-h-[44px] items-center font-mono text-[11px] text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"
-          >
-            <span className="text-[var(--accent)]">$</span>
-            <span className="ml-1.5">sign in</span>
-          </Link>
-        </div>
-      )}
 
       {/* Fullscreen profile viewer (opens via avatar click or saffron dot) */}
       <ProfileLightbox />
