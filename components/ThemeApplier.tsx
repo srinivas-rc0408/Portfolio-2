@@ -29,9 +29,12 @@ export default function ThemeApplier() {
       root.style.setProperty("--theme-accent", themeAccent);
       root.style.setProperty("--theme-accent-rgb", rgb);
     };
-    apply();
+    // Do NOT apply on mount: the accent is already correct on <html> from the
+    // server (SSR from the DB). Applying the possibly-stale localStorage value
+    // here would flash the wrong color over the SSR one. We only re-apply once
+    // hydrate() has fetched fresh settings (which fires SETTINGS_UPDATED_EVENT).
     window.addEventListener(SETTINGS_UPDATED_EVENT, apply);
-    // Load live settings + content from the server, then re-apply.
+    // Load live settings + content from the server, then apply.
     void hydrate();
     // Keep open sessions fresh: admin edits reach every visitor within ~10s
     // (poll only while the tab is visible; also refresh on focus).

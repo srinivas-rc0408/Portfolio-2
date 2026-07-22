@@ -1,10 +1,36 @@
 import type { Metadata } from "next";
-import Script from "next/script";
+import { cache } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL, SITE_NAME, SITE_TAGLINE } from "@/lib/seo-config";
 import ThemeApplier from "@/components/ThemeApplier";
+import { getSettings } from "@/lib/db";
 import "./globals.css";
+
+/** #rrggbb → "r, g, b" (falls back to the default green). */
+function hexToRgb(hex: string): string {
+  const h = hex.replace("#", "");
+  const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+  const n = parseInt(full.slice(0, 6), 16);
+  if (Number.isNaN(n) || full.length < 6) return "34, 197, 94";
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+}
+
+/**
+ * Resolve the admin-chosen accent server-side (deduped per request). Injected
+ * as an inline style on <html> so the FIRST paint — including the boot overlay
+ * — always matches the DB theme on every device / first visit, with no
+ * localStorage lag. Falls back to the default green if the DB is unavailable so
+ * a data outage never breaks page render.
+ */
+const resolveAccent = cache(async (): Promise<string> => {
+  try {
+    const { themeAccent } = await getSettings();
+    return /^#[0-9a-fA-F]{3,8}$/.test(themeAccent) ? themeAccent : "#22c55e";
+  } catch {
+    return "#22c55e";
+  }
+});
 
 // Single site font — JetBrains Mono everywhere (mapped to `font-mono` and the
 // body font-family in globals.css).
@@ -100,25 +126,32 @@ export const metadata: Metadata = {
   category: "technology",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const accent = await resolveAccent();
+  const accentRgb = hexToRgb(accent);
+
   return (
-    // suppressHydrationWarning: the pre-paint theme script mutates the html
-    // style attribute before React hydrates (standard next-themes pattern).
-    <html lang="en" suppressHydrationWarning>
+    // Theme accent is injected inline on <html> (server-rendered from the DB),
+    // so first paint + the boot overlay always match the chosen color with no
+    // flash or localStorage lag. suppressHydrationWarning: ThemeApplier keeps
+    // this in sync client-side for live cross-tab changes.
+    <html
+      lang="en"
+      suppressHydrationWarning
+      style={
+        {
+          "--accent": accent,
+          "--accent-rgb": accentRgb,
+          "--theme-accent": accent,
+          "--theme-accent-rgb": accentRgb,
+        } as React.CSSProperties
+      }
+    >
       <head>
-        {/* Apply the cached theme accent BEFORE first paint — kills the
-            default-cyan flash on every page (incl. the admin login). */}
-        <Script
-          id="theme-accent-prepaint"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `try{var s=JSON.parse(localStorage.getItem("portfolio:settings")||"{}");var a=s.themeAccent;if(typeof a==="string"&&/^#[0-9a-fA-F]{3,8}$/.test(a)){var r=document.documentElement;r.style.setProperty("--accent",a);r.style.setProperty("--theme-accent",a);var h=a.slice(1);if(h.length===3)h=h.split("").map(function(c){return c+c}).join("");var n=parseInt(h.slice(0,6),16);if(!isNaN(n)){var rgb=((n>>16)&255)+", "+((n>>8)&255)+", "+(n&255);r.style.setProperty("--accent-rgb",rgb);r.style.setProperty("--theme-accent-rgb",rgb);}}}catch(e){}`,
-          }}
-        />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"

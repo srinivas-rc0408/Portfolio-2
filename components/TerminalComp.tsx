@@ -201,6 +201,8 @@ const HELP_GROUPS: HelpGroup[] = [
     entries: [
       { command: "jerry", description: "Open the interactive AI chat interface." },
       { command: "play archman", description: "Play the terminal-based Arch-Man game." },
+      { command: "hire", description: "The recruiter's fast track. 😎" },
+      { command: "theme", description: "Show the current accent color." },
     ],
   },
   {
@@ -304,6 +306,8 @@ const COMMAND_NAMES = [
   "admin",
   "signin",
   "login",
+  "hire",
+  "theme",
   "clear",
   "history",
   "neofetch",
@@ -844,7 +848,52 @@ export default function Terminal({
       help: () => <Help />,
       whoami: () => user,
       date: () => new Date().toString(),
-      exit: () => "Close this tab to exit.",
+      exit: () => (
+        <span>
+          logout
+          <br />
+          Connection to srinivas-portfolio closed. (Kidding — close the tab, or
+          keep exploring: try{" "}
+          <span style={{ color: "var(--theme-accent)" }}>projects</span>.)
+        </span>
+      ),
+      // --- Cool, self-contained extras ---
+      hire: () => (
+        <pre className="pre-output">
+{`  ┌──────────────────────────────────────────────┐
+  │  Hiring an AI/ML engineer? You're in the      │
+  │  right terminal. Srinivas ships production    │
+  │  LLM apps end-to-end.                         │
+  └──────────────────────────────────────────────┘
+
+  → type 'resume'   to view the resume
+  → type 'projects' to see what he's built
+  → type 'connect'  to reach him
+  → type 'jerry'    to ask his AI anything`}
+        </pre>
+      ),
+      theme: () => {
+        const a =
+          typeof window !== "undefined"
+            ? getComputedStyle(document.documentElement)
+                .getPropertyValue("--theme-accent")
+                .trim()
+            : "";
+        return (
+          <span>
+            Current accent:{" "}
+            <span style={{ color: "var(--theme-accent)" }}>{a || "#22c55e"}</span>
+            {"  "}■ — set by the site owner in the admin panel.
+          </span>
+        );
+      },
+      secret: () => (
+        <span>
+          🐇 You found a secret. The white rabbit says: try{" "}
+          <span style={{ color: "var(--theme-accent)" }}>play archman</span> or{" "}
+          <span style={{ color: "var(--theme-accent)" }}>neofetch</span>.
+        </span>
+      ),
 
       // --- Privileged / mutating commands: refused on a read-only terminal ---
       sudo: () => stderr(`${user} is not in the sudoers file. This incident will be reported.`),
