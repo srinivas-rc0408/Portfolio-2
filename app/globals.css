@@ -17,15 +17,15 @@
      the restrained palette here — one token line instead of hundreds of
      per-component edits. Bright tokens → the single green accent; dark tokens
      → neutral borders/surfaces. */
-  --color-cyan-300: #22c55e;
-  --color-cyan-400: #22c55e;
-  --color-cyan-500: #22c55e;
+  --color-cyan-300: var(--theme-accent);
+  --color-cyan-400: var(--theme-accent);
+  --color-cyan-500: var(--theme-accent);
   --color-cyan-700: #262626;
   --color-cyan-800: #262626;
   --color-cyan-900: #171717;
-  --color-blue-400: #22c55e;
-  --color-blue-500: #22c55e;
-  --color-blue-600: #22c55e;
+  --color-blue-400: var(--theme-accent);
+  --color-blue-500: var(--theme-accent);
+  --color-blue-600: var(--theme-accent);
 }
 
 :root {
@@ -35,8 +35,8 @@
   --border: #262626;
   --text: #e5e5e5;
   --text-secondary: #737373;
-  --accent: #22c55e;
-  --accent-rgb: 34, 197, 94;
+  --accent: #ffffff;
+  --accent-rgb: 255, 255, 255;
 
   /* Legacy alias — the whole component tree references `--theme-accent`; point
      it at the single accent so there is exactly one accent color site-wide.

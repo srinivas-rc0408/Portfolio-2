@@ -168,7 +168,7 @@ async function init(): Promise<void> {
       id INT PRIMARY KEY,
       display_name TEXT NOT NULL DEFAULT 'Srinivas RC',
       title TEXT NOT NULL DEFAULT 'AI / ML Engineer',
-      theme_accent TEXT NOT NULL DEFAULT '#22c55e',
+      theme_accent TEXT NOT NULL DEFAULT '#ffffff',
       profile_image TEXT,
       summary TEXT,
       updated_at TIMESTAMPTZ DEFAULT now()

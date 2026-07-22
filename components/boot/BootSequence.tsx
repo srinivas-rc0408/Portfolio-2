@@ -88,7 +88,7 @@ export default function BootSequence() {
           .trim()
       : "";
   const accentRaw = cssAccent || loadSettings().themeAccent;
-  const accent = /^#[0-9a-fA-F]{3,8}$/.test(accentRaw) ? accentRaw : "#22c55e";
+  const accent = /^#[0-9a-fA-F]{3,8}$/.test(accentRaw) ? accentRaw : "#ffffff";
   const darkAccent = luminance(accent) < 0.09; // near-black → light backdrop
   const backdrop = darkAccent ? "#ececec" : "#000000";
   const baseOutline = darkAccent ? "#64748b" : "#94a3b8";

@@ -12,7 +12,7 @@ function hexToRgb(hex: string): string {
   const h = hex.replace("#", "");
   const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
   const n = parseInt(full.slice(0, 6), 16);
-  if (Number.isNaN(n) || full.length < 6) return "34, 197, 94";
+  if (Number.isNaN(n) || full.length < 6) return "255, 255, 255";
   return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
 }
 
@@ -26,9 +26,9 @@ function hexToRgb(hex: string): string {
 const resolveAccent = cache(async (): Promise<string> => {
   try {
     const { themeAccent } = await getSettings();
-    return /^#[0-9a-fA-F]{3,8}$/.test(themeAccent) ? themeAccent : "#22c55e";
+    return /^#[0-9a-fA-F]{3,8}$/.test(themeAccent) ? themeAccent : "#ffffff";
   } catch {
-    return "#22c55e";
+    return "#ffffff";
   }
 });
 
