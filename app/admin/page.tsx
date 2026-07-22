@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
 import { Eye, EyeOff, X } from "lucide-react";
 import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
@@ -241,20 +241,48 @@ function GlobalSettingsPanel() {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [dragging, setDragging] = useState(false);
   const [saved, setSaved] = useState(false);
+  // Draft workflow: edits stay local until the admin clicks Save.
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const dirtyRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const read = () => setSettings(loadSettings());
+    // Sync from the server, but never clobber an in-progress edit (a background
+    // hydrate poll fires the same event every ~10s).
+    const read = () => {
+      if (!dirtyRef.current) setSettings(loadSettings());
+    };
     read();
     window.addEventListener(SETTINGS_UPDATED_EVENT, read);
     return () => window.removeEventListener(SETTINGS_UPDATED_EVENT, read);
   }, []);
 
+  // Edits update the draft only — nothing hits the server or the live site
+  // until Save is clicked.
   const patch = (p: Partial<SiteSettings>) => {
     setSettings((prev) => ({ ...prev, ...p }));
-    void saveSettings(p);
+    dirtyRef.current = true;
+    setDirty(true);
+    setSaved(false);
+  };
+
+  const save = async () => {
+    setSaving(true);
+    // Persist the FULL draft → localStorage + server + SETTINGS_UPDATED_EVENT
+    // (which repaints the live site with every change at once).
+    await saveSettings(settings);
+    dirtyRef.current = false;
+    setSaving(false);
+    setDirty(false);
     setSaved(true);
-    window.setTimeout(() => setSaved(false), 1200);
+    window.setTimeout(() => setSaved(false), 2500);
+  };
+
+  const discard = () => {
+    dirtyRef.current = false;
+    setDirty(false);
+    setSettings(loadSettings());
   };
 
   const handleFile = async (file: File | null | undefined) => {
@@ -304,7 +332,7 @@ function GlobalSettingsPanel() {
           className={`resize-y ${FIELD}`}
         />
         <p className="mt-1 text-[10px] text-gray-600">
-          {settings.summary.length}/1500 · reflects on the site instantly
+          {settings.summary.length}/1500 · applied when you Save
         </p>
       </section>
 
@@ -347,7 +375,7 @@ function GlobalSettingsPanel() {
             <span className="mb-1 text-lg">⬆</span>
             Drop an image here or click to upload
             <span className="mt-1 text-[10px] text-gray-500">
-              auto-resized · reflects on the site instantly
+              auto-resized · applied when you Save
             </span>
           </div>
           <input
@@ -403,18 +431,56 @@ function GlobalSettingsPanel() {
           </label>
         </div>
         <p className="mt-3 text-[11px] text-gray-500">
-          Glowing borders, highlights, and hover states update live across the
-          site.
+          Accent color for prompts, links, and highlights across the site —
+          applied when you Save.
         </p>
       </section>
 
-      <p
-        className={`text-xs text-[var(--theme-accent)] transition-opacity duration-150 ${
-          saved ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        ✓ saved
-      </p>
+      {/* Sticky Save bar — nothing reaches the live site until this is clicked.
+          Slides up only when there are unsaved changes. */}
+      <div className="h-16" aria-hidden />
+      <AnimatePresence>
+        {(dirty || saving || saved) && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-black/80 backdrop-blur-xl"
+          >
+            <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-5 py-3">
+              <span className="font-mono text-xs text-gray-400">
+                {saving ? (
+                  "Saving…"
+                ) : saved ? (
+                  <span className="text-[var(--theme-accent)]">✓ Saved · live on the site</span>
+                ) : (
+                  "You have unsaved changes"
+                )}
+              </span>
+              <div className="flex items-center gap-2">
+                {dirty && !saving && (
+                  <button
+                    type="button"
+                    onClick={discard}
+                    className="rounded-lg px-3 py-2 font-mono text-xs text-gray-400 transition-colors duration-150 hover:text-white"
+                  >
+                    Discard
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={save}
+                  disabled={!dirty || saving}
+                  className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] bg-[rgba(var(--theme-accent-rgb),0.14)] px-5 py-2 font-mono text-sm font-semibold text-[var(--theme-accent)] transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {saving ? "Saving…" : "Save changes"}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

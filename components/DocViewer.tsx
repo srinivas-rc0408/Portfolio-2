@@ -33,15 +33,21 @@ export default function DocViewer() {
   // hasn't completed after the timeout is treated as failed — the viewer then
   // offers a direct download instead of spinning forever.
   const [failed, setFailed] = useState(false);
-  // Mobile browsers don't render PDFs inline in an <iframe> (they blank out),
-  // so on coarse-pointer devices we skip the frame and show a tap-to-open card.
+  // iOS Safari fires an iframe's onLoad for a PDF but renders it blank (and
+  // there's no JS way to detect that), so ONLY on iOS we skip the frame and
+  // show a tap-to-open card. Desktop, Android, and Chrome all render the PDF
+  // inline in the iframe, so they get the real in-popup preview.
   // Lazy init (not an effect): the viewer only mounts on a user action, well
   // after hydration, so there's no SSR/client mismatch to worry about.
-  const [isTouch] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(pointer: coarse)").matches
-  );
+  const [isIOS] = useState(() => {
+    if (typeof navigator === "undefined") return false;
+    const ua = navigator.userAgent;
+    return (
+      /iPad|iPhone|iPod/.test(ua) ||
+      // iPadOS 13+ reports as Macintosh but has touch points.
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+    );
+  });
 
   useEffect(() => {
     const onView = (e: Event) => {
@@ -59,10 +65,10 @@ export default function DocViewer() {
   // Slow-load watchdog — only for the desktop iframe path. 8s covers slow
   // networks without racing them; touch devices use the tap-to-open card.
   useEffect(() => {
-    if (!doc || loaded || isTouch) return;
+    if (!doc || loaded || isIOS) return;
     const t = window.setTimeout(() => setFailed(true), 8_000);
     return () => window.clearTimeout(t);
-  }, [doc, loaded, isTouch]);
+  }, [doc, loaded, isIOS]);
 
   useEffect(() => {
     if (!doc) return;
@@ -152,7 +158,7 @@ export default function DocViewer() {
 
             {/* Document */}
             <div className="relative flex-1 bg-white/[0.02]">
-              {isTouch ? (
+              {isIOS ? (
                 /* Mobile: browsers can't inline PDFs, so open in a new tab
                    (native PDF viewer) or download. */
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">

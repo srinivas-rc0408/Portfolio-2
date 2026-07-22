@@ -90,6 +90,17 @@ html {
   line-height: 1.65;
 }
 
+/* iOS/Safari auto-zoom into any focused field whose font-size is < 16px. Force
+   16px on touch/small screens so opening Jerry, Feedback, and the admin forms
+   never zooms the viewport. Desktop keeps the compact sizing. */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 /* --- Hero typewriter + blinking block cursor --- */
 @keyframes typewriter {
   from { width: 0; }
