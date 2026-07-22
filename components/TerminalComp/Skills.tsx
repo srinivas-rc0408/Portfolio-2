@@ -80,6 +80,24 @@ const BrainIcon: React.FC = () => (
   </svg>
 );
 
+const LinuxIcon: React.FC = () => (
+  <svg
+    className="w-5 h-5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <rect x="2" y="3" width="20" height="14" rx="2" />
+    <path d="M6 8l3 2.5L6 13" />
+    <path d="M11 13h5" />
+    <path d="M8 21h8M12 17v4" />
+  </svg>
+);
+
 // Typing animation hook
 const useTypewriter = (text: string, speed: number = 50): TypewriterResult => {
   const [displayText, setDisplayText] = useState<string>("");
@@ -308,8 +326,14 @@ const Skills: React.FC = () => {
       skills: skillsData.frameworks,
     },
     {
+      key: "linux",
+      title: "Linux / OS",
+      icon: <LinuxIcon />,
+      skills: skillsData.linux,
+    },
+    {
       key: "tools",
-      title: "OS & Tools",
+      title: "Dev Tools",
       icon: <ToolIcon />,
       skills: skillsData.tools,
     },

@@ -36,6 +36,7 @@ const SECTION_LABELS: Record<CmsSection, string> = {
   experience: "Experience",
   achievements: "Achievements",
   connect: "Connect",
+  quotes: "Quotes",
 };
 
 const EMPTY_FORM = {
@@ -667,6 +668,14 @@ function Workspace({ section }: { section: CmsSection }) {
         <h3 className="mb-3 text-sm font-bold text-white">
           {editingId ? "$ edit entry" : "$ add entry"}
         </h3>
+        {section === "quotes" && (
+          <p className="mb-3 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.25)] bg-[rgba(var(--theme-accent-rgb),0.06)] p-2.5 text-[11px] leading-relaxed text-gray-300">
+            <span className="text-[var(--theme-accent)]">Title</span> = the quote ·{" "}
+            <span className="text-[var(--theme-accent)]">Description</span> = the author ·
+            set <span className="text-[var(--theme-accent)]">Link</span> to{" "}
+            <code className="text-white">pin</code> to always show this quote.
+          </p>
+        )}
         <div className="flex flex-col gap-2">
           <input
             placeholder="Title *"

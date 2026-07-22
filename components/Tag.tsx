@@ -409,25 +409,30 @@ export default function Tag() {
         })}
       </nav>
 
-      {/* CONNECT — toggles an inline social/contact panel, anchored right here
-          in the identity pane (no fixed overlay → no overlap with the quote or
-          feedback button). Press again to close. */}
-      <div className="mx-auto mt-3 flex w-full max-w-[280px] flex-col items-center">
+      {/* CONNECT — toggles an inline social/contact card, anchored right here in
+          the identity pane. Glass card, staggered icons, lift-on-hover. */}
+      <div className="mx-auto mt-4 flex w-full max-w-[280px] flex-col items-center">
         <button
           type="button"
           onClick={() => setConnectOpen((o) => !o)}
           aria-expanded={connectOpen}
           aria-label={connectOpen ? "Hide contact & social links" : "Show contact & social links"}
           title="Contact & social links"
-          className="group/handle flex min-h-[44px] items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-1 text-[10px] font-mono uppercase tracking-wider text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)] aria-expanded:border-[var(--accent)] aria-expanded:text-[var(--accent)]"
+          className="group/handle flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--border)] bg-white/[0.02] px-5 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-secondary)] shadow-sm transition-all duration-200 ease-out hover:border-[rgba(var(--accent-rgb),0.7)] hover:text-[var(--accent)] hover:shadow-[0_0_18px_-6px_rgba(var(--accent-rgb),0.6)] aria-expanded:border-[rgba(var(--accent-rgb),0.7)] aria-expanded:text-[var(--accent)]"
         >
+          <span
+            className={`h-1.5 w-1.5 rounded-full bg-[var(--accent)] transition-transform duration-200 ${
+              connectOpen ? "scale-125" : "scale-100 opacity-60 group-hover/handle:opacity-100"
+            }`}
+            aria-hidden
+          />
+          {connectOpen ? "close" : "connect"}
           <ChevronUp
             size={13}
             strokeWidth={2.5}
             aria-hidden
             className={`transition-transform duration-300 ease-out ${connectOpen ? "rotate-180" : ""}`}
           />
-          {connectOpen ? "close" : "connect"}
         </button>
 
         <AnimatePresence initial={false}>
@@ -437,41 +442,55 @@ export default function Tag() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className="w-full overflow-hidden"
             >
-              <nav
-                className="mt-3 flex items-center justify-center gap-2.5"
-                aria-label="Social links"
-              >
-                {footerLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    target={link.href.startsWith("http") ? "_blank" : undefined}
-                    rel="noopener noreferrer"
-                    aria-label={link.name}
-                    title={link.name}
-                    className="grid h-11 w-11 place-items-center rounded-full border border-[var(--border)] text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                  >
-                    {SOCIAL_ICONS[link.name]}
-                  </a>
-                ))}
-              </nav>
+              <div className="mt-3 rounded-2xl border border-[var(--border)] bg-white/[0.03] p-4 backdrop-blur-sm">
+                <p className="mb-3 text-center font-mono text-[9px] uppercase tracking-[0.28em] text-[var(--text-secondary)]">
+                  find me on
+                </p>
+                <nav
+                  className="flex items-center justify-center gap-2"
+                  aria-label="Social links"
+                >
+                  {footerLinks.map((link, i) => (
+                    <motion.a
+                      key={link.name}
+                      initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{
+                        delay: 0.06 * i + 0.08,
+                        duration: 0.28,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      href={link.href}
+                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      rel="noopener noreferrer"
+                      aria-label={link.name}
+                      title={link.name}
+                      className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-secondary)] transition-all duration-200 ease-out hover:-translate-y-1 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.12)] hover:text-[var(--accent)] active:scale-90"
+                    >
+                      {SOCIAL_ICONS[link.name]}
+                    </motion.a>
+                  ))}
+                </nav>
 
-              {/* Owner entrance — lives in the footer only, shown when signed
-                  out (signed-in users get the header account menu instead). */}
-              {!user && (
-                <div className="mt-3 flex items-center justify-center gap-2 border-t border-[var(--border)] pt-3">
-                  <Link
-                    href="/admin"
-                    className="inline-flex min-h-[36px] items-center gap-1.5 rounded-full px-3 font-mono text-[11px] text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"
-                  >
-                    <span className="text-[var(--accent)]">$</span>
-                    <span>sign in</span>
-                  </Link>
-                </div>
-              )}
+                {/* Owner entrance — footer only, shown when signed out. */}
+                {!user && (
+                  <div className="mt-4 flex items-center justify-center border-t border-[var(--border)] pt-3">
+                    <Link
+                      href="/admin"
+                      className="group/si inline-flex min-h-[36px] items-center gap-1.5 rounded-full px-3 font-mono text-[11px] text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"
+                    >
+                      <span className="text-[var(--accent)]">$</span>
+                      <span>sign in</span>
+                      <span className="opacity-0 transition-opacity duration-150 group-hover/si:opacity-100">
+                        →
+                      </span>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

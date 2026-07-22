@@ -350,7 +350,7 @@ export default function Projects() {
                         $
                       </span>
                       <span style={{ color: "#9ca3af" }}>git clone</span>
-                      <span style={{ color: "#60a5fa", wordBreak: "break-all", flex: "1 1 auto" }}>
+                      <span style={{ color: "var(--theme-accent)", wordBreak: "break-all", flex: "1 1 auto" }}>
                         {project.githubUrl}.git
                       </span>
                       <span

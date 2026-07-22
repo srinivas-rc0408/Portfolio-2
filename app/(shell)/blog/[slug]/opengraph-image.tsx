@@ -70,7 +70,7 @@ export default async function OpenGraphImage({
             style={{
               display: "flex",
               marginLeft: 14,
-              color: "#38bdf8",
+              color: "#22c55e",
               fontSize: 22,
               letterSpacing: 1,
             }}
@@ -90,7 +90,7 @@ export default async function OpenGraphImage({
           <div
             style={{
               display: "flex",
-              color: "#38bdf8",
+              color: "#22c55e",
               fontSize: 28,
               marginBottom: 18,
             }}
@@ -156,7 +156,7 @@ export default async function OpenGraphImage({
                 width: 10,
                 height: 10,
                 borderRadius: 5,
-                background: "#38bdf8",
+                background: "#22c55e",
               }}
             />
             <div style={{ display: "flex" }}>

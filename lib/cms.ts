@@ -32,6 +32,7 @@ export const CMS_SECTIONS = [
   "experience",
   "achievements",
   "connect",
+  "quotes",
 ] as const;
 
 export type CmsSection = (typeof CMS_SECTIONS)[number];

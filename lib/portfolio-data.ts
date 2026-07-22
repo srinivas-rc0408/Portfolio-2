@@ -139,6 +139,7 @@ export interface SkillsCategory {
   ai_ml: string[];
   frameworks: string[];
   tools: string[];
+  linux: string[];
 }
 
 export const skills: SkillsCategory = {
@@ -163,13 +164,23 @@ export const skills: SkillsCategory = {
     "Streamlit",
   ],
   tools: [
-    "Linux (Arch / Ubuntu)",
     "Git / GitHub",
     "Firebase",
     "Supabase",
     "Prisma",
     "REST APIs",
     "MLflow",
+    "VS Code",
+  ],
+  // Distros daily-driven / distro-hopped over the years (Arch-family is home base).
+  linux: [
+    "Arch Linux",
+    "CachyOS",
+    "Fedora",
+    "Ubuntu",
+    "Linux Mint",
+    "Debian",
+    "Pop!_OS",
   ],
 };
 
@@ -179,6 +190,7 @@ export const skillCommands: Record<keyof SkillsCategory, string> = {
   ai_ml: "python -m pip list | grep ai",
   frameworks: "cat /skills/frameworks/stack.txt",
   tools: "which --all tools",
+  linux: "cat /etc/os-release && lsblk",
 };
 
 // ---------------------------------------------------------------------------

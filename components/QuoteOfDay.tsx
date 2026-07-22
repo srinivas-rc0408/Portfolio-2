@@ -1,11 +1,39 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { getItems } from "@/lib/cms";
 
 interface Quote {
   text: string;
   author: string;
   meaning: string;
+}
+
+/**
+ * Admin-added quotes (CMS "quotes" section): title = quote text, description =
+ * author. Set the item's link to "pin" to pin it (always shown). Merged with
+ * the built-in list below so the owner can add their own from the admin panel.
+ */
+function adminQuotes(): Quote[] {
+  return getItems("quotes")
+    .filter((i) => i.title?.trim())
+    .map((i) => ({
+      text: i.title.trim(),
+      author: (i.description || "").trim() || "Anonymous",
+      meaning: "",
+    }));
+}
+function pinnedQuote(): Quote | null {
+  const p = getItems("quotes").find(
+    (i) => (i.link || "").trim().toLowerCase() === "pin" && i.title?.trim()
+  );
+  return p
+    ? {
+        text: p.title.trim(),
+        author: (p.description || "").trim() || "Anonymous",
+        meaning: "",
+      }
+    : null;
 }
 
 const quotes: Quote[] = [
@@ -43,26 +71,42 @@ const quotes: Quote[] = [
 
 /**
  * Floating "Quote of the Day" toast — fixed bottom-right, overlays the site
- * without affecting page scroll. Appears 10s after the site opens (lets the
- * visitor take in the terminal first), slides up smoothly, hover reveals the
- * author, click springs open the meaning, ✕ dismisses.
+ * without affecting page scroll.
+ *   · First shows 15s after the site opens.
+ *   · After ✕ (or auto-hide) it returns 30s later with a NEW quote.
+ *   · Only on the home page, and never while a popup/dialog is open — if one
+ *     opens while it's showing, it slips away and comes back afterwards.
+ *   · Randomized via a shuffle bag: no repeats until every quote has shown, so
+ *     the next one is genuinely unpredictable.
+ * Hover reveals the author; click springs open the meaning.
  */
-const APPEAR_AFTER_MS = 10_000; // delay before the toast slides in
-const VISIBLE_MS = 60_000; // stays fully visible for 1 minute, then fades
+const APPEAR_FIRST_MS = 15_000; // first appearance after load
+const APPEAR_AGAIN_MS = 30_000; // after ✕ it returns in 30s with a new quote
+const VISIBLE_MS = 600_000; // if left alone, it stays for 10 minutes
+const RETRY_MS = 4_000; // blocked (popup open / not home) → check again soon
+
+/** Fisher–Yates shuffle → an unpredictable, repeat-free order. */
+function shuffled(pool: Quote[]): Quote[] {
+  const b = [...pool];
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
 
 export default function QuoteOfDay() {
-  // Client-only pick keeps SSR markup identical (no hydration mismatch).
   const [quote, setQuote] = useState<Quote | null>(null);
-  const [entered, setEntered] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [leaving, setLeaving] = useState(false); // 1-min fade-out
-  const [dismissed, setDismissed] = useState(false);
-  const [gone, setGone] = useState(false);
-  // Pause the countdown while the user is hovering or has it expanded.
+  // Pause the auto-hide while the user is hovering or has it expanded.
   const holdRef = useRef(false);
-  // Reduced-motion users get instant appearance/disappearance (no slide).
-  // Lazy init (read once at mount) — the card only renders after a 10s delay,
-  // so there's no SSR/client mismatch, and it avoids reading a ref in render.
+  const bagRef = useRef<Quote[]>([]);
+  const showTimer = useRef<number | undefined>(undefined);
+  const hideTimer = useRef<number | undefined>(undefined);
+  const visibleRef = useRef(false); // mirror of `visible` for the observer closure
+  const dismissRef = useRef<() => void>(() => {}); // ✕ handler set by the effect
+  // Reduced-motion users get an instant appearance (no slide).
   const [reduced] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -70,44 +114,82 @@ export default function QuoteOfDay() {
   );
 
   useEffect(() => {
-    // Wait 10s after the site opens, THEN pick client-side (avoids hydration
-    // mismatch); double-rAF lets the hidden state paint once so the slide-up
-    // transition actually runs.
-    let raf1 = 0;
-    let raf2 = 0;
-    const timer = window.setTimeout(() => {
-      raf1 = requestAnimationFrame(() => {
-        setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-        raf2 = requestAnimationFrame(() => setEntered(true));
-      });
-    }, APPEAR_AFTER_MS);
+    // Show only on the home page and never over an open popup/dialog.
+    const canShow = () =>
+      window.location.pathname === "/" &&
+      !document.querySelector('[role="dialog"], [aria-modal="true"]');
+
+    const draw = (): Quote => {
+      // A pinned admin quote always wins.
+      const pin = pinnedQuote();
+      if (pin) return pin;
+      if (bagRef.current.length === 0) {
+        // Rebuild the bag from built-ins + admin quotes each cycle so newly
+        // added quotes join the rotation without a reload.
+        bagRef.current = shuffled([...quotes, ...adminQuotes()]);
+      }
+      return bagRef.current.pop() as Quote;
+    };
+
+    const show = () => {
+      if (!canShow()) {
+        showTimer.current = window.setTimeout(show, RETRY_MS);
+        return;
+      }
+      setExpanded(false);
+      holdRef.current = false;
+      setQuote(draw());
+      // double-rAF so the hidden state paints once → the slide-up runs.
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setVisible(true))
+      );
+      armAutoHide();
+    };
+
+    const armAutoHide = () => {
+      window.clearTimeout(hideTimer.current);
+      hideTimer.current = window.setTimeout(() => {
+        if (holdRef.current) {
+          armAutoHide(); // held open (hover/expanded) → keep checking
+          return;
+        }
+        hideAndReschedule();
+      }, VISIBLE_MS);
+    };
+
+    const hideAndReschedule = () => {
+      setVisible(false);
+      window.clearTimeout(hideTimer.current);
+      window.setTimeout(() => setQuote(null), 400); // after the exit transition
+      showTimer.current = window.setTimeout(show, APPEAR_AGAIN_MS);
+    };
+    dismissRef.current = hideAndReschedule;
+
+    // If a popup opens while the quote is up, let it slip away (return later).
+    const observer = new MutationObserver(() => {
+      if (
+        visibleRef.current &&
+        document.querySelector('[role="dialog"], [aria-modal="true"]')
+      ) {
+        hideAndReschedule();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    showTimer.current = window.setTimeout(show, APPEAR_FIRST_MS);
     return () => {
-      window.clearTimeout(timer);
-      cancelAnimationFrame(raf1);
-      cancelAnimationFrame(raf2);
+      window.clearTimeout(showTimer.current);
+      window.clearTimeout(hideTimer.current);
+      observer.disconnect();
     };
   }, []);
 
-  // Countdown ticks only while not held; on reaching zero → gentle fade → unmount.
+  // Mirror `visible` into a ref for the MutationObserver closure.
   useEffect(() => {
-    if (!quote) return;
-    const TICK = 250;
-    let remaining = VISIBLE_MS;
-    const id = window.setInterval(() => {
-      if (holdRef.current) return;
-      remaining -= TICK;
-      if (remaining <= 0) {
-        window.clearInterval(id);
-        setLeaving(true);
-        window.setTimeout(() => setGone(true), 400); // matches the exit transition
-      }
-    }, TICK);
-    return () => window.clearInterval(id);
-  }, [quote]);
+    visibleRef.current = visible;
+  }, [visible]);
 
-  if (!quote || dismissed || gone) return null;
-
-  const visible = entered && !leaving;
+  if (!quote) return null;
 
   return (
     /* pointer-events-none wrapper: the page scrolls/clicks straight through
@@ -153,7 +235,7 @@ export default function QuoteOfDay() {
             onPointerDown={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              setDismissed(true);
+              dismissRef.current(); // hide now, return in 30s with a new quote
             }}
             className="pointer-events-auto absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white/50 transition-all hover:bg-white/10 hover:text-white active:scale-90"
           >
