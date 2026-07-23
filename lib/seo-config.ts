@@ -27,14 +27,6 @@ export const TWITTER_HANDLE = "";
 export const DEFAULT_OG_IMAGE = "/images/logo.jpg";
 export const LOGO_URL = `${SITE_URL}/images/logo.jpg`;
 
-export const BLOG_PATH = "/blog";
-export const BLOG_RSS_PATH = "/blog/rss.xml";
-export const BLOG_CANONICAL = `${SITE_URL}${BLOG_PATH}`;
-export const BLOG_RSS_URL = `${SITE_URL}${BLOG_RSS_PATH}`;
-
-export const BLOG_DESCRIPTION =
-  "Developer blog by Srinivas RC — notes on AI engineering, LLMs, agentic systems, and Linux.";
-
 export function toIsoDateTime(dateStr?: string): string | undefined {
   if (!dateStr) return undefined;
   const d = new Date(dateStr);
@@ -50,8 +42,4 @@ export function readingTimeMinutes(text: string): number {
 export function absoluteUrl(path: string): string {
   if (path.startsWith("http")) return path;
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
-}
-
-export function postOgImageUrl(slug: string): string {
-  return absoluteUrl(`/blog/${slug}/opengraph-image`);
 }
