@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Tag from "@/components/Tag";
 import QuoteOfDay from "@/components/QuoteOfDay";
+import WelcomePopup from "@/components/WelcomePopup";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import GameModal from "@/components/GameModal";
 import DocViewer from "@/components/DocViewer";
@@ -60,6 +61,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <section className="terminal-pane">{children}</section>
         </div>
       </main>
+      {/* Jerry welcome toast — slides in bottom-right 1.5s after load (home only) */}
+      {!isBlog && <WelcomePopup />}
       {/* Floating quote toast — overlays the site, never affects layout/scroll */}
       <QuoteOfDay />
       {/* Document viewer — resume/CV/certificates popup (view + download) */}

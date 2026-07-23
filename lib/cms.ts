@@ -21,6 +21,8 @@ export interface CmsItem {
   tech?: string[];
   imageUrl?: string;
   private: boolean;
+  pinned?: boolean;
+  starred?: boolean;
 }
 
 export const CMS_SECTIONS = [
@@ -111,6 +113,8 @@ interface ApiEntry {
   tech: string[];
   imageUrl: string | null;
   isPrivate: boolean;
+  pinned?: boolean;
+  starred?: boolean;
 }
 
 function toItem(e: ApiEntry): CmsItem {
@@ -125,6 +129,8 @@ function toItem(e: ApiEntry): CmsItem {
     tech: e.tech,
     imageUrl: e.imageUrl ?? undefined,
     private: e.isPrivate,
+    pinned: !!e.pinned,
+    starred: !!e.starred,
   };
 }
 

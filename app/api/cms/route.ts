@@ -40,6 +40,8 @@ function parseEntry(b: Record<string, unknown>): Omit<DbCmsEntry, "id"> | null {
     imageUrl: typeof b.imageUrl === "string" && b.imageUrl ? b.imageUrl : null,
     isPrivate: b.isPrivate === true,
     sortOrder: typeof b.sortOrder === "number" ? b.sortOrder : 0,
+    pinned: b.pinned === true,
+    starred: b.starred === true,
   };
 }
 

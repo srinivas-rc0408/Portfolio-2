@@ -72,6 +72,11 @@ const CmsSectionOutput: React.FC<{ section: CmsSection }> = ({ section }) => {
             )}
             <span className="min-w-0">
               <span className="font-semibold text-white">{item.title}</span>
+              {item.starred && (
+                <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-2 py-0.5 align-middle text-[9px] font-bold uppercase tracking-wider text-[var(--theme-accent)]">
+                  ★ Featured
+                </span>
+              )}
               {item.date && (
                 <span className="text-gray-500"> ({item.date})</span>
               )}

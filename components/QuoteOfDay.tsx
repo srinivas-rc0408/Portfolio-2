@@ -114,10 +114,13 @@ export default function QuoteOfDay() {
   );
 
   useEffect(() => {
-    // Show only on the home page and never over an open popup/dialog.
+    // Show only on the home page, never over an open popup/dialog, and never
+    // while the Jerry welcome toast is still up (they'd stack bottom-right).
     const canShow = () =>
       window.location.pathname === "/" &&
-      !document.querySelector('[role="dialog"], [aria-modal="true"]');
+      !document.querySelector(
+        '[role="dialog"], [aria-modal="true"], [data-welcome-popup]'
+      );
 
     const draw = (): Quote => {
       // A pinned admin quote always wins.

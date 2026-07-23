@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
-import { Eye, EyeOff, X } from "lucide-react";
+import { Eye, EyeOff, Pin, Star, X } from "lucide-react";
 import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
 import { CardSkeletonList, RowSkeletonList } from "@/components/ui/Skeleton";
 import {
@@ -656,6 +656,27 @@ function Workspace({ section }: { section: CmsSection }) {
     }
   };
 
+  // Pin (float to top of the section) / Star (featured badge) — saved instantly,
+  // so the public site reflects it on its next hydrate.
+  const togglePin = async (item: CmsItem) => {
+    setUploadError(null);
+    try {
+      await updateItem(section, { ...item, pinned: !item.pinned });
+      await refresh();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not pin the entry.");
+    }
+  };
+  const toggleStar = async (item: CmsItem) => {
+    setUploadError(null);
+    try {
+      await updateItem(section, { ...item, starred: !item.starred });
+      await refresh();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not star the entry.");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
       {/* Add / edit form — for resume/CV the "add" form is replaced by upload,
@@ -862,6 +883,41 @@ function Workspace({ section }: { section: CmsSection }) {
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
+                    {/* Pin & Star — projects and certificates only. Pin floats
+                        the item to the top of its public section; star adds a
+                        featured badge. Saved instantly. */}
+                    {(section === "projects" || section === "certificates") && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => togglePin(item)}
+                          aria-pressed={!!item.pinned}
+                          aria-label={item.pinned ? "Unpin" : "Pin to top"}
+                          title={item.pinned ? "Pinned to top — click to unpin" : "Pin to top of the section"}
+                          className={`grid h-8 w-8 place-items-center rounded-md border transition-colors duration-150 ${
+                            item.pinned
+                              ? "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-[var(--theme-accent)]"
+                              : "border-white/15 text-gray-500 hover:text-white"
+                          }`}
+                        >
+                          <Pin size={14} strokeWidth={2} className={item.pinned ? "fill-current" : ""} aria-hidden />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => toggleStar(item)}
+                          aria-pressed={!!item.starred}
+                          aria-label={item.starred ? "Unstar" : "Star as featured"}
+                          title={item.starred ? "Featured — click to unstar" : "Star as featured"}
+                          className={`grid h-8 w-8 place-items-center rounded-md border transition-colors duration-150 ${
+                            item.starred
+                              ? "border-yellow-500/60 bg-yellow-500/15 text-yellow-400"
+                              : "border-white/15 text-gray-500 hover:text-white"
+                          }`}
+                        >
+                          <Star size={14} strokeWidth={2} className={item.starred ? "fill-current" : ""} aria-hidden />
+                        </button>
+                      </>
+                    )}
                     {/* Public/Private toggle with a visible label so it's clear
                         what it does. Private entries are hidden from the site. */}
                     <button

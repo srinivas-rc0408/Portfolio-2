@@ -104,6 +104,8 @@ export interface DbCmsEntry {
   imageUrl: string | null;
   isPrivate: boolean;
   sortOrder: number;
+  pinned: boolean;
+  starred: boolean;
 }
 
 export interface DbSettings {
@@ -193,9 +195,15 @@ async function init(): Promise<void> {
       image_url TEXT,
       is_private BOOLEAN NOT NULL DEFAULT false,
       sort_order INT NOT NULL DEFAULT 0,
+      pinned BOOLEAN NOT NULL DEFAULT false,
+      starred BOOLEAN NOT NULL DEFAULT false,
       created_at TIMESTAMPTZ DEFAULT now()
     )`,
   ]);
+
+  // Migrate tables created before pin/star existed.
+  await sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false`;
+  await sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS starred BOOLEAN NOT NULL DEFAULT false`;
 
   await sql`INSERT INTO site_setting (id) VALUES (1) ON CONFLICT (id) DO NOTHING`;
   await seed();
@@ -215,6 +223,8 @@ async function seed(): Promise<void> {
       imageUrl: e.imageUrl ?? null,
       isPrivate: e.isPrivate ?? false,
       sortOrder: e.sortOrder ?? 0,
+      pinned: e.pinned ?? false,
+      starred: e.starred ?? false,
     });
 
   push("resume", {
@@ -322,6 +332,8 @@ interface CmsRow {
   image_url: string | null;
   is_private: boolean;
   sort_order: number;
+  pinned: boolean;
+  starred: boolean;
 }
 
 function mapEntry(r: CmsRow): DbCmsEntry {
@@ -337,6 +349,8 @@ function mapEntry(r: CmsRow): DbCmsEntry {
     imageUrl: r.image_url,
     isPrivate: r.is_private,
     sortOrder: r.sort_order,
+    pinned: !!r.pinned,
+    starred: !!r.starred,
   };
 }
 
@@ -344,10 +358,11 @@ export async function getAllEntries(
   includePrivate: boolean
 ): Promise<DbCmsEntry[]> {
   await ensureDb();
+  // Pinned entries float to the top of their section.
   const rows = (
     includePrivate
-      ? await sql`SELECT * FROM cms_entry ORDER BY section, sort_order, created_at`
-      : await sql`SELECT * FROM cms_entry WHERE is_private = false ORDER BY section, sort_order, created_at`
+      ? await sql`SELECT * FROM cms_entry ORDER BY section, pinned DESC, sort_order, created_at`
+      : await sql`SELECT * FROM cms_entry WHERE is_private = false ORDER BY section, pinned DESC, sort_order, created_at`
   ) as CmsRow[];
   return rows.map(mapEntry);
 }
@@ -358,10 +373,10 @@ export async function createEntry(
   await ensureDb();
   const newId = id();
   await sql`INSERT INTO cms_entry
-    (id, section, title, description, link, github_url, date, tech, image_url, is_private, sort_order)
+    (id, section, title, description, link, github_url, date, tech, image_url, is_private, sort_order, pinned, starred)
     VALUES (${newId}, ${e.section}, ${e.title}, ${e.description}, ${e.link},
       ${e.githubUrl}, ${e.date}, ${JSON.stringify(e.tech)}::jsonb, ${e.imageUrl},
-      ${e.isPrivate}, ${e.sortOrder})`;
+      ${e.isPrivate}, ${e.sortOrder}, ${e.pinned}, ${e.starred})`;
   return { ...e, id: newId };
 }
 
@@ -370,7 +385,8 @@ export async function updateEntry(e: DbCmsEntry): Promise<void> {
   await sql`UPDATE cms_entry SET
     title = ${e.title}, description = ${e.description}, link = ${e.link},
     github_url = ${e.githubUrl}, date = ${e.date}, tech = ${JSON.stringify(e.tech)}::jsonb,
-    image_url = ${e.imageUrl}, is_private = ${e.isPrivate}, sort_order = ${e.sortOrder}
+    image_url = ${e.imageUrl}, is_private = ${e.isPrivate}, sort_order = ${e.sortOrder},
+    pinned = ${e.pinned}, starred = ${e.starred}
     WHERE id = ${e.id}`;
 }
 

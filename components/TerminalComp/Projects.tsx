@@ -7,8 +7,11 @@ import { type Project } from "@/lib/portfolio-data";
 import { CMS_UPDATED_EVENT, getItems } from "@/lib/cms";
 import WindowDots from "@/components/WindowDots";
 
-/** Public projects from the CMS store (private entries excluded), mapped to the card shape. */
-function readPublicProjects(): Project[] {
+/** A public project plus the `starred` featured flag from the CMS. */
+type PublicProject = Project & { starred?: boolean };
+
+/** Public projects from the CMS store (private excluded, pinned first). */
+function readPublicProjects(): PublicProject[] {
   return getItems("projects").map((item) => ({
     name: item.title,
     description: item.description,
@@ -16,6 +19,7 @@ function readPublicProjects(): Project[] {
     liveUrl: item.link ?? "#",
     githubUrl: item.githubUrl ?? "#",
     tech: item.tech ?? [],
+    starred: item.starred,
   }));
 }
 
@@ -129,7 +133,7 @@ const Projects: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [projectsPerPage, setProjectsPerPage] = useState<number>(2);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [projectsData, setProjectsData] = useState<Project[]>([]);
+  const [projectsData, setProjectsData] = useState<PublicProject[]>([]);
   const [detailProject, setDetailProject] = useState<Project | null>(null);
 
   // Close the detail modal on Escape.
@@ -345,6 +349,11 @@ const Projects: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <h3 className="font-semibold text-white text-base sm:text-xl mb-2 sm:mb-3 font-mono group-hover:text-white transition-colors leading-tight">
                       {project.name}
+                      {project.starred && (
+                        <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-2 py-0.5 align-middle text-[9px] font-bold uppercase tracking-wider text-[var(--theme-accent)]">
+                          ★ Featured
+                        </span>
+                      )}
                     </h3>
                   </div>
 
