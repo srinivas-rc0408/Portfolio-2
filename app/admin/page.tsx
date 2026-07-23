@@ -21,7 +21,6 @@ import {
   deleteItem,
   login,
   logout,
-  currentUser,
   hydrate,
   loadSettings,
   saveSettings,
@@ -645,26 +644,45 @@ function Workspace({ section }: { section: CmsSection }) {
   const uploadCfg = UPLOAD_CONFIG[section];
   const isDocSection = section === "resume" || section === "cv";
 
-  // Fetch server truth → reset the draft to a clean baseline. Runs on mount
-  // (Workspace is keyed by section, so it remounts per tab) and after each Save.
-  const loadDraft = useCallback(
+  // Fetch server truth as a clean baseline (Workspace is keyed by section, so
+  // it remounts per tab). Used by the initial load, Save, and Discard.
+  const fetchEntries = useCallback(
     () =>
-      apiGetAllEntries().then((all) => {
-        setDraft(
-          all
-            .filter((i) => i.section === section)
-            .map((i) => ({ ...i, _key: i.id, _status: "clean" as const }))
-        );
-        setLoading(false);
-      }),
+      apiGetAllEntries().then((all) =>
+        all
+          .filter((i) => i.section === section)
+          .map((i) => ({ ...i, _key: i.id, _status: "clean" as const }))
+      ),
     [section]
   );
 
-  useEffect(() => {
-    void loadDraft();
-  }, [loadDraft]);
-
   const dirty = draft.some((i) => i._status !== "clean");
+
+  // Mirror `dirty` so the async initial load can read the latest value and
+  // never overwrite edits the admin has already started.
+  const dirtyRef = useRef(false);
+  useEffect(() => {
+    dirtyRef.current = dirty;
+  }, [dirty]);
+
+  // Initial load, once per section — guarded so a slow response can't wipe
+  // in-progress edits.
+  useEffect(() => {
+    let alive = true;
+    void fetchEntries()
+      .then((d) => {
+        if (alive && !dirtyRef.current) setDraft(d);
+      })
+      .catch(() => {
+        /* fetch failed — leave the draft as-is, just drop the skeleton */
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [fetchEntries]);
 
   // --- Local draft mutations (nothing reaches the server until Save) ---
 
@@ -739,7 +757,7 @@ function Workspace({ section }: { section: CmsSection }) {
           await updateItem(section, { ...draftToPayload(it), id: it.id });
         else if (it._status === "deleted") await deleteItem(section, it.id);
       }
-      await loadDraft();
+      setDraft(await fetchEntries());
       setSelected(new Set());
       setForm(EMPTY_FORM);
       setEditingKey(null);
@@ -747,7 +765,7 @@ function Workspace({ section }: { section: CmsSection }) {
       window.setTimeout(() => setSaved(false), 2500);
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Could not save changes.");
-      await loadDraft(); // reflect whatever committed; the rest can be redone
+      setDraft(await fetchEntries()); // reflect whatever committed; redo the rest
     } finally {
       setSaving(false);
     }
@@ -758,7 +776,7 @@ function Workspace({ section }: { section: CmsSection }) {
     setForm(EMPTY_FORM);
     setEditingKey(null);
     setTextDraft(null);
-    void loadDraft();
+    void fetchEntries().then(setDraft).catch(() => {});
   };
 
   // --- Upload → stage as draft entries (committed on Save like everything else) ---
@@ -1724,17 +1742,33 @@ export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("settings");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Verify the session against the server (httpOnly cookie) before rendering.
-  // setState lives in the promise callback (async), never sync in the effect.
+  // Gate on a lightweight session probe (JWT verify only) so the login form —
+  // and, after sign-in, the dashboard — appear instantly. The heavy CMS
+  // hydrate runs in the background; the dashboard's panels fetch their own
+  // data, so nothing renders behind it.
   const check = useCallback(
-    () => hydrate().then(() => setUser(currentUser())),
+    () =>
+      fetch("/api/auth/session", { cache: "no-store" })
+        .then((res) => res.json())
+        .then(({ user: u }) => {
+          setUser(u ?? null);
+          if (u?.role === "admin") void hydrate(); // warm caches in background
+        })
+        .catch(() => setUser(null)),
     []
   );
   useEffect(() => {
     void check();
   }, [check]);
 
-  if (user === undefined) return null; // avoid auth flash before session check
+  // Brief probe in flight — a quiet spinner beats a black flash on a cold start.
+  if (user === undefined) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/15 border-t-[var(--theme-accent)]" />
+      </div>
+    );
+  }
 
   // Firm gate: no valid admin session → login screen, always.
   if (!user || user.role !== "admin") {
