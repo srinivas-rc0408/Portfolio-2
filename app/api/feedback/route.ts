@@ -6,7 +6,7 @@ import {
   deleteFeedback,
 } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { clientIp, limit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,7 @@ async function requireAdmin(): Promise<boolean> {
 /** Public: submit feedback. Name + message required; email optional. */
 export async function POST(req: NextRequest) {
   // 5 submissions / 10 min per IP — enough for real users, blocks spam.
-  if (!rateLimit(`feedback:${clientIp(req)}`, 5, 10 * 60_000)) {
+  if (!(await limit(`feedback:${clientIp(req)}`, 5, 10 * 60_000))) {
     return NextResponse.json(
       { error: "Too many submissions — please try again later." },
       { status: 429 }

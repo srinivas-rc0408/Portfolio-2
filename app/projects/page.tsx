@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/lib/seo-config";
+import { jsonLd } from "@/lib/jsonld";
 import { Metadata } from "next";
 import Image from "next/image";
 import { projects as projectsData } from "@/lib/portfolio-data";
@@ -194,12 +195,12 @@ export default function Projects() {
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbStructuredData),
+          __html: jsonLd(breadcrumbStructuredData),
         }}
       />
       {/* Copy-to-clipboard for git clone blocks (server-rendered page) */}

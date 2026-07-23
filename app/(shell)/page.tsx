@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/lib/seo-config";
+import { jsonLd } from "@/lib/jsonld";
 import { CONTACT_EMAIL } from "@/lib/portfolio-data";
 import HomeTerminal from "@/components/HomeTerminal";
 
@@ -62,11 +63,11 @@ export default function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(personSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbSchema) }}
       />
       <HomeTerminal />
     </>

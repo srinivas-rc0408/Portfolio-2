@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { clientIp, limit } from "@/lib/rate-limit";
 
 // Edge runtime: no cold-boot lambda spin-up, streams from the nearest region.
 // (Only web APIs are used below — fetch, ReadableStream, TextEncoder.)
@@ -241,9 +241,13 @@ async function callGemini(user: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-  // 20 questions / 5 min per IP — protects the upstream API keys from abuse.
-  // Max 200 AI requests per IP per hour — protects the upstream API quotas.
-  if (!rateLimit(`chat:${clientIp(req)}`, 200, 60 * 60_000)) {
+  // Strict per-IP cap on the AI route — the free-tier LLM keys are the scarcest
+  // resource, so a spammer/bot must not be able to drain them. 15 messages /
+  // 15 min is plenty for a genuine recruiter conversation (the client also caps
+  // 10/day) while blocking automated abuse. Tune CHAT_MAX / CHAT_WINDOW freely.
+  const CHAT_MAX = 15;
+  const CHAT_WINDOW = 15 * 60_000;
+  if (!(await limit(`chat:${clientIp(req)}`, CHAT_MAX, CHAT_WINDOW))) {
     return new Response(RATE_LIMIT_MESSAGE, { status: 429 });
   }
   const { message } = await req.json().catch(() => ({ message: "" }));

@@ -247,7 +247,7 @@ const Projects: React.FC = () => {
             onClick={prevPage}
             disabled={currentPage === 0}
             aria-label="Previous page"
-            className={`grid h-6 w-6 place-items-center rounded-md border transition-all duration-150 ${
+            className={`grid h-9 w-9 place-items-center rounded-md border transition-all duration-150 ${
               currentPage === 0
                 ? "cursor-not-allowed border-gray-700/50 text-gray-600"
                 : "border-[rgba(var(--theme-accent-rgb),0.4)] text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-90"
@@ -263,7 +263,7 @@ const Projects: React.FC = () => {
             onClick={nextPage}
             disabled={currentPage === totalPages - 1}
             aria-label="Next page"
-            className={`grid h-6 w-6 place-items-center rounded-md border transition-all duration-150 ${
+            className={`grid h-9 w-9 place-items-center rounded-md border transition-all duration-150 ${
               currentPage === totalPages - 1
                 ? "cursor-not-allowed border-gray-700/50 text-gray-600"
                 : "border-[rgba(var(--theme-accent-rgb),0.4)] text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-90"

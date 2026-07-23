@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/lib/seo-config";
+import { jsonLd } from "@/lib/jsonld";
 import { Metadata } from "next";
 import type { ReactNode } from "react";
 import {
@@ -299,12 +300,12 @@ export default function Skills() {
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbStructuredData),
+          __html: jsonLd(breadcrumbStructuredData),
         }}
       />
 

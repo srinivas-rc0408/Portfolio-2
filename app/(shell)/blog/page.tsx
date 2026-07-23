@@ -1,4 +1,5 @@
 import Script from "next/script";
+import { jsonLd as jsonLdScript } from "@/lib/jsonld";
 import BlogTerminalPage from "@/components/BlogTerminalPage";
 import { getAllPosts } from "@/lib/blog";
 import { buildBlogIndexJsonLd } from "@/lib/blog-seo";
@@ -18,7 +19,7 @@ export default function BlogIndexPage() {
         id="blog-index-jsonld"
         type="application/ld+json"
         strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
       <nav className="sr-only" aria-label="Blog posts index for search engines">
         <h1>Srinivas RC — Developer Blog</h1>

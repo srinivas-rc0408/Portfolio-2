@@ -410,7 +410,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             style={{ willChange: "transform, opacity" }}
-            className="flex h-[78vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 font-mono backdrop-blur-xl sm:h-[600px] sm:max-h-[85vh]"
+            className="flex h-[78vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-md sm:h-[600px] sm:max-h-[85vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -434,7 +434,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                   }}
                   aria-label="Clear conversation"
                   title="Clear conversation"
-                  className="rounded-md p-1.5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+                  className="rounded-md p-2.5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
                 >
                   <Trash2 size={15} strokeWidth={2} aria-hidden />
                 </button>
@@ -443,7 +443,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                   onClick={onClose}
                   aria-label="Close chat"
                   title="Close (Esc)"
-                  className="rounded-md p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                  className="rounded-md p-2.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
                 >
                   <X size={17} strokeWidth={2.5} aria-hidden />
                 </button>

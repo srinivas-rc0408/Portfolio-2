@@ -43,11 +43,24 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
 export const MatrixRain: React.FC = () => {
   const chars = "01";
   const columns =
-    typeof window !== "undefined" && window.innerWidth < 768 ? 20 : 50;
+    typeof window !== "undefined" && window.innerWidth < 768 ? 16 : 40;
 
   const [columnDelays] = useState(() =>
     Array.from({ length: columns }, () => Math.random() * 5)
   );
+
+  // Skip the ~1000-node animated backdrop entirely for users who ask for less
+  // motion (and it spares their battery/GPU). Initial state matches SSR to
+  // avoid a hydration mismatch; the effect flips it after mount.
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduced(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  if (reduced) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">

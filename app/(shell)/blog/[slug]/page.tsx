@@ -1,4 +1,5 @@
 import Script from "next/script";
+import { jsonLd as jsonLdScript } from "@/lib/jsonld";
 import { notFound } from "next/navigation";
 import BlogTerminalPage from "@/components/BlogTerminalPage";
 import BlogSeoArticle from "@/components/BlogSeoArticle";
@@ -46,7 +47,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         id={`article-jsonld-${slug}`}
         type="application/ld+json"
         strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
       <nav className="sr-only" aria-label="Article navigation">
         <a href={BLOG_CANONICAL}>← Blog index</a>

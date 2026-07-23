@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { findUserByEmail, createUser } from "@/lib/db";
 import { isAdminCredential, setSessionCookie } from "@/lib/auth";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { clientIp, limit } from "@/lib/rate-limit";
 import { sendEmail, welcomeEmail } from "@/lib/email";
 
 // Basic shape check — real deliverability is confirmed by the welcome email.
@@ -15,7 +15,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  */
 export async function POST(req: NextRequest) {
   // 5 sign-ups / 10 min per IP — blunts automated account creation.
-  if (!rateLimit(`register:${clientIp(req)}`, 5, 10 * 60_000)) {
+  if (!(await limit(`register:${clientIp(req)}`, 5, 10 * 60_000))) {
     return NextResponse.json(
       { error: "Too many attempts. Please try again in a little while." },
       { status: 429 }

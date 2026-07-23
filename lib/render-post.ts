@@ -1,6 +1,9 @@
-import { remark } from "remark";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
-import remarkHtml from "remark-html";
+import remarkRehype from "remark-rehype";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeStringify from "rehype-stringify";
 
 /** Open in-article links in a new tab (post cards/nav use same-tab routing). */
 export function withBlogLinkTargets(html: string): string {
@@ -10,11 +13,21 @@ export function withBlogLinkTargets(html: string): string {
   });
 }
 
+/**
+ * Markdown → sanitized HTML. Runs through rehype-sanitize (GitHub-safe schema)
+ * so even if a post source ever becomes user-editable, no script/iframe/on*
+ * handler can survive — the security architecture is production-grade now, not
+ * "safe because inputs happen to be trusted today". target/rel are added after
+ * sanitization (we control that string injection, not the content).
+ */
 export async function renderPostHtml(markdown: string): Promise<string> {
   const raw = String(
-    await remark()
+    await unified()
+      .use(remarkParse)
       .use(remarkGfm)
-      .use(remarkHtml, { sanitize: false })
+      .use(remarkRehype)
+      .use(rehypeSanitize)
+      .use(rehypeStringify)
       .process(markdown)
   );
   return withBlogLinkTargets(raw);

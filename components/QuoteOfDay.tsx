@@ -240,7 +240,7 @@ export default function QuoteOfDay() {
               e.preventDefault();
               dismissRef.current(); // hide now, return in 30s with a new quote
             }}
-            className="pointer-events-auto absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white/50 transition-all hover:bg-white/10 hover:text-white active:scale-90"
+            className="pointer-events-auto absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full text-white/50 transition-all hover:bg-white/10 hover:text-white active:scale-90"
           >
             ✕
           </button>

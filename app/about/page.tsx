@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { jsonLd } from "@/lib/jsonld";
 import { SITE_URL, SITE_NAME, SITE_TAGLINE } from "@/lib/seo-config";
 import { CONTACT_EMAIL } from "@/lib/portfolio-data";
 
@@ -223,17 +224,17 @@ export default function About() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(aboutPageStructuredData),
+          __html: jsonLd(aboutPageStructuredData),
         }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbStructuredData),
+          __html: jsonLd(breadcrumbStructuredData),
         }}
       />
 

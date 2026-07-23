@@ -69,7 +69,7 @@ export default function WelcomePopup() {
               type="button"
               onClick={dismiss}
               aria-label="Dismiss welcome message"
-              className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-md text-zinc-500 transition-colors duration-150 hover:bg-white/10 hover:text-zinc-200"
+              className="absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-md text-zinc-500 transition-colors duration-150 hover:bg-white/10 hover:text-zinc-200"
             >
               <X size={15} strokeWidth={2.4} aria-hidden />
             </button>
