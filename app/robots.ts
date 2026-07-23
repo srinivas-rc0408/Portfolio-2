@@ -51,7 +51,7 @@ export default function robots(): MetadataRoute.Robots {
       // Explicit allow-list (clarifies intent for crawlers that respect named rules)
       ...ALLOWED_USER_AGENTS.map((userAgent) => ({
         userAgent,
-        allow: ["/", "/blog", "/blog/", "/llms.txt"],
+        allow: ["/", "/llms.txt"],
         disallow: ["/api/", "/.next/", "/admin"],
       })),
     ],

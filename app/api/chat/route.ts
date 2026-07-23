@@ -2,9 +2,10 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { clientIp, limit } from "@/lib/rate-limit";
 
-// Edge runtime: no cold-boot lambda spin-up, streams from the nearest region.
-// (Only web APIs are used below — fetch, ReadableStream, TextEncoder.)
-export const runtime = "edge";
+// Node.js serverless runtime. (Edge was disabling static generation and buys
+// us nothing here — the reply is buffered server-side for the output guard
+// before streaming, so there's no first-token latency to shave.) Never cached.
+export const dynamic = "force-dynamic";
 
 // --- Config (keys live in .env.local, never in source) ---
 const NVIDIA_API_KEY_1 = process.env.NVIDIA_API_KEY_1;

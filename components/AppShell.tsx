@@ -12,14 +12,9 @@ import DocViewer from "@/components/DocViewer";
 import BootSequence from "@/components/boot/BootSequence";
 import { ShellContext } from "@/context/ShellContext";
 
-function isBlogPath(pathname: string): boolean {
-  return pathname === "/blog" || pathname.startsWith("/blog/");
-}
-
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const isBlog = isBlogPath(pathname);
   const [hideIdentityOnMobile, setHideIdentityOnMobile] = useState(false);
 
   // Reveal scrollbars only while the user is actively scrolling; hide 5s after
@@ -43,8 +38,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const hideIdentityOnMobileOnly =
-    isBlog || (isHome && hideIdentityOnMobile);
+  const hideIdentityOnMobileOnly = isHome && hideIdentityOnMobile;
 
   return (
     <ShellContext.Provider value={{ setHideIdentityOnMobile }}>
@@ -65,7 +59,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </main>
       {/* Jerry welcome toast — slides in bottom-right 1.5s after load (home only) */}
-      {!isBlog && <WelcomePopup />}
+      <WelcomePopup />
       {/* Floating quote toast — overlays the site, never affects layout/scroll */}
       <QuoteOfDay />
       {/* Document viewer — resume/CV/certificates popup (view + download) */}

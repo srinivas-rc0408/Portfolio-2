@@ -117,11 +117,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
-    types: {
-      "application/rss+xml": [
-        { url: `${SITE_URL}/blog/rss.xml`, title: `${SITE_NAME} — Blog RSS` },
-      ],
-    },
   },
   referrer: "strict-origin-when-cross-origin",
   category: "technology",
@@ -171,12 +166,6 @@ export default async function RootLayout({
           type="text/plain"
           title="LLMs Description"
           href={`${SITE_URL}/llms.txt`}
-        />
-        <link
-          rel="alternate"
-          type="application/rss+xml"
-          title={`${SITE_NAME} — Blog (RSS)`}
-          href={`${SITE_URL}/blog/rss.xml`}
         />
         <script
           type="application/ld+json"

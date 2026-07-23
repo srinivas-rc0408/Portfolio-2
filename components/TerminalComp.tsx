@@ -3,14 +3,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "@/public/css/TerminalComp.css";
-import type { BlogInitialPost } from "@/components/BlogTerminalPage.types";
 
 import About from "./TerminalComp/About";
 import Projects from "./TerminalComp/Projects";
 import Skills from "./TerminalComp/Skills";
 import Contact from "./TerminalComp/Contact";
 import Experience from "./TerminalComp/Experience";
-import Blog from "./TerminalComp/Blog";
 import CmsSectionOutput from "./TerminalComp/CmsSection";
 import JerryChat from "./JerryChat";
 import type { CmsSection } from "@/lib/cms";
@@ -56,26 +54,11 @@ interface TerminalProps {
   onFirstCommand?: () => void;
   /** Fired on `clear` — lets the shell restore the identity pane on mobile. */
   onClear?: () => void;
-  /** When set, this terminal is mounted on /blog routes. */
-  blogRoute?: boolean;
-  initialBlogSlug?: string | null;
-  initialBlogPost?: BlogInitialPost | null;
   /** Deep-link from /?section=about */
   initialSection?: string | null;
   /** Deep-link from /?cmd=help */
   initialCommand?: string | null;
 }
-
-const HOME_CD_SECTIONS = [
-  "about",
-  "projects",
-  "skills",
-  "experience",
-  "education",
-  "certificates",
-  "contact",
-  "welcome",
-] as const;
 
 // ============ Typewriter Text Component ============
 const TypewriterText: React.FC<{ text: string; speed?: number; onComplete?: () => void }> = ({ text, speed = 20, onComplete }) => {
@@ -531,9 +514,6 @@ const MAX_COMMAND_HISTORY = 50;
 export default function Terminal({
   onFirstCommand,
   onClear,
-  blogRoute = false,
-  initialBlogSlug = null,
-  initialBlogPost = null,
   initialSection = null,
   initialCommand = null,
 }: TerminalProps) {
@@ -555,54 +535,11 @@ export default function Terminal({
   const host = "srinivas";
 
 
-  const redirectFromBlogRoute = (trimmedCmd: string): boolean => {
-    if (!blogRoute) return false;
-
-    const parts = trimmedCmd.split(/\s+/);
-    const commandName = parts[0]?.toLowerCase() ?? "";
-    const args = parts.slice(1);
-
-    if (commandName === "blog") {
-      const q = args.join(" ").trim();
-      if (q) {
-        router.push(`/?cmd=${encodeURIComponent(`blog ${q}`)}`);
-      } else {
-        router.push("/blog");
-      }
-      return true;
-    }
-
-    if (commandName === "cd" && args[0]?.toLowerCase() === "blog") {
-      router.push("/blog");
-      return true;
-    }
-
-    if (
-      commandName === "cd" &&
-      args[0] &&
-      HOME_CD_SECTIONS.includes(
-        args[0].toLowerCase() as (typeof HOME_CD_SECTIONS)[number]
-      )
-    ) {
-      const dir = args[0].toLowerCase();
-      router.push(dir === "welcome" ? "/" : `/?section=${dir}`);
-      return true;
-    }
-
-    router.push(`/?cmd=${encodeURIComponent(trimmedCmd)}`);
-    return true;
-  };
-
   const processCommand = async (
     cmd: string,
     isAuto: boolean = false
   ): Promise<void> => {
     const trimmedCmd = cmd.trim();
-
-    if (!isAuto && blogRoute && trimmedCmd) {
-      redirectFromBlogRoute(trimmedCmd);
-      return;
-    }
 
     const newHist: HistoryLine[] = [
       ...history,
@@ -957,20 +894,6 @@ export default function Terminal({
   };
 
   const handleNav = async (cmd: string): Promise<void> => {
-    if (blogRoute) {
-      if (cmd === "blog") {
-        router.push("/blog");
-        return;
-      }
-      const cdSections = ["about", "projects", "skills", "experience", "education", "certificates", "contact"];
-      if (cdSections.includes(cmd)) {
-        router.push(`/?section=${cmd}`);
-        return;
-      }
-      router.push(`/?cmd=${encodeURIComponent(cmd)}`);
-      return;
-    }
-
     await processCommand(cmd);
   };
 
@@ -1055,32 +978,8 @@ export default function Terminal({
       inputRef.current?.focus();
     }
     setTimeout(() => {
-      if (blogRoute) {
-        setHistory([
-          { type: "prompt", command: "cd welcome" },
-          { type: "output", content: <Welcome /> },
-          { type: "prompt", command: "blog" },
-          {
-            type: "output",
-            content: (
-              <Blog
-                slug={initialBlogSlug}
-                initialPost={initialBlogPost}
-                syncUrls
-              />
-            ),
-          },
-        ]);
-        setIsFirstUserCommand(false);
-        return;
-      }
-
       const boot = async () => {
         if (initialSection) {
-          if (initialSection === "blog") {
-            router.replace("/blog", { scroll: false });
-            return;
-          }
           await processCommand(`cd ${initialSection}`, true);
           router.replace("/", { scroll: false });
         } else if (initialCommand) {
@@ -1099,16 +998,10 @@ export default function Terminal({
     const el = terminalRef.current;
     if (!el) return;
     const id = requestAnimationFrame(() => {
-      const blogEl = el.querySelector(".terminal-blog");
-      if (blogEl && blogRoute) {
-        const top = (blogEl as HTMLElement).offsetTop - 8;
-        el.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
-        return;
-      }
       el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
     });
     return () => cancelAnimationFrame(id);
-  }, [history, blogRoute]);
+  }, [history]);
 
   return (
     <div

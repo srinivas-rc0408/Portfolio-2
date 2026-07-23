@@ -29,30 +29,55 @@
   overflow: hidden;
 }
 
-/* CRT scanlines: subtle horizontal lines overlay (old monitor look) */
+/* Screen "bloom": a soft accent glow from the top + an edge vignette, so the
+   terminal reads as a powered-on display with depth (replaces the old blocky
+   tiled-noise texture that seamed into a visible grid). */
 .terminal-container::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: repeating-linear-gradient(0deg,
-      transparent 0,
-      transparent 1px,
-      rgba(0, 0, 0, 0.12) 1px,
-      rgba(0, 0, 0, 0.12) 2px);
+  background:
+    radial-gradient(130% 65% at 50% -12%,
+      rgba(var(--theme-accent-rgb), 0.08), transparent 58%),
+    radial-gradient(100% 90% at 50% 115%,
+      rgba(0, 0, 0, 0.45), transparent 55%);
 }
 
-/* CRT noise: light texture overlay (physical screen grain) */
+/* Fine CRT scanlines — barely-there, just enough to read as a live CRT. */
 .terminal-container::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 120px 120px;
+  background: repeating-linear-gradient(0deg,
+      transparent 0,
+      transparent 2px,
+      rgba(0, 0, 0, 0.05) 2px,
+      rgba(0, 0, 0, 0.05) 3px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* A slow accent sweep drifting down the screen — subtle "signal" life. */
+  .terminal-container::after {
+    background:
+      linear-gradient(to bottom,
+        transparent 0%,
+        rgba(var(--theme-accent-rgb), 0.035) 50%,
+        transparent 100%) 0 0 / 100% 220% no-repeat,
+      repeating-linear-gradient(0deg,
+        transparent 0,
+        transparent 2px,
+        rgba(0, 0, 0, 0.05) 2px,
+        rgba(0, 0, 0, 0.05) 3px);
+    animation: terminal-sweep 7s linear infinite;
+  }
+  @keyframes terminal-sweep {
+    0% { background-position: 0 -120%, 0 0; }
+    100% { background-position: 0 120%, 0 0; }
+  }
 }
 
 /* Header bar at the top — strict flexbox: dots left, nav grouped right */

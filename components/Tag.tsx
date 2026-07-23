@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@vercel/analytics";
-import { ChevronUp, Download, Gamepad2, Mail, Sparkles } from "lucide-react";
+import { ChevronUp, Download, Gamepad2, LogIn, Mail, Sparkles } from "lucide-react";
 import ProfileLightbox from "@/components/ProfileLightbox";
 import { footerLinks } from "@/lib/portfolio-data";
 import {
@@ -438,20 +438,25 @@ export default function Tag() {
           aria-expanded={connectOpen}
           aria-label={connectOpen ? "Hide contact & social links" : "Show contact & social links"}
           title="Contact & social links"
-          className="group/handle flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-xl border border-[var(--border)] bg-white/[0.03] px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-[var(--text-secondary)] shadow-sm transition-all duration-200 ease-out hover:border-[rgba(var(--accent-rgb),0.6)] hover:bg-[rgba(var(--accent-rgb),0.05)] hover:text-[var(--accent)] hover:shadow-[0_0_22px_-8px_rgba(var(--accent-rgb),0.7)] aria-expanded:border-[rgba(var(--accent-rgb),0.6)] aria-expanded:text-[var(--accent)]"
+          className="group/handle relative flex min-h-[44px] w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl border border-[rgba(var(--accent-rgb),0.3)] bg-gradient-to-b from-white/[0.06] to-white/[0.015] px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-[var(--text-secondary)] shadow-sm transition-all duration-200 ease-out hover:border-[rgba(var(--accent-rgb),0.7)] hover:text-[var(--accent)] hover:shadow-[0_0_24px_-8px_rgba(var(--accent-rgb),0.85)] aria-expanded:border-[rgba(var(--accent-rgb),0.7)] aria-expanded:text-[var(--accent)]"
         >
+          {/* sheen sweep on hover */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-[900ms] ease-out group-hover/handle:translate-x-full"
+          />
           <span className="relative flex h-2 w-2" aria-hidden>
             {!connectOpen && (
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-50" />
             )}
             <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
           </span>
-          {connectOpen ? "close" : "let's connect"}
+          <span className="relative">{connectOpen ? "close" : "let's connect"}</span>
           <ChevronUp
             size={14}
             strokeWidth={2.5}
             aria-hidden
-            className={`transition-transform duration-300 ease-out ${connectOpen ? "rotate-180" : ""}`}
+            className={`relative transition-transform duration-300 ease-out ${connectOpen ? "rotate-180" : ""}`}
           />
         </button>
 
@@ -468,7 +473,20 @@ export default function Tag() {
               }}
               className="w-full overflow-hidden"
             >
-              <div className="mt-3 rounded-2xl border border-[var(--border)] bg-white/[0.03] p-4 backdrop-blur-sm">
+              <div className="relative mt-3 overflow-hidden rounded-2xl border border-[rgba(var(--accent-rgb),0.25)] bg-gradient-to-b from-white/[0.05] to-white/[0.015] p-4 shadow-[0_0_44px_-18px_rgba(var(--accent-rgb),0.6)] backdrop-blur-md">
+                {/* accent hairline across the top of the card */}
+                <span
+                  aria-hidden
+                  className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-60"
+                />
+                {/* availability signal — a recruiter-facing status line */}
+                <div className="mb-3 flex items-center justify-center gap-2 font-mono text-[9px] uppercase tracking-[0.26em] text-[var(--text-secondary)]">
+                  <span className="relative flex h-1.5 w-1.5" aria-hidden>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  available for opportunities
+                </div>
                 <p className="mb-3 flex items-center justify-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.28em] text-[var(--text-secondary)]">
                   <span className="text-[var(--accent)]">{"//"}</span> find me on
                 </p>
@@ -492,7 +510,7 @@ export default function Tag() {
                       rel="noopener noreferrer"
                       aria-label={link.name}
                       title={link.name}
-                      className="group/soc flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-[var(--border)] py-2 text-[var(--text-secondary)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.1)] hover:text-[var(--accent)] active:scale-90"
+                      className="group/soc flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-[var(--border)] py-2 text-[var(--text-secondary)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.1)] hover:text-[var(--accent)] hover:shadow-[0_0_16px_-6px_rgba(var(--accent-rgb),0.8)] active:scale-90"
                     >
                       {SOCIAL_ICONS[link.name]}
                       <span className="text-[8px] uppercase tracking-wider opacity-70 transition-opacity group-hover/soc:opacity-100">
@@ -502,18 +520,19 @@ export default function Tag() {
                   ))}
                 </nav>
 
-                {/* Owner entrance — sign in / register, shown when signed out. */}
+                {/* Owner entrance — sign in / register CTA, shown when signed out. */}
                 {!user && (
-                  <div className="mt-4 border-t border-[var(--border)] pt-3">
+                  <div className="mt-4 border-t border-[var(--border)] pt-4">
                     <Link
                       href="/admin"
-                      className="group/si flex min-h-[40px] items-center justify-center gap-2 rounded-lg border border-transparent bg-white/[0.02] font-mono text-[11px] text-[var(--text-secondary)] transition-all duration-150 ease-out hover:border-[var(--border)] hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"
+                      className="group/si relative flex min-h-[44px] items-center justify-center gap-2 overflow-hidden rounded-xl border border-[rgba(var(--accent-rgb),0.5)] bg-[rgba(var(--accent-rgb),0.08)] font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)] transition-all duration-200 ease-out hover:border-[var(--accent)] hover:bg-[rgba(var(--accent-rgb),0.16)] hover:shadow-[0_0_22px_-6px_rgba(var(--accent-rgb),0.8)] active:scale-[0.98]"
                     >
-                      <span className="text-[var(--accent)]">$</span>
-                      <span>sign in / register</span>
-                      <span className="translate-x-0 opacity-0 transition-all duration-150 group-hover/si:translate-x-1 group-hover/si:opacity-100">
-                        →
-                      </span>
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-[900ms] ease-out group-hover/si:translate-x-full"
+                      />
+                      <LogIn size={14} strokeWidth={2.4} className="relative" aria-hidden />
+                      <span className="relative">Sign in / Register</span>
                     </Link>
                   </div>
                 )}
