@@ -70,6 +70,17 @@ html {
   overflow: hidden;
 }
 
+/* Only the terminal home locks to a fixed 100vh viewport (it scrolls
+   internally). Every other route — the /projects, /skills, /experience,
+   /contact, /about SEO pages and /admin — renders OUTSIDE the shell and must
+   scroll the document normally on desktop too. Scoped via :has(.app-shell). */
+html:not(:has(.app-shell)),
+body:not(:has(.app-shell)) {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+}
+
 * {
   box-sizing: border-box;
 }

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
 import { Eye, EyeOff, Pin, Star, X } from "lucide-react";
@@ -20,7 +21,9 @@ import {
   updateItem,
   deleteItem,
   login,
+  register,
   logout,
+  currentUser,
   hydrate,
   loadSettings,
   saveSettings,
@@ -225,21 +228,44 @@ function SaveBar({
 // --- Auth gate: Login / Register toggle ---
 
 function AuthGate({ onSuccess }: { onSuccess: () => void }) {
+  const router = useRouter();
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   // Press-and-hold reveal: true only while the eye button is held down.
   const [showPw, setShowPw] = useState(false);
-
   const [busy, setBusy] = useState(false);
+
+  const isRegister = mode === "register";
+
+  const switchMode = (m: "login" | "register") => {
+    setMode(m);
+    setError(null);
+  };
+
+  // Admin → into the dashboard (parent re-renders once the session is admin).
+  // A regular visitor is now signed in for the site → back to the terminal.
+  const finish = () => {
+    if (currentUser()?.role === "admin") onSuccess();
+    else router.push("/");
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setBusy(true);
     try {
-      if (await login(email, password)) onSuccess();
-      else setError("Access denied: invalid credentials.");
+      if (isRegister) {
+        const err = await register(name.trim(), email.trim(), password);
+        if (err) setError(err);
+        else finish();
+      } else if (await login(email.trim(), password)) {
+        finish();
+      } else {
+        setError("Access denied: invalid credentials.");
+      }
     } finally {
       setBusy(false);
     }
@@ -264,57 +290,97 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
           <X size={16} strokeWidth={2.5} aria-hidden />
         </Link>
         <div className="mb-4 flex items-center gap-2" aria-hidden="true">
-          <span
-            className="h-3 w-3 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06)",
-              boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
-            }}
-          />
-          <span
-            className="h-3 w-3 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)",
-              boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
-            }}
-          />
-          <span
-            className="h-3 w-3 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)",
-              boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
-            }}
-          />
-          <span className="ml-2 text-sm text-white">admin@login:~$</span>
+          {[
+            "radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06)",
+            "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)",
+            "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)",
+          ].map((bg) => (
+            <span
+              key={bg}
+              className="h-3 w-3 rounded-full"
+              style={{ background: bg, boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)" }}
+            />
+          ))}
+          <span className="ml-2 text-sm text-white">auth@portfolio:~$</span>
         </div>
-        <h1 className="mb-4 text-lg font-bold text-white">
-          $ sudo access --admin
+
+        {/* Mode toggle — sliding accent pill (buttery layout animation). */}
+        <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-1">
+          {(["login", "register"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => switchMode(m)}
+              aria-pressed={mode === m}
+              className={`relative rounded-md py-1.5 text-xs font-semibold transition-colors duration-150 ${
+                mode === m ? "text-black" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              {mode === m && (
+                <motion.span
+                  layoutId="auth-tab"
+                  className="absolute inset-0 rounded-md bg-[var(--theme-accent)]"
+                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                />
+              )}
+              <span className="relative">
+                {m === "login" ? "Sign in" : "Create account"}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <h1 className="mb-4 text-sm font-bold text-white">
+          {isRegister ? "$ ./register --new-user" : "$ ./signin"}
         </h1>
 
-        <label className="mb-1 block text-xs text-gray-400" htmlFor="admin-email">
+        {/* Name — register only, height-animated so nothing jumps. */}
+        <AnimatePresence initial={false}>
+          {isRegister && (
+            <motion.div
+              key="name"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden"
+            >
+              <label className="mb-1 block text-xs text-gray-400" htmlFor="auth-name">
+                NAME
+              </label>
+              <input
+                id="auth-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                className={`mb-3 ${FIELD}`}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <label className="mb-1 block text-xs text-gray-400" htmlFor="auth-email">
           EMAIL
         </label>
         <input
-          id="admin-email"
+          id="auth-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          autoComplete="username"
+          autoComplete={isRegister ? "email" : "username"}
           className={`mb-3 ${FIELD}`}
         />
-        <label className="mb-1 block text-xs text-gray-400" htmlFor="admin-pass">
+        <label className="mb-1 block text-xs text-gray-400" htmlFor="auth-pass">
           PASSWORD
         </label>
-        <div className="relative mb-4">
+        <div className="relative mb-1">
           <input
-            id="admin-pass"
+            id="auth-pass"
             type={showPw ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
+            autoComplete={isRegister ? "new-password" : "current-password"}
             className={`pr-11 ${FIELD}`}
           />
           {/* Press & hold to reveal; releasing (or leaving) hides it again. */}
@@ -344,26 +410,33 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
             )}
           </button>
         </div>
+        <p className="mb-4 h-4 text-[10px] text-gray-500">
+          {isRegister ? "Minimum 8 characters." : ""}
+        </p>
 
         {error && (
-          <p className="mb-3 text-sm text-red-400" role="alert">
+          <motion.p
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-3 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300"
+            role="alert"
+          >
             {error}
-          </p>
+          </motion.p>
         )}
 
         <div className="flex items-center justify-between">
           <button
             type="submit"
             disabled={busy}
-            className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] px-4 py-2 text-sm text-white transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95 disabled:opacity-50"
+            className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] bg-[rgba(var(--theme-accent-rgb),0.1)] px-5 py-2 text-sm font-semibold text-[var(--theme-accent)] transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.2)] active:scale-95 disabled:opacity-50"
           >
-            {busy ? "…" : "authenticate →"}
+            {busy ? "…" : isRegister ? "create account →" : "authenticate →"}
           </button>
           <Link href="/" className="text-xs text-gray-500 hover:text-white">
             ← back to terminal
           </Link>
         </div>
-
       </motion.form>
     </div>
   );

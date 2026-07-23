@@ -288,22 +288,41 @@ export default function Tag() {
             draggable={false}
             className="object-cover transition-transform duration-150 ease-out group-hover:scale-[1.03]"
           />
-          {/* Greeting — "I am Him" on hover (desktop) or long-press (mobile) */}
+          {/* Greeting — "I am Him" on hover (desktop) or long-press (mobile).
+              Terminal-style reveal: `> whoami` in the accent, then the answer
+              with a blinking caret, over a bottom-up gradient so the face still
+              reads through. */}
           <div
-            className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 backdrop-blur-md transition-opacity duration-200 ease-out ${
+            className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-end gap-1.5 bg-gradient-to-t from-black/90 via-black/45 to-transparent pb-5 transition-opacity duration-300 ease-out ${
               greet ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             }`}
           >
             <span
-              className={`font-mono text-lg font-bold tracking-wide text-white transition-all duration-300 ease-out sm:text-xl ${
+              className={`font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--theme-accent)] transition-all duration-300 ease-out ${
                 greet
                   ? "translate-y-0 opacity-100"
-                  : "translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                  : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+              }`}
+            >
+              &gt; whoami
+            </span>
+            <span
+              className={`flex items-center font-mono text-lg font-bold tracking-wide text-white transition-all delay-75 duration-300 ease-out sm:text-xl ${
+                greet
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
               }`}
             >
               I am Him
+              <span className="ml-1 inline-block h-4 w-[3px] animate-pulse bg-[var(--theme-accent)]" />
             </span>
-            <span className="rounded-full border border-white/40 px-3 py-1 font-mono text-[10px] text-white/75">
+            <span
+              className={`mt-1 rounded-full border border-white/25 bg-black/40 px-3 py-1 font-mono text-[10px] text-white/80 backdrop-blur-sm transition-all delay-150 duration-300 ease-out ${
+                greet
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+              }`}
+            >
               tap to view ↗
             </span>
           </div>
@@ -409,26 +428,27 @@ export default function Tag() {
         })}
       </nav>
 
-      {/* CONNECT — toggles an inline social/contact card, anchored right here in
-          the identity pane. Glass card, staggered icons, lift-on-hover. */}
-      <div className="mx-auto mt-4 flex w-full max-w-[280px] flex-col items-center">
+      {/* CONNECT — the identity pane's footer: a toggle that reveals a glass
+          card of labeled social tiles + a sign-in entrance. Spring expand,
+          staggered tiles, lift-on-hover. */}
+      <div className="mx-auto mt-5 flex w-full max-w-[280px] flex-col items-center">
         <button
           type="button"
           onClick={() => setConnectOpen((o) => !o)}
           aria-expanded={connectOpen}
           aria-label={connectOpen ? "Hide contact & social links" : "Show contact & social links"}
           title="Contact & social links"
-          className="group/handle flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--border)] bg-white/[0.02] px-5 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-secondary)] shadow-sm transition-all duration-200 ease-out hover:border-[rgba(var(--accent-rgb),0.7)] hover:text-[var(--accent)] hover:shadow-[0_0_18px_-6px_rgba(var(--accent-rgb),0.6)] aria-expanded:border-[rgba(var(--accent-rgb),0.7)] aria-expanded:text-[var(--accent)]"
+          className="group/handle flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-xl border border-[var(--border)] bg-white/[0.03] px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-[var(--text-secondary)] shadow-sm transition-all duration-200 ease-out hover:border-[rgba(var(--accent-rgb),0.6)] hover:bg-[rgba(var(--accent-rgb),0.05)] hover:text-[var(--accent)] hover:shadow-[0_0_22px_-8px_rgba(var(--accent-rgb),0.7)] aria-expanded:border-[rgba(var(--accent-rgb),0.6)] aria-expanded:text-[var(--accent)]"
         >
-          <span
-            className={`h-1.5 w-1.5 rounded-full bg-[var(--accent)] transition-transform duration-200 ${
-              connectOpen ? "scale-125" : "scale-100 opacity-60 group-hover/handle:opacity-100"
-            }`}
-            aria-hidden
-          />
-          {connectOpen ? "close" : "connect"}
+          <span className="relative flex h-2 w-2" aria-hidden>
+            {!connectOpen && (
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-50" />
+            )}
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
+          </span>
+          {connectOpen ? "close" : "let's connect"}
           <ChevronUp
-            size={13}
+            size={14}
             strokeWidth={2.5}
             aria-hidden
             className={`transition-transform duration-300 ease-out ${connectOpen ? "rotate-180" : ""}`}
@@ -442,49 +462,56 @@ export default function Tag() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                height: { type: "spring", stiffness: 320, damping: 32 },
+                opacity: { duration: 0.2 },
+              }}
               className="w-full overflow-hidden"
             >
               <div className="mt-3 rounded-2xl border border-[var(--border)] bg-white/[0.03] p-4 backdrop-blur-sm">
-                <p className="mb-3 text-center font-mono text-[9px] uppercase tracking-[0.28em] text-[var(--text-secondary)]">
-                  find me on
+                <p className="mb-3 flex items-center justify-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.28em] text-[var(--text-secondary)]">
+                  <span className="text-[var(--accent)]">{"//"}</span> find me on
                 </p>
                 <nav
-                  className="flex items-center justify-center gap-2"
+                  className="grid grid-cols-4 gap-2"
                   aria-label="Social links"
                 >
                   {footerLinks.map((link, i) => (
                     <motion.a
                       key={link.name}
-                      initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                      initial={{ opacity: 0, y: 10, scale: 0.85 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{
-                        delay: 0.06 * i + 0.08,
-                        duration: 0.28,
-                        ease: [0.22, 1, 0.36, 1],
+                        delay: 0.045 * i + 0.06,
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 24,
                       }}
                       href={link.href}
                       target={link.href.startsWith("http") ? "_blank" : undefined}
                       rel="noopener noreferrer"
                       aria-label={link.name}
                       title={link.name}
-                      className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-secondary)] transition-all duration-200 ease-out hover:-translate-y-1 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.12)] hover:text-[var(--accent)] active:scale-90"
+                      className="group/soc flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-[var(--border)] py-2 text-[var(--text-secondary)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.1)] hover:text-[var(--accent)] active:scale-90"
                     >
                       {SOCIAL_ICONS[link.name]}
+                      <span className="text-[8px] uppercase tracking-wider opacity-70 transition-opacity group-hover/soc:opacity-100">
+                        {link.name}
+                      </span>
                     </motion.a>
                   ))}
                 </nav>
 
-                {/* Owner entrance — footer only, shown when signed out. */}
+                {/* Owner entrance — sign in / register, shown when signed out. */}
                 {!user && (
-                  <div className="mt-4 flex items-center justify-center border-t border-[var(--border)] pt-3">
+                  <div className="mt-4 border-t border-[var(--border)] pt-3">
                     <Link
                       href="/admin"
-                      className="group/si inline-flex min-h-[36px] items-center gap-1.5 rounded-full px-3 font-mono text-[11px] text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"
+                      className="group/si flex min-h-[40px] items-center justify-center gap-2 rounded-lg border border-transparent bg-white/[0.02] font-mono text-[11px] text-[var(--text-secondary)] transition-all duration-150 ease-out hover:border-[var(--border)] hover:text-[var(--accent)] focus-visible:text-[var(--accent)]"
                     >
                       <span className="text-[var(--accent)]">$</span>
-                      <span>sign in</span>
-                      <span className="opacity-0 transition-opacity duration-150 group-hover/si:opacity-100">
+                      <span>sign in / register</span>
+                      <span className="translate-x-0 opacity-0 transition-all duration-150 group-hover/si:translate-x-1 group-hover/si:opacity-100">
                         →
                       </span>
                     </Link>

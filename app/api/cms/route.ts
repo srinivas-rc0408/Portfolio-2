@@ -31,12 +31,14 @@ function parseEntry(b: Record<string, unknown>): Omit<DbCmsEntry, "id"> | null {
   if (typeof b.title !== "string" || !b.title.trim()) return null;
   return {
     section: b.section,
-    title: b.title.trim(),
-    description: typeof b.description === "string" ? b.description : "",
+    title: b.title.trim().slice(0, 200),
+    description: typeof b.description === "string" ? b.description.slice(0, 8000) : "",
     link: typeof b.link === "string" && b.link ? b.link : null,
-    githubUrl: typeof b.githubUrl === "string" && b.githubUrl ? b.githubUrl : null,
-    date: typeof b.date === "string" && b.date ? b.date : null,
-    tech: Array.isArray(b.tech) ? b.tech.filter((t): t is string => typeof t === "string") : [],
+    githubUrl: typeof b.githubUrl === "string" && b.githubUrl ? b.githubUrl.slice(0, 500) : null,
+    date: typeof b.date === "string" && b.date ? b.date.slice(0, 60) : null,
+    tech: Array.isArray(b.tech)
+      ? b.tech.filter((t): t is string => typeof t === "string").slice(0, 40)
+      : [],
     imageUrl: typeof b.imageUrl === "string" && b.imageUrl ? b.imageUrl : null,
     isPrivate: b.isPrivate === true,
     sortOrder: typeof b.sortOrder === "number" ? b.sortOrder : 0,

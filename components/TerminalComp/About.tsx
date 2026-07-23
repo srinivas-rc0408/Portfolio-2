@@ -64,7 +64,7 @@ const About: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-black text-white overflow-hidden">
+    <div className="relative min-h-full bg-black text-white overflow-hidden">
       {/* Matrix background effect */}
       <MatrixRain />
 

@@ -124,9 +124,9 @@ export interface DbUser {
 }
 
 function id(): string {
-  return (
-    Math.random().toString(36).slice(2, 10) + Date.now().toString(36)
-  );
+  // Cryptographically-random id (never used as a secret/capability, but this
+  // removes any doubt vs. Math.random()).
+  return crypto.randomUUID();
 }
 
 let ready: Promise<void> | null = null;
@@ -145,6 +145,26 @@ export function ensureDb(): Promise<void> {
 }
 
 async function init(): Promise<void> {
+  // Fail closed if the DB isn't running with standard_conforming_strings=on —
+  // lit()'s single-quote escaping is only injection-safe under that setting
+  // (see the header note). An endpoint that doesn't support SHOW is tolerated;
+  // only an explicit "off" aborts startup.
+  try {
+    const rows = (await sql`SHOW standard_conforming_strings`) as Record<
+      string,
+      string
+    >[];
+    const val = rows[0] && Object.values(rows[0])[0];
+    if (typeof val === "string" && val.toLowerCase() === "off") {
+      throw new Error(
+        "Refusing to start: standard_conforming_strings is OFF (SQL escaping unsafe)."
+      );
+    }
+  } catch (e) {
+    if (e instanceof Error && e.message.startsWith("Refusing to start")) throw e;
+    /* SHOW unsupported / transient — don't block on it */
+  }
+
   // Fast path — after the very first deploy the schema always exists, so a
   // cold start pays ONE probe round-trip instead of the full 8-call setup.
   try {

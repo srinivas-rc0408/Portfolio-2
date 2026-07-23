@@ -290,7 +290,7 @@ const Contact: React.FC = () => {
     .map((link) => ({ ...link, icon: socialIcons[link.name] }));
 
   return (
-    <div className="text-white max-w-5xl mx-auto p-3 sm:p-6 relative min-h-screen flex items-center">
+    <div className="text-white max-w-5xl mx-auto p-3 sm:p-6 relative min-h-full">
       {/* Background gradient effects with animation */}
       <div
         className={`absolute inset-0 transition-all duration-150 ease-out ${mounted ? "opacity-100 scale-100" : "opacity-0 scale-95"
@@ -346,7 +346,7 @@ const Contact: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {/* Direct Contact Section - Animated */}
           <section
-            className={`space-y-4 sm:space-y-6 transition-all duration-600 ease-out ${contentVisible
+            className={`space-y-4 sm:space-y-6 transition-all duration-500 ease-out ${contentVisible
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 -translate-x-6"
               }`}
@@ -479,7 +479,7 @@ const Contact: React.FC = () => {
 
           {/* Social Links Section - Animated */}
           <section
-            className={`space-y-4 sm:space-y-6 transition-all duration-600 ease-out delay-300 ${socialsVisible
+            className={`space-y-4 sm:space-y-6 transition-all duration-500 ease-out delay-300 ${socialsVisible
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 translate-x-6"
               }`}

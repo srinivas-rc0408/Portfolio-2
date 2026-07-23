@@ -150,14 +150,21 @@ const INTRO =
   "Hi! I am Jerry, Srinivas RC's personal AI assistant. How can I help you explore his portfolio today?";
 
 const MANDATORY_CHIP = "Why choose Srinivas R C?";
+// Professional, recruiter-oriented prompts — each maps to Jerry's knowledge
+// base so answers stay accurate. A fresh sample of 3 shows on every open.
 const CHIP_POOL = [
   "What is his tech stack?",
-  "Show me his projects",
-  "What is Archagent?",
-  "Tell me a fun fact",
-  "What is his CGPA?",
-  "How can I contact him?",
+  "Show me his best projects",
+  "Tell me about ArchAgent",
+  "What's his experience with LLMs & agentic AI?",
+  "Is he open to internships?",
+  "Summarize his experience",
+  "What are his strongest skills?",
   "What certifications does he have?",
+  "Does he have MLOps experience?",
+  "What's his education background?",
+  "How can I contact him?",
+  "Tell me a fun fact",
 ];
 
 const OFFLINE_MSG =

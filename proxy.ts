@@ -23,10 +23,18 @@ const GUARDED: { prefix: string; methods: Set<string> }[] = [
   { prefix: "/api/feedback", methods: new Set(["PATCH", "DELETE"]) },
 ];
 
+// Mirrors lib/auth.ts secret(): refuse the insecure dev fallback in production
+// so a missing AUTH_SECRET fails closed (thrown → caught → 401) instead of
+// verifying against a publicly-known key.
 function secret(): Uint8Array {
-  return new TextEncoder().encode(
-    process.env.AUTH_SECRET || "insecure-dev-secret-set-AUTH_SECRET"
-  );
+  const s = process.env.AUTH_SECRET;
+  if (!s) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("AUTH_SECRET must be set in production");
+    }
+    return new TextEncoder().encode("insecure-dev-secret-set-AUTH_SECRET");
+  }
+  return new TextEncoder().encode(s);
 }
 
 export async function proxy(req: NextRequest) {

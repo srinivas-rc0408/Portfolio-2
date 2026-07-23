@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { MotionConfig } from "framer-motion";
 import Tag from "@/components/Tag";
 import QuoteOfDay from "@/components/QuoteOfDay";
 import WelcomePopup from "@/components/WelcomePopup";
@@ -47,6 +48,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ShellContext.Provider value={{ setHideIdentityOnMobile }}>
+      {/* Honor the OS "reduce motion" setting across every framer animation. */}
+      <MotionConfig reducedMotion="user">
       <BootSequence />
       <main className="app-shell" role="main">
         <div className="main-content-area">
@@ -71,6 +74,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <FeedbackWidget />
       {/* Arch-Man arcade popup (opened by `play archman` / the Games button) */}
       <GameModal />
+      </MotionConfig>
     </ShellContext.Provider>
   );
 }
