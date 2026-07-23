@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@vercel/analytics";
 import { Send, Trash2, X } from "lucide-react";
@@ -42,6 +48,80 @@ function JerryLogo({ size = 30, live = true }: { size?: number; live?: boolean }
       )}
     </span>
   );
+}
+
+/** Inline markdown: **bold** and `code`. Everything else is plain text. */
+function renderInline(text: string): ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((p, i) => {
+    if (p.length > 4 && p.startsWith("**") && p.endsWith("**"))
+      return (
+        <strong key={i} className="font-semibold text-white">
+          {p.slice(2, -2)}
+        </strong>
+      );
+    if (p.length > 2 && p.startsWith("`") && p.endsWith("`"))
+      return (
+        <code
+          key={i}
+          className="rounded bg-white/10 px-1 py-0.5 text-[12px] text-[var(--theme-accent)]"
+        >
+          {p.slice(1, -1)}
+        </code>
+      );
+    return <span key={i}>{p}</span>;
+  });
+}
+
+/**
+ * Lightweight markdown for Jerry's replies — bullets (`- `), **bold**, `code`,
+ * and an accented "→ visit the … section" pointer line. No dependency; keeps
+ * the structured answers looking clean and professional instead of raw text.
+ */
+function JerryMarkdown({ text }: { text: string }) {
+  const out: ReactNode[] = [];
+  let bullets: ReactNode[] = [];
+  const flush = () => {
+    if (!bullets.length) return;
+    const items = bullets;
+    bullets = [];
+    out.push(
+      <ul key={`ul-${out.length}`} className="my-1 space-y-1">
+        {items.map((b, i) => (
+          <li key={i} className="flex gap-2">
+            <span className="mt-[3px] text-[var(--theme-accent)]" aria-hidden>
+              ▹
+            </span>
+            <span className="min-w-0 flex-1">{b}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  text.split("\n").forEach((line, idx) => {
+    const t = line.trimStart();
+    const bullet = /^[-•]\s+(.*)$/.exec(t);
+    if (bullet) {
+      bullets.push(renderInline(bullet[1]));
+      return;
+    }
+    flush();
+    if (!t) {
+      out.push(<div key={`sp-${idx}`} className="h-1.5" />);
+      return;
+    }
+    const pointer = /(visit|check|see|explore)\b.*\b(section|panel|top)\b/i.test(t);
+    out.push(
+      <p
+        key={`p-${idx}`}
+        className={pointer ? "mt-1.5 text-[var(--theme-accent)]" : ""}
+      >
+        {renderInline(t)}
+      </p>
+    );
+  });
+  flush();
+  return <div className="space-y-0.5">{out}</div>;
 }
 
 /**
@@ -132,6 +212,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const revealTimerRef = useRef<number | null>(null);
   const sentInitialRef = useRef(false);
 
   const setAndCache = useCallback((updater: (prev: Msg[]) => Msg[]) => {
@@ -140,6 +221,45 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       return chatCache;
     });
   }, []);
+
+  // Overwrite the trailing (streaming) Jerry bubble's text.
+  const setLastJerry = useCallback(
+    (text: string) =>
+      setAndCache((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        if (last?.role === "jerry") next[next.length - 1] = { ...last, text };
+        return next;
+      }),
+    [setAndCache]
+  );
+
+  // The API buffers the full reply server-side (so the output-guard can vet it
+  // before a single byte reaches us). We re-create a premium "typing" feel on
+  // the client: reveal the vetted text progressively, faster for longer answers.
+  const revealText = useCallback(
+    (full: string, signal: AbortSignal) =>
+      new Promise<void>((resolve) => {
+        const chunk = Math.max(2, Math.round(full.length / 140));
+        let i = 0;
+        const step = () => {
+          if (signal.aborted) {
+            setLastJerry(full);
+            resolve();
+            return;
+          }
+          i = Math.min(full.length, i + chunk);
+          setLastJerry(full.slice(0, i));
+          if (i >= full.length) {
+            resolve();
+            return;
+          }
+          revealTimerRef.current = window.setTimeout(step, 16);
+        };
+        step();
+      }),
+    [setLastJerry]
+  );
 
   const send = useCallback(
     async (raw: string) => {
@@ -191,13 +311,6 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       ]);
       const controller = new AbortController();
       abortRef.current = controller;
-      const appendToken = (t: string) =>
-        setAndCache((prev) => {
-          const next = [...prev];
-          const last = next[next.length - 1];
-          next[next.length - 1] = { ...last, text: last.text + t };
-          return next;
-        });
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
@@ -208,11 +321,14 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
         if (!res.body) throw new Error("no stream");
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
+        let full = "";
         for (;;) {
           const { done, value } = await reader.read();
           if (done) break;
-          appendToken(decoder.decode(value, { stream: true }));
+          full += decoder.decode(value, { stream: true });
         }
+        // Reveal the vetted reply with a smooth typewriter cadence.
+        await revealText(full.trim() || OFFLINE_MSG, controller.signal);
       } catch {
         if (!controller.signal.aborted) {
           setAndCache((prev) => {
@@ -228,7 +344,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
         setBusy(false);
       }
     },
-    [busy, onClose, setAndCache]
+    [busy, onClose, setAndCache, revealText]
   );
 
   // On open: fresh chip sample, focus, sync from cache; Esc closes.
@@ -246,6 +362,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       window.clearTimeout(t);
       window.removeEventListener("keydown", onKey);
       abortRef.current?.abort();
+      if (revealTimerRef.current) window.clearTimeout(revealTimerRef.current);
     };
   }, [open, onClose]);
 
@@ -386,13 +503,15 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                           />
                         ))}
                       </span>
-                    ) : (
-                      <>
+                    ) : busy && i === messages.length - 1 ? (
+                      /* Still typing → plain text + caret (natural typewriter);
+                         it snaps to formatted markdown the moment it finishes. */
+                      <span className="whitespace-pre-wrap">
                         {m.text}
-                        {busy && i === messages.length - 1 && (
-                          <span className="ml-0.5 inline-block h-3.5 w-[7px] animate-pulse bg-[var(--theme-accent)] align-middle" />
-                        )}
-                      </>
+                        <span className="ml-0.5 inline-block h-3.5 w-[7px] animate-pulse bg-[var(--theme-accent)] align-middle" />
+                      </span>
+                    ) : (
+                      <JerryMarkdown text={m.text} />
                     )}
                   </motion.div>
                 )

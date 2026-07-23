@@ -55,6 +55,174 @@ const FIELD =
   "[caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.7)] focus:bg-[rgba(var(--theme-accent-rgb),0.06)] " +
   "";
 
+// --- Draft model: edits stay local until Save commits them to the server ---
+
+type DraftStatus = "clean" | "new" | "edited" | "deleted";
+
+/** A CMS item plus its local draft status — nothing is written until Save. */
+interface DraftItem extends CmsItem {
+  _key: string; // stable local key: the real id, or `new-…` for unsaved adds
+  _status: DraftStatus;
+  _prev?: DraftStatus; // status before a delete, so it can be undone
+}
+
+/** Strip draft metadata → the payload the CMS API expects. */
+function draftToPayload(it: DraftItem): Omit<CmsItem, "id"> {
+  return {
+    section: it.section,
+    title: it.title,
+    description: it.description,
+    link: it.link,
+    githubUrl: it.githubUrl,
+    date: it.date,
+    tech: it.tech,
+    imageUrl: it.imageUrl,
+    private: it.private,
+    pinned: it.pinned,
+    starred: it.starred,
+  };
+}
+
+/** Mark a draft item edited — a brand-new (unsaved) item stays "new". */
+function markEdited(it: DraftItem, patch: Partial<CmsItem>): DraftItem {
+  return { ...it, ...patch, _status: it._status === "new" ? "new" : "edited" };
+}
+
+// Terminal-styled checkbox — row selection + select-all for bulk delete.
+// The ✓ is always rendered (transparent when off) so toggling shifts nothing.
+function CheckBox({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={onChange}
+      className={`grid h-5 w-5 shrink-0 place-items-center rounded border text-[11px] leading-none transition-all duration-150 active:scale-90 ${
+        checked
+          ? "border-[rgba(var(--theme-accent-rgb),0.7)] bg-[rgba(var(--theme-accent-rgb),0.2)] text-[var(--theme-accent)]"
+          : "border-white/25 text-transparent hover:border-white/50"
+      }`}
+    >
+      ✓
+    </button>
+  );
+}
+
+/**
+ * Unified sticky footer — the single Save/Discard + bulk-delete surface shared
+ * by every tab. It's fixed to the viewport (a spacer reserves its height) so it
+ * never shifts the page, and springs in only when there's something to act on.
+ */
+function SaveBar({
+  dirty,
+  saving,
+  saved,
+  onSave,
+  onDiscard,
+  savedLabel = "✓ Saved · live on the site",
+  selectedCount = 0,
+  onDeleteSelected,
+  onClearSelection,
+}: {
+  dirty: boolean;
+  saving: boolean;
+  saved: boolean;
+  onSave: () => void;
+  onDiscard: () => void;
+  savedLabel?: string;
+  selectedCount?: number;
+  onDeleteSelected?: () => void;
+  onClearSelection?: () => void;
+}) {
+  const selecting = selectedCount > 0 && !saving;
+  const active = dirty || saving || saved || selecting;
+
+  return (
+    <>
+      {/* Reserve the bar's height so fixed positioning never hides content. */}
+      <div className="h-20" aria-hidden />
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            initial={{ y: 90, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 90, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 320, damping: 30 }}
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-black/80 backdrop-blur-xl"
+          >
+            <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+              <span className="min-w-0 truncate font-mono text-xs text-gray-400">
+                {saving ? (
+                  <span className="text-[var(--theme-accent)]">◇ Saving…</span>
+                ) : saved ? (
+                  <span className="text-[var(--theme-accent)]">{savedLabel}</span>
+                ) : selecting ? (
+                  <span className="text-white">{selectedCount} selected</span>
+                ) : (
+                  <>
+                    <span className="text-[var(--theme-accent)]">●</span> unsaved
+                    changes
+                  </>
+                )}
+              </span>
+              <div className="flex shrink-0 items-center gap-2">
+                {selecting && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={onDeleteSelected}
+                      className="rounded-lg border border-red-900/60 bg-red-900/10 px-3 py-2 font-mono text-xs text-red-300 transition-colors duration-150 hover:bg-red-900/25 active:scale-95"
+                    >
+                      🗑 Delete {selectedCount}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onClearSelection}
+                      className="rounded-lg px-3 py-2 font-mono text-xs text-gray-400 transition-colors duration-150 hover:text-white"
+                    >
+                      Clear
+                    </button>
+                  </>
+                )}
+                {(dirty || saving || saved) && (
+                  <>
+                    {dirty && !saving && (
+                      <button
+                        type="button"
+                        onClick={onDiscard}
+                        className="rounded-lg px-3 py-2 font-mono text-xs text-gray-400 transition-colors duration-150 hover:text-white"
+                      >
+                        Discard
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={onSave}
+                      disabled={!dirty || saving}
+                      className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] bg-[rgba(var(--theme-accent-rgb),0.14)] px-5 py-2 font-mono text-sm font-semibold text-[var(--theme-accent)] transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      {saving ? "Saving…" : "Save changes"}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 // --- Auth gate: Login / Register toggle ---
 
 function AuthGate({ onSuccess }: { onSuccess: () => void }) {
@@ -437,51 +605,14 @@ function GlobalSettingsPanel() {
         </p>
       </section>
 
-      {/* Sticky Save bar — nothing reaches the live site until this is clicked.
-          Slides up only when there are unsaved changes. */}
-      <div className="h-16" aria-hidden />
-      <AnimatePresence>
-        {(dirty || saving || saved) && (
-          <motion.div
-            initial={{ y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 80, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-black/80 backdrop-blur-xl"
-          >
-            <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-5 py-3">
-              <span className="font-mono text-xs text-gray-400">
-                {saving ? (
-                  "Saving…"
-                ) : saved ? (
-                  <span className="text-[var(--theme-accent)]">✓ Saved · live on the site</span>
-                ) : (
-                  "You have unsaved changes"
-                )}
-              </span>
-              <div className="flex items-center gap-2">
-                {dirty && !saving && (
-                  <button
-                    type="button"
-                    onClick={discard}
-                    className="rounded-lg px-3 py-2 font-mono text-xs text-gray-400 transition-colors duration-150 hover:text-white"
-                  >
-                    Discard
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={save}
-                  disabled={!dirty || saving}
-                  className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] bg-[rgba(var(--theme-accent-rgb),0.14)] px-5 py-2 font-mono text-sm font-semibold text-[var(--theme-accent)] transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {saving ? "Saving…" : "Save changes"}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Unified sticky Save bar — nothing reaches the live site until Save. */}
+      <SaveBar
+        dirty={dirty}
+        saving={saving}
+        saved={saved}
+        onSave={save}
+        onDiscard={discard}
+      />
     </div>
   );
 }
@@ -499,37 +630,140 @@ const UPLOAD_CONFIG: Partial<
 };
 
 function Workspace({ section }: { section: CmsSection }) {
-  const [items, setItems] = useState<CmsItem[]>([]);
+  // Draft = the working copy. Every edit stays local until Save commits it.
+  const [draft, setDraft] = useState<DraftItem[]>([]);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [uploadError, setUploadError] = useState<string | null>(null);
-  // Text file dropped → inline editor before saving.
+  // Text file dropped → inline editor before it's staged as an entry.
   const [textDraft, setTextDraft] = useState<{ title: string; text: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const uploadCfg = UPLOAD_CONFIG[section];
   const isDocSection = section === "resume" || section === "cv";
 
-  // Starts true: Workspace mounts fresh per tab (keyed) and always fetches.
-  const [loading, setLoading] = useState(true);
-
-  const refresh = useCallback(
+  // Fetch server truth → reset the draft to a clean baseline. Runs on mount
+  // (Workspace is keyed by section, so it remounts per tab) and after each Save.
+  const loadDraft = useCallback(
     () =>
       apiGetAllEntries().then((all) => {
-        setItems(all.filter((i) => i.section === section));
+        setDraft(
+          all
+            .filter((i) => i.section === section)
+            .map((i) => ({ ...i, _key: i.id, _status: "clean" as const }))
+        );
         setLoading(false);
       }),
     [section]
   );
 
-  // Workspace is keyed by section (see render below), so form/editing state
-  // resets automatically when the tab changes — only the fetch lives here.
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    void loadDraft();
+  }, [loadDraft]);
 
-  // Drag-and-drop upload → text editor (text files) or save as an entry (PDF/image).
-  const handleUpload = async (r: UploadResult) => {
+  const dirty = draft.some((i) => i._status !== "clean");
+
+  // --- Local draft mutations (nothing reaches the server until Save) ---
+
+  const patchDraft = (key: string, patch: Partial<CmsItem>) =>
+    setDraft((d) => d.map((it) => (it._key === key ? markEdited(it, patch) : it)));
+
+  const addDraft = (fields: Omit<CmsItem, "id">) =>
+    setDraft((d) => [
+      { ...fields, id: "", _key: `new-${crypto.randomUUID()}`, _status: "new" },
+      ...d,
+    ]);
+
+  const removeDraft = (key: string) =>
+    setDraft((d) =>
+      d.flatMap((it) => {
+        if (it._key !== key) return [it];
+        if (it._status === "new") return []; // never persisted → just drop it
+        return [{ ...it, _status: "deleted" as const, _prev: it._status }];
+      })
+    );
+
+  const undoDelete = (key: string) =>
+    setDraft((d) =>
+      d.map((it) =>
+        it._key === key && it._status === "deleted"
+          ? { ...it, _status: it._prev ?? "clean", _prev: undefined }
+          : it
+      )
+    );
+
+  // --- Selection / bulk delete (deleted rows aren't selectable) ---
+
+  const selectableKeys = draft
+    .filter((i) => i._status !== "deleted")
+    .map((i) => i._key);
+  const allSelected =
+    selectableKeys.length > 0 && selectableKeys.every((k) => selected.has(k));
+
+  const toggleSelect = (key: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  const toggleSelectAll = () =>
+    setSelected(allSelected ? new Set() : new Set(selectableKeys));
+
+  const deleteSelected = () => {
+    setDraft((d) =>
+      d.flatMap((it) => {
+        if (!selected.has(it._key)) return [it];
+        if (it._status === "new") return [];
+        return [{ ...it, _status: "deleted" as const, _prev: it._status }];
+      })
+    );
+    setSelected(new Set());
+  };
+
+  // --- Commit / discard ---
+
+  const save = async () => {
+    setSaving(true);
+    setUploadError(null);
+    try {
+      // ponytail: sequential commit reusing the per-item API. On a mid-list
+      // failure we reload server truth and surface the error; a batch/
+      // transactional endpoint is the upgrade path if partial saves ever bite.
+      for (const it of draft) {
+        if (it._status === "new") await addItem(section, draftToPayload(it));
+        else if (it._status === "edited")
+          await updateItem(section, { ...draftToPayload(it), id: it.id });
+        else if (it._status === "deleted") await deleteItem(section, it.id);
+      }
+      await loadDraft();
+      setSelected(new Set());
+      setForm(EMPTY_FORM);
+      setEditingKey(null);
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not save changes.");
+      await loadDraft(); // reflect whatever committed; the rest can be redone
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const discard = () => {
+    setSelected(new Set());
+    setForm(EMPTY_FORM);
+    setEditingKey(null);
+    setTextDraft(null);
+    void loadDraft();
+  };
+
+  // --- Upload → stage as draft entries (committed on Save like everything else) ---
+
+  const handleUpload = (r: UploadResult) => {
     setUploadError(null);
     if (r.text !== undefined) {
       setTextDraft({ title: r.name.replace(/\.[^.]+$/, ""), text: r.text });
@@ -537,68 +771,56 @@ function Workspace({ section }: { section: CmsSection }) {
     }
     const asset = r.dataUrl;
     if (!asset) return;
-    setUploading(true);
-    try {
-      if (section === "projects") {
-        // Image → new project entry (title = filename; edit details after).
-        await addItem(section, {
-          title: r.name.replace(/\.[^.]+$/, ""),
-          description: "",
-          imageUrl: asset,
-          private: false,
-        });
-      } else if (isDocSection) {
-        // Single resume/CV entry: replace the existing one or create it.
-        const label = SECTION_LABELS[section];
-        const existing = items[0];
-        const base = {
-          title: `Srinivas RC — ${label} (PDF)`,
-          description: existing?.description || `AI/ML Engineer ${label.toLowerCase()}: skills, projects, certifications, education.`,
-          link: asset,
-          date: existing?.date || String(new Date().getFullYear()),
-        };
-        if (existing) await updateItem(section, { ...existing, ...base });
-        else await addItem(section, { ...base, private: false });
-      } else {
-        // Certificates: PDF/image → new entry.
-        await addItem(section, {
-          title: r.name.replace(/\.[^.]+$/, ""),
-          description: "",
-          link: asset,
-          private: false,
-        });
-      }
-      await refresh();
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed. Please try again.");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const saveTextDraft = async () => {
-    if (!textDraft || !textDraft.title.trim()) return;
-    setUploading(true);
-    setUploadError(null);
-    try {
-      await addItem(section, {
-        title: textDraft.title.trim(),
-        description: textDraft.text,
+    if (section === "projects") {
+      // Image → new project entry (title = filename; edit details after).
+      addDraft({
+        section,
+        title: r.name.replace(/\.[^.]+$/, ""),
+        description: "",
+        imageUrl: asset,
         private: false,
       });
-      setTextDraft(null);
-      await refresh();
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Could not save. Please try again.");
-    } finally {
-      setUploading(false);
+    } else if (isDocSection) {
+      // Single resume/CV entry: replace the existing draft item or create it.
+      const label = SECTION_LABELS[section];
+      const existing = draft.find((i) => i._status !== "deleted");
+      const base = {
+        title: `Srinivas RC — ${label} (PDF)`,
+        description:
+          existing?.description ||
+          `AI/ML Engineer ${label.toLowerCase()}: skills, projects, certifications, education.`,
+        link: asset,
+        date: existing?.date || String(new Date().getFullYear()),
+      };
+      if (existing) patchDraft(existing._key, base);
+      else addDraft({ section, ...base, private: false });
+    } else {
+      // Certificates: PDF/image → new entry.
+      addDraft({
+        section,
+        title: r.name.replace(/\.[^.]+$/, ""),
+        description: "",
+        link: asset,
+        private: false,
+      });
     }
   };
 
-  const submit = async (e: React.FormEvent) => {
+  const saveTextDraft = () => {
+    if (!textDraft || !textDraft.title.trim()) return;
+    addDraft({
+      section,
+      title: textDraft.title.trim(),
+      description: textDraft.text,
+      private: false,
+    });
+    setTextDraft(null);
+  };
+
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return;
-    const payload = {
+    const fields = {
       title: form.title.trim(),
       description: form.description.trim(),
       link: form.link.trim() || undefined,
@@ -608,20 +830,14 @@ function Workspace({ section }: { section: CmsSection }) {
         : undefined,
       private: form.private,
     };
-    setUploadError(null);
-    try {
-      if (editingId) await updateItem(section, { ...payload, id: editingId });
-      else await addItem(section, payload);
-      setForm(EMPTY_FORM);
-      setEditingId(null);
-      await refresh();
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Could not save the entry.");
-    }
+    if (editingKey) patchDraft(editingKey, fields);
+    else addDraft({ section, ...fields });
+    setForm(EMPTY_FORM);
+    setEditingKey(null);
   };
 
-  const startEdit = (item: CmsItem) => {
-    setEditingId(item.id);
+  const startEdit = (item: DraftItem) => {
+    setEditingKey(item._key);
     setForm({
       title: item.title,
       description: item.description,
@@ -632,62 +848,26 @@ function Workspace({ section }: { section: CmsSection }) {
     });
   };
 
-  const remove = async (id: string) => {
-    setUploadError(null);
-    try {
-      await deleteItem(section, id);
-      if (editingId === id) {
-        setEditingId(null);
-        setForm(EMPTY_FORM);
-      }
-      await refresh();
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Could not delete the entry.");
-    }
-  };
-
-  const togglePrivate = async (item: CmsItem) => {
-    setUploadError(null);
-    try {
-      await updateItem(section, { ...item, private: !item.private });
-      await refresh();
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Could not update visibility.");
-    }
-  };
-
-  // Pin (float to top of the section) / Star (featured badge) — saved instantly,
-  // so the public site reflects it on its next hydrate.
-  const togglePin = async (item: CmsItem) => {
-    setUploadError(null);
-    try {
-      await updateItem(section, { ...item, pinned: !item.pinned });
-      await refresh();
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Could not pin the entry.");
-    }
-  };
-  const toggleStar = async (item: CmsItem) => {
-    setUploadError(null);
-    try {
-      await updateItem(section, { ...item, starred: !item.starred });
-      await refresh();
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Could not star the entry.");
-    }
-  };
+  // Row toggles — all local, applied to the live site on Save.
+  const togglePrivate = (item: DraftItem) =>
+    patchDraft(item._key, { private: !item.private });
+  const togglePin = (item: DraftItem) =>
+    patchDraft(item._key, { pinned: !item.pinned });
+  const toggleStar = (item: DraftItem) =>
+    patchDraft(item._key, { starred: !item.starred });
 
   return (
+    <>
     <div className="flex flex-col gap-6 lg:flex-row">
       {/* Add / edit form — for resume/CV the "add" form is replaced by upload,
           so it only appears when editing an existing entry. */}
-      {(!isDocSection || editingId) && (
+      {(!isDocSection || editingKey) && (
       <form
         onSubmit={submit}
         className="w-full shrink-0 rounded-2xl border border-white/10 bg-black/40 p-4 backdrop-blur-md lg:w-80"
       >
         <h3 className="mb-3 text-sm font-bold text-white">
-          {editingId ? "$ edit entry" : "$ add entry"}
+          {editingKey ? "$ edit entry" : "$ add entry"}
         </h3>
         {section === "quotes" && (
           <p className="mb-3 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.25)] bg-[rgba(var(--theme-accent-rgb),0.06)] p-2.5 text-[11px] leading-relaxed text-gray-300">
@@ -764,13 +944,13 @@ function Workspace({ section }: { section: CmsSection }) {
             type="submit"
             className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] px-4 py-1.5 text-sm text-white transition-all hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95"
           >
-            {editingId ? "save" : "add"}
+            {editingKey ? "save" : "add"}
           </button>
-          {editingId && (
+          {editingKey && (
             <button
               type="button"
               onClick={() => {
-                setEditingId(null);
+                setEditingKey(null);
                 setForm(EMPTY_FORM);
               }}
               className="rounded-lg border border-gray-600 px-4 py-1.5 text-sm text-gray-400 hover:bg-gray-800/50"
@@ -793,7 +973,7 @@ function Workspace({ section }: { section: CmsSection }) {
               accept={uploadCfg.accept}
               maxSizeMB={3}
               hint={uploadCfg.hint}
-              busy={uploading}
+              busy={saving}
               onFile={handleUpload}
             />
             {uploadError && (
@@ -834,7 +1014,7 @@ function Workspace({ section }: { section: CmsSection }) {
                   <button
                     type="button"
                     onClick={saveTextDraft}
-                    disabled={uploading || !textDraft.title.trim()}
+                    disabled={!textDraft.title.trim()}
                     className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.7)] px-4 py-1.5 text-sm text-white transition-all hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-95 disabled:opacity-40"
                   >
                     save
@@ -852,130 +1032,261 @@ function Workspace({ section }: { section: CmsSection }) {
           </div>
         )}
 
-        {loading && items.length === 0 ? (
+        {loading && draft.length === 0 ? (
           <CardSkeletonList count={3} />
-        ) : items.length === 0 ? (
+        ) : draft.length === 0 ? (
           <p className="font-mono text-sm text-gray-500">
             (no entries yet — add the first one)
           </p>
         ) : (
-          <ul className="flex flex-col gap-3">
-            {items.map((item) => (
-              <li
-                key={item.id}
-                className="rounded-xl border border-white/10 bg-black/40 p-3 backdrop-blur-sm transition-colors hover:border-[rgba(var(--theme-accent-rgb),0.3)]"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate font-bold text-white">
-                      {item.title}
-                      {item.private && (
-                        <span className="ml-2 rounded bg-yellow-900/50 px-1.5 py-0.5 text-[10px] text-yellow-400">
-                          PRIVATE
-                        </span>
-                      )}
-                    </p>
-                    {item.date && (
-                      <p className="text-xs text-gray-500">{item.date}</p>
-                    )}
-                    <p className="mt-1 line-clamp-2 text-sm text-gray-400">
-                      {item.description}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {/* Pin & Star — projects and certificates only. Pin floats
-                        the item to the top of its public section; star adds a
-                        featured badge. Saved instantly. */}
-                    {(section === "projects" || section === "certificates") && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => togglePin(item)}
-                          aria-pressed={!!item.pinned}
-                          aria-label={item.pinned ? "Unpin" : "Pin to top"}
-                          title={item.pinned ? "Pinned to top — click to unpin" : "Pin to top of the section"}
-                          className={`grid h-8 w-8 place-items-center rounded-md border transition-colors duration-150 ${
-                            item.pinned
-                              ? "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-[var(--theme-accent)]"
-                              : "border-white/15 text-gray-500 hover:text-white"
-                          }`}
-                        >
-                          <Pin size={14} strokeWidth={2} className={item.pinned ? "fill-current" : ""} aria-hidden />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => toggleStar(item)}
-                          aria-pressed={!!item.starred}
-                          aria-label={item.starred ? "Unstar" : "Star as featured"}
-                          title={item.starred ? "Featured — click to unstar" : "Star as featured"}
-                          className={`grid h-8 w-8 place-items-center rounded-md border transition-colors duration-150 ${
-                            item.starred
-                              ? "border-yellow-500/60 bg-yellow-500/15 text-yellow-400"
-                              : "border-white/15 text-gray-500 hover:text-white"
-                          }`}
-                        >
-                          <Star size={14} strokeWidth={2} className={item.starred ? "fill-current" : ""} aria-hidden />
-                        </button>
-                      </>
-                    )}
-                    {/* Public/Private toggle with a visible label so it's clear
-                        what it does. Private entries are hidden from the site. */}
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={item.private}
-                      aria-label={`${item.title} is ${item.private ? "private" : "public"} — click to toggle`}
-                      title={
-                        item.private
-                          ? "Private — hidden from the site. Click to make public."
-                          : "Public — visible on the site. Click to make private."
-                      }
-                      onClick={() => togglePrivate(item)}
-                      className="flex items-center gap-1.5"
+          <div className="space-y-3">
+            {/* Select-all toolbar — always rendered, so entering select mode
+                never shifts the list. */}
+            <div className="flex items-center gap-3 px-1">
+              <CheckBox
+                checked={allSelected}
+                onChange={toggleSelectAll}
+                label={allSelected ? "Deselect all" : "Select all"}
+              />
+              <span className="font-mono text-[11px] text-gray-500">
+                {selected.size > 0
+                  ? `${selected.size} selected`
+                  : `${selectableKeys.length} ${
+                      selectableKeys.length === 1 ? "entry" : "entries"
+                    }`}
+              </span>
+            </div>
+
+            <ul className="flex flex-col gap-3">
+              <AnimatePresence initial={false}>
+                {draft.map((item) => {
+                  const deleted = item._status === "deleted";
+                  const isSel = selected.has(item._key);
+                  return (
+                    <motion.li
+                      key={item._key}
+                      layout
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, height: 0, marginTop: -12 }}
+                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                      className={`overflow-hidden rounded-xl border p-3 backdrop-blur-sm transition-colors ${
+                        deleted
+                          ? "border-red-900/40 bg-red-950/20"
+                          : isSel
+                          ? "border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.06)]"
+                          : "border-white/10 bg-black/40 hover:border-[rgba(var(--theme-accent-rgb),0.3)]"
+                      }`}
                     >
-                      <span
-                        className={`font-mono text-[10px] uppercase tracking-wide ${
-                          item.private
-                            ? "text-[var(--theme-accent)]"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {item.private ? "private" : "public"}
-                      </span>
-                      <span
-                        className={`relative inline-block h-5 w-10 rounded-full transition-colors ${
-                          item.private ? "bg-[var(--theme-accent)]" : "bg-gray-700"
-                        }`}
-                      >
-                        <span
-                          className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-transform ${
-                            item.private ? "translate-x-5" : "translate-x-0.5"
-                          }`}
-                        />
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => startEdit(item)}
-                      className="rounded border border-white/15 px-2 py-1 text-xs text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)]"
-                    >
-                      edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => remove(item.id)}
-                      className="rounded border border-red-900/60 px-2 py-1 text-xs text-red-400 hover:bg-red-900/20"
-                    >
-                      rm
-                    </button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                      <div className="flex items-start gap-3">
+                        <div className="pt-0.5">
+                          {deleted ? (
+                            <span
+                              className="grid h-5 w-5 place-items-center text-xs text-red-500/70"
+                              aria-hidden
+                            >
+                              ✕
+                            </span>
+                          ) : (
+                            <CheckBox
+                              checked={isSel}
+                              onChange={() => toggleSelect(item._key)}
+                              label={`Select ${item.title}`}
+                            />
+                          )}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className={`truncate font-bold ${
+                              deleted ? "text-gray-500 line-through" : "text-white"
+                            }`}
+                          >
+                            {item.title}
+                            {item._status === "new" && (
+                              <span className="ml-2 rounded bg-[rgba(var(--theme-accent-rgb),0.15)] px-1.5 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wide text-[var(--theme-accent)]">
+                                + new
+                              </span>
+                            )}
+                            {item._status === "edited" && (
+                              <span className="ml-2 rounded bg-amber-500/15 px-1.5 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wide text-amber-400">
+                                • edited
+                              </span>
+                            )}
+                            {deleted && (
+                              <span className="ml-2 rounded bg-red-500/15 px-1.5 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wide text-red-400">
+                                − removing
+                              </span>
+                            )}
+                            {item.private && !deleted && (
+                              <span className="ml-2 rounded bg-yellow-900/50 px-1.5 py-0.5 align-middle text-[10px] text-yellow-400">
+                                PRIVATE
+                              </span>
+                            )}
+                          </p>
+                          {item.date && !deleted && (
+                            <p className="text-xs text-gray-500">{item.date}</p>
+                          )}
+                          {!deleted && (
+                            <p className="mt-1 line-clamp-2 text-sm text-gray-400">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex shrink-0 items-center gap-2">
+                          {deleted ? (
+                            <button
+                              type="button"
+                              onClick={() => undoDelete(item._key)}
+                              className="rounded border border-white/15 px-2.5 py-1 text-xs text-gray-300 transition-colors hover:bg-[rgba(var(--theme-accent-rgb),0.15)] hover:text-white"
+                            >
+                              undo
+                            </button>
+                          ) : (
+                            <>
+                              {/* Pin (floats to the top of its public section) &
+                                  Star (featured badge) — projects/certificates,
+                                  applied to the site on Save. */}
+                              {(section === "projects" ||
+                                section === "certificates") && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => togglePin(item)}
+                                    aria-pressed={!!item.pinned}
+                                    aria-label={item.pinned ? "Unpin" : "Pin to top"}
+                                    title={
+                                      item.pinned
+                                        ? "Pinned to top — click to unpin"
+                                        : "Pin to top of the section"
+                                    }
+                                    className={`grid h-8 w-8 place-items-center rounded-md border transition-colors duration-150 ${
+                                      item.pinned
+                                        ? "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-[var(--theme-accent)]"
+                                        : "border-white/15 text-gray-500 hover:text-white"
+                                    }`}
+                                  >
+                                    <Pin
+                                      size={14}
+                                      strokeWidth={2}
+                                      className={item.pinned ? "fill-current" : ""}
+                                      aria-hidden
+                                    />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleStar(item)}
+                                    aria-pressed={!!item.starred}
+                                    aria-label={
+                                      item.starred ? "Unstar" : "Star as featured"
+                                    }
+                                    title={
+                                      item.starred
+                                        ? "Featured — click to unstar"
+                                        : "Star as featured"
+                                    }
+                                    className={`grid h-8 w-8 place-items-center rounded-md border transition-colors duration-150 ${
+                                      item.starred
+                                        ? "border-yellow-500/60 bg-yellow-500/15 text-yellow-400"
+                                        : "border-white/15 text-gray-500 hover:text-white"
+                                    }`}
+                                  >
+                                    <Star
+                                      size={14}
+                                      strokeWidth={2}
+                                      className={item.starred ? "fill-current" : ""}
+                                      aria-hidden
+                                    />
+                                  </button>
+                                </>
+                              )}
+                              {/* Public/Private toggle — private entries are
+                                  hidden from the site (applied on Save). */}
+                              <button
+                                type="button"
+                                role="switch"
+                                aria-checked={item.private}
+                                aria-label={`${item.title} is ${
+                                  item.private ? "private" : "public"
+                                } — click to toggle`}
+                                title={
+                                  item.private
+                                    ? "Private — hidden from the site. Click to make public."
+                                    : "Public — visible on the site. Click to make private."
+                                }
+                                onClick={() => togglePrivate(item)}
+                                className="flex items-center gap-1.5"
+                              >
+                                <span
+                                  className={`font-mono text-[10px] uppercase tracking-wide ${
+                                    item.private
+                                      ? "text-[var(--theme-accent)]"
+                                      : "text-gray-500"
+                                  }`}
+                                >
+                                  {item.private ? "private" : "public"}
+                                </span>
+                                <span
+                                  className={`relative inline-block h-5 w-10 rounded-full transition-colors ${
+                                    item.private
+                                      ? "bg-[var(--theme-accent)]"
+                                      : "bg-gray-700"
+                                  }`}
+                                >
+                                  <span
+                                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-transform ${
+                                      item.private
+                                        ? "translate-x-5"
+                                        : "translate-x-0.5"
+                                    }`}
+                                  />
+                                </span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => startEdit(item)}
+                                className={`rounded border px-2 py-1 text-xs transition-colors ${
+                                  editingKey === item._key
+                                    ? "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-[var(--theme-accent)]"
+                                    : "border-white/15 text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)]"
+                                }`}
+                              >
+                                edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removeDraft(item._key)}
+                                className="rounded border border-red-900/60 px-2 py-1 text-xs text-red-400 hover:bg-red-900/20"
+                              >
+                                rm
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </motion.li>
+                  );
+                })}
+              </AnimatePresence>
+            </ul>
+          </div>
         )}
       </div>
     </div>
+
+      {/* Unified sticky footer — bulk-delete + Save/Discard for this tab. */}
+      <SaveBar
+        dirty={dirty}
+        saving={saving}
+        saved={saved}
+        onSave={save}
+        onDiscard={discard}
+        selectedCount={selected.size}
+        onDeleteSelected={deleteSelected}
+        onClearSelection={() => setSelected(new Set())}
+      />
+    </>
   );
 }
 
@@ -1008,6 +1319,11 @@ function FeedbackPanel() {
   const [query, setQuery] = useState("");
   const [newestFirst, setNewestFirst] = useState(true);
   const [openId, setOpenId] = useState<string | null>(null);
+  // Multi-select bulk delete: selection → staged (marked) → committed on Save.
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [staged, setStaged] = useState<Set<string>>(new Set());
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const refresh = useCallback(
     () =>
@@ -1060,6 +1376,55 @@ function FeedbackPanel() {
     }
   };
 
+  // --- Multi-select bulk delete (staged locally, committed via the Save bar) ---
+  const dirty = staged.size > 0;
+
+  const toggleSelect = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const stageSelected = () => {
+    setStaged((prev) => new Set([...prev, ...selected]));
+    setSelected(new Set());
+  };
+
+  const unstage = (id: string) =>
+    setStaged((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+
+  const commitDeletes = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      for (const id of staged) {
+        const res = await fetch(`/api/feedback?id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) throw new Error("Could not delete some feedback.");
+      }
+      setEntries((prev) => prev.filter((f) => !staged.has(f.id)));
+      if (openId && staged.has(openId)) setOpenId(null);
+      setStaged(new Set());
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 2500);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not delete some feedback.");
+      await refresh();
+      setStaged(new Set());
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const discardDeletes = () => setStaged(new Set());
+
   // Search across name, message, email, and the formatted date.
   const q = query.trim().toLowerCase();
   const filtered = entries.filter(
@@ -1075,8 +1440,17 @@ function FeedbackPanel() {
       ? b.createdAt.localeCompare(a.createdAt)
       : a.createdAt.localeCompare(b.createdAt)
   );
-  const starred = entries.filter((f) => f.starred);
+  const starred = entries.filter((f) => f.starred && !staged.has(f.id));
   const open = openId ? entries.find((f) => f.id === openId) : null;
+
+  // Select-all operates over the visible (searched) rows not already staged.
+  const selectableIds = sorted
+    .filter((f) => !staged.has(f.id))
+    .map((f) => f.id);
+  const allSelected =
+    selectableIds.length > 0 && selectableIds.every((id) => selected.has(id));
+  const toggleSelectAll = () =>
+    setSelected(allSelected ? new Set() : new Set(selectableIds));
 
   const StarButton = ({ entry, size = 16 }: { entry: FeedbackEntry; size?: number }) => (
     <button
@@ -1150,6 +1524,7 @@ function FeedbackPanel() {
 
   // --- Inbox view ---
   return (
+    <>
     <div className="flex flex-col gap-6 xl:flex-row">
       <div className="min-w-0 flex-1">
         {/* Toolbar: search + sort */}
@@ -1184,40 +1559,110 @@ function FeedbackPanel() {
             {q ? "no feedback matches your search." : "no feedback yet — it will appear here when visitors send it."}
           </p>
         ) : (
-          <ul className="flex flex-col gap-2.5">
-            {sorted.map((f) => (
-              <li key={f.id}>
-                {/* div[role=button], not <button>: the star inside is a real
-                    button and buttons can't nest (hydration error). */}
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setOpenId(f.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setOpenId(f.id);
-                    }
-                  }}
-                  className="w-full cursor-pointer rounded-xl border border-white/10 bg-black/40 p-3 text-left backdrop-blur-sm transition-colors hover:border-[rgba(var(--theme-accent-rgb),0.35)]"
-                  aria-label={`Open feedback from ${f.name}`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="truncate font-bold text-white">{f.name}</p>
-                    <span className="flex shrink-0 items-center gap-2">
-                      <span className="text-[10px] text-gray-500">
-                        {fmtDate(f.createdAt)}
-                      </span>
-                      <StarButton entry={f} />
-                    </span>
-                  </div>
-                  <p className="mt-1 line-clamp-2 text-sm text-gray-400">
-                    {f.message}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-2.5">
+            {/* Select-all — always present so selecting shifts nothing. */}
+            <div className="flex items-center gap-3 px-1">
+              <CheckBox
+                checked={allSelected}
+                onChange={toggleSelectAll}
+                label={allSelected ? "Deselect all" : "Select all"}
+              />
+              <span className="font-mono text-[11px] text-gray-500">
+                {selected.size > 0
+                  ? `${selected.size} selected`
+                  : `${sorted.length} shown`}
+              </span>
+            </div>
+
+            <ul className="flex flex-col gap-2.5">
+              <AnimatePresence initial={false}>
+                {sorted.map((f) => {
+                  const isStaged = staged.has(f.id);
+                  const isSel = selected.has(f.id);
+                  return (
+                    <motion.li
+                      key={f.id}
+                      layout
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, height: 0, marginTop: -10 }}
+                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                      className="flex items-start gap-3 overflow-hidden"
+                    >
+                      <div className="pt-3.5">
+                        {isStaged ? (
+                          <span
+                            className="grid h-5 w-5 place-items-center text-xs text-red-500/70"
+                            aria-hidden
+                          >
+                            ✕
+                          </span>
+                        ) : (
+                          <CheckBox
+                            checked={isSel}
+                            onChange={() => toggleSelect(f.id)}
+                            label={`Select feedback from ${f.name}`}
+                          />
+                        )}
+                      </div>
+                      {isStaged ? (
+                        <div className="flex w-full items-center justify-between gap-3 rounded-xl border border-red-900/40 bg-red-950/20 p-3">
+                          <div className="min-w-0">
+                            <p className="truncate font-bold text-gray-500 line-through">
+                              {f.name}
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-red-400">
+                              will be deleted on Save
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => unstage(f.id)}
+                            className="shrink-0 rounded border border-white/15 px-2.5 py-1 text-xs text-gray-300 transition-colors hover:bg-[rgba(var(--theme-accent-rgb),0.15)] hover:text-white"
+                          >
+                            undo
+                          </button>
+                        </div>
+                      ) : (
+                        // div[role=button], not <button>: the star inside is a
+                        // real button and buttons can't nest (hydration error).
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setOpenId(f.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setOpenId(f.id);
+                            }
+                          }}
+                          className={`w-full cursor-pointer rounded-xl border p-3 text-left backdrop-blur-sm transition-colors ${
+                            isSel
+                              ? "border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.06)]"
+                              : "border-white/10 bg-black/40 hover:border-[rgba(var(--theme-accent-rgb),0.35)]"
+                          }`}
+                          aria-label={`Open feedback from ${f.name}`}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="truncate font-bold text-white">{f.name}</p>
+                            <span className="flex shrink-0 items-center gap-2">
+                              <span className="text-[10px] text-gray-500">
+                                {fmtDate(f.createdAt)}
+                              </span>
+                              <StarButton entry={f} />
+                            </span>
+                          </div>
+                          <p className="mt-1 line-clamp-2 text-sm text-gray-400">
+                            {f.message}
+                          </p>
+                        </div>
+                      )}
+                    </motion.li>
+                  );
+                })}
+              </AnimatePresence>
+            </ul>
+          </div>
         )}
       </div>
 
@@ -1253,6 +1698,20 @@ function FeedbackPanel() {
         )}
       </aside>
     </div>
+
+      {/* Unified sticky footer — select rows, stage deletions, commit on Save. */}
+      <SaveBar
+        dirty={dirty}
+        saving={saving}
+        saved={saved}
+        savedLabel="✓ Deleted"
+        onSave={commitDeletes}
+        onDiscard={discardDeletes}
+        selectedCount={selected.size}
+        onDeleteSelected={stageSelected}
+        onClearSelection={() => setSelected(new Set())}
+      />
+    </>
   );
 }
 
