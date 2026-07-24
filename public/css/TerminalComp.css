@@ -381,44 +381,110 @@
   font-size: inherit;
 }
 
+/* Traffic-light dots grouped in a row so the mobile layout can stack the
+   "back to profile" button neatly beneath them. */
+.dots-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Staggered pop-in for the dots on mount. `backwards` fill (not `forwards`)
+   holds the hidden start state during the delay, then releases — so the
+   :hover / :active scale transforms keep working once the entrance finishes. */
+.dot {
+  animation: dot-pop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.dot-red {
+  animation-delay: 40ms;
+}
+.dot-green {
+  animation-delay: 110ms;
+}
+.dot-blue {
+  animation-delay: 180ms;
+}
+@keyframes dot-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* "Back to profile" — mobile only (desktop always shows the identity pane).
-   Lets you return to the landing/profile view without wiping terminal history. */
+   Returns to the landing/profile view without wiping terminal history.
+   Sits BELOW the dots via the .window-dots column layout below. */
 .home-nav-btn {
   display: none;
 }
 @media (max-width: 1024px) {
+  /* Header's left cluster stacks vertically: dots on top, button below. */
+  .window-dots {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
   .home-nav-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    margin-left: 0.4rem;
-    padding: 0.28rem 0.55rem;
-    border-radius: 0.5rem;
+    gap: 0.38rem;
+    padding: 0.36rem 0.72rem;
+    border-radius: 0.65rem;
     border: 1px solid rgba(var(--theme-accent-rgb), 0.55);
-    background: rgba(var(--theme-accent-rgb), 0.1);
+    background: linear-gradient(
+      180deg,
+      rgba(var(--theme-accent-rgb), 0.17),
+      rgba(var(--theme-accent-rgb), 0.05)
+    );
     color: var(--theme-accent);
     font-family: inherit;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
     line-height: 1;
     cursor: pointer;
-    transition: background 150ms ease, transform 120ms ease, box-shadow 150ms ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      0 2px 10px -5px rgba(0, 0, 0, 0.7);
+    transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 200ms ease, border-color 160ms ease, background 160ms ease;
+    /* backwards (no forwards) so :hover/:active transforms still apply after. */
+    animation: home-btn-in 460ms cubic-bezier(0.22, 1, 0.36, 1) 120ms backwards;
   }
-  .home-nav-btn:hover {
-    background: rgba(var(--theme-accent-rgb), 0.18);
-    box-shadow: 0 0 16px -6px rgba(var(--theme-accent-rgb), 0.8);
+  .home-nav-btn:hover,
+  .home-nav-btn:focus-visible {
+    border-color: var(--theme-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 0 22px -6px rgba(var(--theme-accent-rgb), 0.9),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
   .home-nav-btn:active {
-    transform: scale(0.93);
+    transform: scale(0.94);
+  }
+  .home-nav-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .home-nav-btn:hover .home-nav-icon {
+    transform: translateY(-1px) scale(1.1);
   }
   .home-nav-label {
-    font-weight: 600;
-    letter-spacing: 0.03em;
+    text-transform: lowercase;
   }
 }
-/* Very narrow phones: icon only, so the 3×3 nav grid keeps its room. */
-@media (max-width: 420px) {
-  .home-nav-label {
-    display: none;
+@keyframes home-btn-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

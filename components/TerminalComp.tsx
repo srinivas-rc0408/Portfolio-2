@@ -1015,40 +1015,44 @@ export default function Terminal({
     >
       <header className="terminal-header">
         <div className="window-dots">
-          {/* Red — view profile picture */}
-          <button
-            type="button"
-            className="dot dot-red"
-            title="View profile picture"
-            aria-label="View profile picture"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.dispatchEvent(new CustomEvent("profile:view"));
-            }}
-          />
-          {/* Green — clear the terminal (R·G·B order) */}
-          <button
-            type="button"
-            className="dot dot-green"
-            title="Clear terminal"
-            aria-label="Clear terminal"
-            onClick={(e) => {
-              e.stopPropagation();
-              void processCommand("clear");
-            }}
-          />
-          {/* Blue — show help */}
-          <button
-            type="button"
-            className="dot dot-blue"
-            title="Show help"
-            aria-label="Show help"
-            onClick={(e) => {
-              e.stopPropagation();
-              void processCommand("help");
-            }}
-          />
-          {/* Mobile-only: return to the profile pane without clearing history */}
+          {/* Traffic-light controls — glossy RGB beads, each with a function */}
+          <div className="dots-row">
+            {/* Red — view profile picture */}
+            <button
+              type="button"
+              className="dot dot-red"
+              title="View profile picture"
+              aria-label="View profile picture"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent("profile:view"));
+              }}
+            />
+            {/* Green — clear the terminal (R·G·B order) */}
+            <button
+              type="button"
+              className="dot dot-green"
+              title="Clear terminal"
+              aria-label="Clear terminal"
+              onClick={(e) => {
+                e.stopPropagation();
+                void processCommand("clear");
+              }}
+            />
+            {/* Blue — show help */}
+            <button
+              type="button"
+              className="dot dot-blue"
+              title="Show help"
+              aria-label="Show help"
+              onClick={(e) => {
+                e.stopPropagation();
+                void processCommand("help");
+              }}
+            />
+          </div>
+          {/* Mobile-only: return to the profile pane without clearing history.
+              Sits BELOW the dots (see .window-dots column layout on mobile). */}
           {onShowIdentity && (
             <button
               type="button"
@@ -1060,7 +1064,9 @@ export default function Terminal({
                 onShowIdentity();
               }}
             >
-              <span aria-hidden>⌂</span>
+              <span className="home-nav-icon" aria-hidden>
+                ⌂
+              </span>
               <span className="home-nav-label">profile</span>
             </button>
           )}
