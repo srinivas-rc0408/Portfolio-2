@@ -29,55 +29,28 @@
   overflow: hidden;
 }
 
-/* Screen "bloom": a soft accent glow from the top + an edge vignette, so the
-   terminal reads as a powered-on display with depth (replaces the old blocky
-   tiled-noise texture that seamed into a visible grid). */
+/* Screen "bloom": a soft accent glow from the top + an edge vignette + fine
+   CRT scanlines, so the terminal reads as a powered-on display with depth.
+   z-index:0 keeps the whole backdrop BEHIND the text (the terminal body lifts
+   itself to z-index:1) — a positioned overlay painted OVER the glyphs makes
+   mobile GPUs ghost/smear the text on repaint, which is the bug this fixes.
+   Static (no animation over text) for the same reason. */
 .terminal-container::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
   background:
     radial-gradient(130% 65% at 50% -12%,
       rgba(var(--theme-accent-rgb), 0.08), transparent 58%),
     radial-gradient(100% 90% at 50% 115%,
-      rgba(0, 0, 0, 0.45), transparent 55%);
-}
-
-/* Fine CRT scanlines — barely-there, just enough to read as a live CRT. */
-.terminal-container::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.45), transparent 55%),
+    repeating-linear-gradient(0deg,
       transparent 0,
       transparent 2px,
       rgba(0, 0, 0, 0.05) 2px,
       rgba(0, 0, 0, 0.05) 3px);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  /* A slow accent sweep drifting down the screen — subtle "signal" life. */
-  .terminal-container::after {
-    background:
-      linear-gradient(to bottom,
-        transparent 0%,
-        rgba(var(--theme-accent-rgb), 0.035) 50%,
-        transparent 100%) 0 0 / 100% 220% no-repeat,
-      repeating-linear-gradient(0deg,
-        transparent 0,
-        transparent 2px,
-        rgba(0, 0, 0, 0.05) 2px,
-        rgba(0, 0, 0, 0.05) 3px);
-    animation: terminal-sweep 7s linear infinite;
-  }
-  @keyframes terminal-sweep {
-    0% { background-position: 0 -120%, 0 0; }
-    100% { background-position: 0 120%, 0 0; }
-  }
 }
 
 /* Header bar at the top — strict flexbox: dots left, nav grouped right */
@@ -197,6 +170,10 @@
 
 /* Main content area of the terminal */
 .terminal-body {
+  position: relative;
+  /* Sit ABOVE the ::before backdrop so text renders on its own layer and is
+     never composited under an overlay (prevents mobile repaint ghosting). */
+  z-index: 1;
   flex: 1 1 auto;
   min-height: 0;
   padding: 1rem;
