@@ -54,6 +54,8 @@ interface TerminalProps {
   onFirstCommand?: () => void;
   /** Fired on `clear` — lets the shell restore the identity pane on mobile. */
   onClear?: () => void;
+  /** Restore the identity pane on mobile WITHOUT clearing the history. */
+  onShowIdentity?: () => void;
   /** Deep-link from /?section=about */
   initialSection?: string | null;
   /** Deep-link from /?cmd=help */
@@ -514,6 +516,7 @@ const MAX_COMMAND_HISTORY = 50;
 export default function Terminal({
   onFirstCommand,
   onClear,
+  onShowIdentity,
   initialSection = null,
   initialCommand = null,
 }: TerminalProps) {
@@ -1045,6 +1048,22 @@ export default function Terminal({
               void processCommand("help");
             }}
           />
+          {/* Mobile-only: return to the profile pane without clearing history */}
+          {onShowIdentity && (
+            <button
+              type="button"
+              className="home-nav-btn"
+              title="Back to profile"
+              aria-label="Back to profile"
+              onClick={(e) => {
+                e.stopPropagation();
+                onShowIdentity();
+              }}
+            >
+              <span aria-hidden>⌂</span>
+              <span className="home-nav-label">profile</span>
+            </button>
+          )}
         </div>
         <nav className="terminal-nav" aria-label="Terminal navigation">
           {[

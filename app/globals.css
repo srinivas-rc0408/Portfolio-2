@@ -461,6 +461,16 @@ html.scrolling * {
   }
 }
 
+/* Landscape mobile is short — a floating welcome toast or quote card would
+   swallow the already-cramped terminal. Hide them there (they return in
+   portrait / on larger screens). !important beats the framer inline styles. */
+@media (orientation: landscape) and (max-height: 520px) {
+  [data-welcome-popup],
+  [data-quote-of-day] {
+    display: none !important;
+  }
+}
+
 /* === HIGH DPI SCREENS === */
 @media (-webkit-min-device-pixel-ratio: 2),
 (min-resolution: 192dpi) {

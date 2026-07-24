@@ -404,6 +404,47 @@
   font-size: inherit;
 }
 
+/* "Back to profile" — mobile only (desktop always shows the identity pane).
+   Lets you return to the landing/profile view without wiping terminal history. */
+.home-nav-btn {
+  display: none;
+}
+@media (max-width: 1024px) {
+  .home-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-left: 0.4rem;
+    padding: 0.28rem 0.55rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.55);
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    color: var(--theme-accent);
+    font-family: inherit;
+    font-size: 0.72rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 150ms ease, transform 120ms ease, box-shadow 150ms ease;
+  }
+  .home-nav-btn:hover {
+    background: rgba(var(--theme-accent-rgb), 0.18);
+    box-shadow: 0 0 16px -6px rgba(var(--theme-accent-rgb), 0.8);
+  }
+  .home-nav-btn:active {
+    transform: scale(0.93);
+  }
+  .home-nav-label {
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+}
+/* Very narrow phones: icon only, so the 3×3 nav grid keeps its room. */
+@media (max-width: 420px) {
+  .home-nav-label {
+    display: none;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   /* Mobile only: dots left, nav in 4 + 4 grid */
