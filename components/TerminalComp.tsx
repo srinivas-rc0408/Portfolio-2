@@ -1014,7 +1014,8 @@ export default function Terminal({
       aria-label="Interactive terminal"
     >
       <header className="terminal-header">
-        <div className="window-dots">
+        {/* Window title bar: traffic-light controls · host prompt · profile */}
+        <div className="terminal-titlebar">
           {/* Traffic-light controls — glossy RGB beads, each with a function */}
           <div className="dots-row">
             {/* Red — view profile picture */}
@@ -1051,8 +1052,12 @@ export default function Terminal({
               }}
             />
           </div>
-          {/* Mobile-only: return to the profile pane without clearing history.
-              Sits BELOW the dots (see .window-dots column layout on mobile). */}
+          {/* Host prompt — real terminal chrome, fills the bar, truncates. */}
+          <span className="terminal-title" aria-hidden>
+            srinivas<span className="tt-accent">@</span>rc
+            <span className="tt-path">:~</span>
+          </span>
+          {/* Mobile-only: return to the profile pane without clearing history. */}
           {onShowIdentity && (
             <button
               type="button"
