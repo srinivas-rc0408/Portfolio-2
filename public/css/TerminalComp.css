@@ -77,7 +77,10 @@
   min-width: 0;
 }
 
+/* Mobile only: on desktop the identity pane is always on screen and the body
+   already shows the root@srinivas prompt, so a second host label is noise. */
 .terminal-title {
+  display: none;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -86,6 +89,11 @@
   letter-spacing: 0.01em;
   color: var(--text-secondary);
   opacity: 0.72;
+}
+@media (max-width: 1024px) {
+  .terminal-title {
+    display: block;
+  }
 }
 .terminal-title .tt-accent {
   color: rgba(var(--theme-accent-rgb), 0.7);

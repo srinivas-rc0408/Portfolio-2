@@ -341,6 +341,35 @@ export default function Tag() {
         </p>
       </div>
 
+      {/* Current focus — the live "what I'm building now" signal. Opens the
+          full board in the terminal. */}
+      <button
+        type="button"
+        onClick={() => execInTerminal("focus")}
+        aria-label="Current focus: AquaSentinel AI — open the full board"
+        title="What I'm building right now"
+        className="group/focus mx-auto mt-4 flex w-full max-w-[280px] min-h-[44px] items-center gap-2.5 rounded-xl border border-[rgba(var(--accent-rgb),0.28)] bg-gradient-to-b from-[rgba(var(--accent-rgb),0.08)] to-transparent px-3 py-2 text-left transition-all duration-200 ease-out hover:border-[rgba(var(--accent-rgb),0.65)] hover:shadow-[0_0_22px_-10px_rgba(var(--accent-rgb),0.9)] active:scale-[0.98]"
+      >
+        <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-60" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-mono text-[9px] uppercase tracking-[0.22em] text-[var(--text-secondary)]">
+            currently building
+          </span>
+          <span className="block truncate font-mono text-[13px] font-semibold text-[var(--text)]">
+            AquaSentinel AI
+          </span>
+        </span>
+        <span
+          className="shrink-0 font-mono text-xs text-[var(--accent)] opacity-0 transition-all duration-200 group-hover/focus:translate-x-0.5 group-hover/focus:opacity-100"
+          aria-hidden
+        >
+          →
+        </span>
+      </button>
+
       {/* Quick action menu — flat rows, single accent on prompt + hover bar */}
       <nav
         className="mx-auto mt-4 flex w-full max-w-[280px] flex-col gap-2 sm:mt-8 sm:gap-2.5"

@@ -3,37 +3,38 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import TerminalComp from "@/components/TerminalComp";
-import { useShell } from "@/context/ShellContext";
+
+/** Smooth-scroll helper that respects the OS "reduce motion" setting. */
+function scrollTo(top: number): void {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top, behavior: reduced ? "auto" : "smooth" });
+}
 
 function HomeTerminalInner() {
   const searchParams = useSearchParams();
-  const { setHideIdentityOnMobile } = useShell();
   const section = searchParams.get("section");
   const cmd = searchParams.get("cmd");
 
-  const handleFirstCommand = (): void => {
-    setHideIdentityOnMobile(true);
-  };
-
-  // `clear` returns to the landing view — bring the profile pane back on mobile.
-  const handleClear = (): void => {
-    setHideIdentityOnMobile(false);
-  };
-
-  // "Back to profile" (mobile) — reveal the identity pane, keep the terminal
-  // history intact, and smooth-scroll it into view at the top of the page.
-  const handleShowIdentity = (): void => {
-    setHideIdentityOnMobile(false);
+  // On mobile the profile pane sits above the terminal. Running a command
+  // scrolls the terminal into view instead of hiding the pane — so the profile
+  // is always one scroll (or one tap) away, never lost.
+  const revealTerminal = (): void => {
+    const pane = document.querySelector(".terminal-pane");
+    if (!pane) return;
     requestAnimationFrame(() =>
-      window.scrollTo({ top: 0, behavior: "smooth" })
+      scrollTo(window.scrollY + pane.getBoundingClientRect().top)
     );
+  };
+
+  const revealProfile = (): void => {
+    requestAnimationFrame(() => scrollTo(0));
   };
 
   return (
     <TerminalComp
-      onFirstCommand={handleFirstCommand}
-      onClear={handleClear}
-      onShowIdentity={handleShowIdentity}
+      onFirstCommand={revealTerminal}
+      onClear={revealProfile}
+      onShowIdentity={revealProfile}
       initialSection={section}
       initialCommand={cmd}
     />

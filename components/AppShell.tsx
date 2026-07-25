@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { MotionConfig } from "framer-motion";
 import Tag from "@/components/Tag";
 import QuoteOfDay from "@/components/QuoteOfDay";
@@ -10,12 +9,8 @@ import FeedbackWidget from "@/components/FeedbackWidget";
 import GameModal from "@/components/GameModal";
 import DocViewer from "@/components/DocViewer";
 import BootSequence from "@/components/boot/BootSequence";
-import { ShellContext } from "@/context/ShellContext";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isHome = pathname === "/";
-  const [hideIdentityOnMobile, setHideIdentityOnMobile] = useState(false);
 
   // Reveal scrollbars only while the user is actively scrolling; hide 5s after
   // they stop. Capture phase catches every nested scroll container (terminal,
@@ -38,19 +33,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const hideIdentityOnMobileOnly = isHome && hideIdentityOnMobile;
 
   return (
-    <ShellContext.Provider value={{ setHideIdentityOnMobile }}>
+    <>
       {/* Honor the OS "reduce motion" setting across every framer animation. */}
       <MotionConfig reducedMotion="user">
       <BootSequence />
       <main className="app-shell" role="main">
         <div className="main-content-area">
           <section
-            className={`identity-pane ${
-              hideIdentityOnMobileOnly ? "hide-on-mobile" : ""
-            }`}
+            className="identity-pane"
             aria-label="Developer identity — Srinivas RC"
           >
             <Tag />
@@ -69,6 +61,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Arch-Man arcade popup (opened by `play archman` / the Games button) */}
       <GameModal />
       </MotionConfig>
-    </ShellContext.Provider>
+    </>
   );
 }

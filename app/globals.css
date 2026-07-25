@@ -482,21 +482,11 @@ html.scrolling * {
   }
 }
 
-/* Hide identity pane on mobile after first command (portrait only) */
-@media screen and (max-width: 1024px) and (orientation: portrait) {
-  .identity-pane.hide-on-mobile {
-    display: none;
-  }
-
-  .identity-pane.hide-on-mobile + .terminal-pane {
-    width: 100%;
-    min-height: 100vh;
-  }
-
-  .identity-pane.hide-on-mobile + .terminal-pane .terminal-container {
-    height: 100vh;
-  }
-}
+/* NOTE: the identity pane is never removed from the flow on mobile. Hiding it
+   (display:none) after the first command meant there was nothing to scroll back
+   up to — the profile could only be recovered via `clear` or a reload. It now
+   always stays in the document: running a command smooth-scrolls the terminal
+   into view, and scrolling up (or the ⌂ profile button) returns to the profile. */
 
 
 /* Highlight color when user selects/copies text */

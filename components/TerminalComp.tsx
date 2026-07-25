@@ -9,6 +9,7 @@ import Projects from "./TerminalComp/Projects";
 import Skills from "./TerminalComp/Skills";
 import Contact from "./TerminalComp/Contact";
 import Experience from "./TerminalComp/Experience";
+import Focus from "./TerminalComp/Focus";
 import CmsSectionOutput from "./TerminalComp/CmsSection";
 import JerryChat from "./JerryChat";
 import type { CmsSection } from "@/lib/cms";
@@ -170,6 +171,7 @@ const HELP_GROUPS: HelpGroup[] = [
     accent: "text-white",
     entries: [
       { command: "about", description: "About me — plus this portfolio's build info." },
+      { command: "focus", description: "What I'm building right now." },
       { command: "projects", description: "View my recent AI and Web projects." },
       { command: "skills", description: "See my technical stack." },
       { command: "experience", description: "View my professional experience." },
@@ -229,6 +231,7 @@ const TAB_COMPLETIONS: string[] = [
   "help",
   "about",
   "about-portfolio",
+  "focus",
   "projects",
   "skills",
   "experience",
@@ -313,6 +316,7 @@ const COMMAND_NAMES = [
 
 const CD_SECTIONS = [
   "welcome",
+  "focus",
   "about",
   "projects",
   "skills",
@@ -503,6 +507,7 @@ const SECTION_COMPONENTS: Record<string, React.ReactNode> = {
     </>
   ),
   "about-portfolio": <AboutPortfolio />,
+  focus: <Focus />,
   projects: <Projects />,
   skills: <Skills />,
   experience: <Experience />,
@@ -1077,16 +1082,18 @@ export default function Terminal({
           )}
         </div>
         <nav className="terminal-nav" aria-label="Terminal navigation">
+          {/* 9 commands → a tidy 3×3 grid on phones. `clear` lives on the green
+              window dot (and still works as a typed command). */}
           {[
             "help",
             "about",
+            "focus",
             "projects",
             "skills",
             "experience",
             "education",
             "certificates",
             "contact",
-            "clear",
           ].map((cmd) => (
             <button
               key={cmd}
