@@ -9,6 +9,7 @@ import FeedbackWidget from "@/components/FeedbackWidget";
 import GameModal from "@/components/GameModal";
 import DocViewer from "@/components/DocViewer";
 import BootSequence from "@/components/boot/BootSequence";
+import StatusFooter from "@/components/StatusFooter";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
 
@@ -50,6 +51,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <section className="terminal-pane">{children}</section>
         </div>
       </main>
+      {/* Global status bar — desktop-only control panel pinned to the bottom */}
+      <StatusFooter />
       {/* Jerry welcome toast — slides in bottom-right 1.5s after load (home only) */}
       <WelcomePopup />
       {/* Floating quote toast — overlays the site, never affects layout/scroll */}
