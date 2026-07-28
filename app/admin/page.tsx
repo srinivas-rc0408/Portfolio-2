@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
-import { Eye, EyeOff, Pin, Star, X } from "lucide-react";
+import { Eye, EyeOff, Globe, Lock, Pin, Star, X } from "lucide-react";
 import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
 import { CardSkeletonList, RowSkeletonList } from "@/components/ui/Skeleton";
 import {
@@ -40,6 +40,22 @@ const SECTION_LABELS: Record<CmsSection, string> = {
   connect: "Connect",
   quotes: "Quotes",
 };
+
+/** "Uploaded on 28 Jul 2026" — recorded when a file is staged. */
+function uploadStamp(): string {
+  return `Uploaded on ${new Date().toLocaleDateString(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })}`;
+}
+
+/** Original filename + format + size, so the row is self-describing. */
+function describeUpload(r: UploadResult): string {
+  const ext = (r.name.match(/\.([^.]+)$/)?.[1] || "file").toUpperCase();
+  const kb = r.size ? ` · ${Math.max(1, Math.round(r.size / 1024))} KB` : "";
+  return `${r.name} · ${ext}${kb}`;
+}
 
 const EMPTY_FORM = {
   title: "",
@@ -150,6 +166,27 @@ function SaveBar({
 
   return (
     <>
+      {/* Success toast — springs in above the bar once a commit lands. */}
+      <AnimatePresence>
+        {saved && (
+          <motion.div
+            role="status"
+            aria-live="polite"
+            initial={{ y: 24, opacity: 0, scale: 0.96 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 12, opacity: 0, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-24 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2.5 rounded-xl border border-emerald-500/40 bg-zinc-950/90 px-4 py-2.5 font-mono text-xs text-emerald-300 shadow-lg shadow-black/50 backdrop-blur-md"
+          >
+            <span className="relative flex h-2 w-2" aria-hidden>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+            {savedLabel}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Reserve the bar's height so fixed positioning never hides content. */}
       <div className="h-20" aria-hidden />
       <AnimatePresence>
@@ -867,7 +904,8 @@ function Workspace({ section }: { section: CmsSection }) {
       addDraft({
         section,
         title: r.name.replace(/\.[^.]+$/, ""),
-        description: "",
+        description: describeUpload(r),
+        date: uploadStamp(),
         imageUrl: asset,
         private: false,
       });
@@ -890,7 +928,8 @@ function Workspace({ section }: { section: CmsSection }) {
       addDraft({
         section,
         title: r.name.replace(/\.[^.]+$/, ""),
-        description: "",
+        description: describeUpload(r),
+        date: uploadStamp(),
         link: asset,
         private: false,
       });
@@ -1307,31 +1346,21 @@ function Workspace({ section }: { section: CmsSection }) {
                                     : "Public — visible on the site. Click to make private."
                                 }
                                 onClick={() => togglePrivate(item)}
-                                className="flex items-center gap-1.5"
+                                className={`flex min-h-[36px] items-center gap-1.5 rounded-md border px-2 transition-colors duration-150 ${
+                                  item.private
+                                    ? "border-amber-500/50 bg-amber-500/10 text-amber-400"
+                                    : "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                                }`}
                               >
-                                <span
-                                  className={`font-mono text-[10px] uppercase tracking-wide ${
-                                    item.private
-                                      ? "text-[var(--theme-accent)]"
-                                      : "text-gray-500"
-                                  }`}
-                                >
+                                {/* Fixed-width icon + label: swapping state must
+                                    not reflow the row (zero layout shift). */}
+                                {item.private ? (
+                                  <Lock size={13} strokeWidth={2.2} aria-hidden />
+                                ) : (
+                                  <Globe size={13} strokeWidth={2.2} aria-hidden />
+                                )}
+                                <span className="w-[46px] text-left font-mono text-[10px] uppercase tracking-wide">
                                   {item.private ? "private" : "public"}
-                                </span>
-                                <span
-                                  className={`relative inline-block h-5 w-10 rounded-full transition-colors ${
-                                    item.private
-                                      ? "bg-[var(--theme-accent)]"
-                                      : "bg-gray-700"
-                                  }`}
-                                >
-                                  <span
-                                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-transform ${
-                                      item.private
-                                        ? "translate-x-5"
-                                        : "translate-x-0.5"
-                                    }`}
-                                  />
                                 </span>
                               </button>
                               <button
