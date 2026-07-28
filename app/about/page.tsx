@@ -330,7 +330,9 @@ export default function About() {
                     &amp; Machine Learning.
                   </p>
                   <div>
-                    <span itemProp="credentialCategory">CGPA: 7.5</span>
+                    <span itemProp="credentialCategory">
+                      B.Tech — Artificial Intelligence &amp; Machine Learning
+                    </span>
                   </div>
                 </article>
               </div>
@@ -351,11 +353,13 @@ export default function About() {
                   </div>
                   <h3>Agentic AI Systems</h3>
                   <p>
-                    Building autonomous agents with <strong>LLMs</strong> and{" "}
-                    <strong>CrewAI</strong>, like Archagent — an agent that
-                    handles architecture and interior design tasks end to end.
-                    Focused on prompt engineering and shipping AI-powered web
-                    applications.
+                    Building agentic systems with <strong>LLMs</strong>,{" "}
+                    <strong>Google Gemini</strong> and <strong>CrewAI</strong> —
+                    like <strong>ArchAgent</strong>, an AI architectural design
+                    platform that turns a text brief into 3D renders, panoramic
+                    views and itemised cost estimates through a 4-stage Gemini
+                    prompt-chaining pipeline. Focused on prompt engineering and
+                    shipping AI-powered web applications.
                   </p>
                 </article>
 

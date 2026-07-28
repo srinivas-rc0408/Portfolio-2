@@ -3,16 +3,25 @@
 import React, { useState, useEffect } from "react";
 import SmartImage from "@/components/ui/SmartImage";
 import { AnimatePresence, motion } from "framer-motion";
-import { type Project } from "@/lib/portfolio-data";
+import { projects as staticProjects, type Project } from "@/lib/portfolio-data";
 import { CMS_UPDATED_EVENT, getItems } from "@/lib/cms";
 import WindowDots from "@/components/WindowDots";
 
 /** A public project plus the `starred` featured flag from the CMS. */
 type PublicProject = Project & { starred?: boolean };
 
-/** Public projects from the CMS store (private excluded, pinned first). */
+/**
+ * Public projects, CMS-first with a static fallback.
+ *
+ * The CMS copy is authoritative (admin edits, pin/star, private filtering), but
+ * it only exists once /api/bootstrap has resolved. If that request fails or is
+ * slow — a cold/unreachable DB — falling through to nothing rendered an empty
+ * "0 repos" shell, which reads as broken. The bundled portfolio-data array is
+ * the same content the DB seeds from, so it's a truthful last resort and the
+ * section is never empty.
+ */
 function readPublicProjects(): PublicProject[] {
-  return getItems("projects").map((item) => ({
+  const fromCms: PublicProject[] = getItems("projects").map((item) => ({
     name: item.title,
     description: item.description,
     imageUrl: item.imageUrl ?? "/images/logo.jpg",
@@ -21,6 +30,7 @@ function readPublicProjects(): PublicProject[] {
     tech: item.tech ?? [],
     starred: item.starred,
   }));
+  return fromCms.length > 0 ? fromCms : staticProjects;
 }
 
 
@@ -133,7 +143,11 @@ const Projects: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [projectsPerPage, setProjectsPerPage] = useState<number>(2);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [projectsData, setProjectsData] = useState<PublicProject[]>([]);
+  // Seeded on mount (this component is runtime terminal output, so it never
+  // SSRs) — avoids a one-frame flash of the empty "0 repos" shell.
+  const [projectsData, setProjectsData] = useState<PublicProject[]>(
+    readPublicProjects
+  );
   const [detailProject, setDetailProject] = useState<Project | null>(null);
 
   // Close the detail modal on Escape.

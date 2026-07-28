@@ -62,56 +62,123 @@ const Experience: React.FC = () => {
 
                 {/* Nested entries with vertical timeline */}
                 <ol className="relative border-l-2 border-cyan-800/30 ml-5 sm:ml-7 space-y-6">
-                  {/* Archagent */}
+                  {/* ArchAgent */}
                   <li className="pl-4 sm:pl-5 relative">
                     <span
                       aria-hidden="true"
                       className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-cyan-400 ring-2 ring-black"
                     />
                     <h4 className="text-white font-semibold text-sm sm:text-base font-mono">
-                      Archagent — Autonomous AI Agent
+                      ArchAgent — AI Architectural Design Platform
                     </h4>
                     <p className="text-gray-400 text-xs sm:text-sm">
-                      Agentic systems
+                      Apr – Jun 2026 · Agentic systems
                     </p>
 
                     <ul className="mt-3 list-disc list-outside space-y-1 text-gray-300 text-sm sm:text-base ml-4 sm:ml-5">
                       <li>
-                        Designed and built an autonomous AI agent that handles
-                        architecture and interior design tasks end to end.
+                        Built an AI platform that turns text design briefs into
+                        3D renders, panoramic views and itemised cost estimates
+                        through a 4-stage Google Gemini prompt-chaining pipeline.
                       </li>
                       <li>
-                        Applied agentic frameworks (CrewAI), LLM orchestration,
-                        and prompt engineering to a real-world domain.
+                        Combined two AI models — Gemini for design reasoning and
+                        Hugging Face FLUX for images — with an interactive
+                        Three.js 3D viewer, plus Supabase login and storage.
+                      </li>
+                      <li>
+                        Fixed inaccurate cost estimates (LLM hallucinations)
+                        using few-shot prompting with real INR price examples,
+                        and added 1-click PDF export with jsPDF.
                       </li>
                     </ul>
                   </li>
 
-                  {/* Language Detector */}
+                  {/* AI Travel Planner */}
                   <li className="pl-4 sm:pl-5 relative">
                     <span
                       aria-hidden="true"
                       className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-black border-2 border-cyan-700"
                     />
                     <h4 className="text-white font-semibold text-sm sm:text-base font-mono">
-                      Language Detector — ML Web App
+                      AI Travel Planner
                     </h4>
                     <p className="text-gray-400 text-xs sm:text-sm">
-                      Machine learning
+                      Jun 2026 · LLM application
                     </p>
 
                     <ul className="mt-3 list-disc list-outside space-y-1 text-gray-300 text-sm sm:text-base ml-4 sm:ml-5">
                       <li>
-                        Built a minimalist, single-page language detection web
-                        application requiring no login.
+                        Generated personalised, day-by-day itineraries from three
+                        inputs — destination, budget and preferences — using
+                        structured JSON prompts with Google Gemini.
                       </li>
                       <li>
-                        Focused on a friction-free user experience: paste text,
-                        get the language — nothing else in the way.
+                        Integrated 4 Google services (Gemini, OAuth, Places API,
+                        Firebase Firestore) for secure sign-in, live location
+                        data and trips saved across sessions.
+                      </li>
+                    </ul>
+                  </li>
+
+                  {/* AI Finance Assistant */}
+                  <li className="pl-4 sm:pl-5 relative">
+                    <span
+                      aria-hidden="true"
+                      className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-black border-2 border-cyan-700"
+                    />
+                    <h4 className="text-white font-semibold text-sm sm:text-base font-mono">
+                      AI Finance Assistant
+                    </h4>
+                    <p className="text-gray-400 text-xs sm:text-sm">
+                      2026 · Full-stack + LLM
+                    </p>
+
+                    <ul className="mt-3 list-disc list-outside space-y-1 text-gray-300 text-sm sm:text-base ml-4 sm:ml-5">
+                      <li>
+                        Built a personal-finance assistant on Next.js with 3
+                        modules (dashboard, portfolio, transactions) answering
+                        finance questions via prompt-engineered LLM responses.
+                      </li>
+                      <li>
+                        Designed a relational Prisma database with 5+ models
+                        served through dedicated REST endpoints, with Inngest
+                        running background jobs to keep the dashboard responsive.
                       </li>
                     </ul>
                   </li>
                 </ol>
+              </div>
+
+              {/* Leadership — Yantra IoT Club */}
+              <div>
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="min-w-0">
+                    <h3 className="text-white font-semibold text-base sm:text-lg font-mono">
+                      Core Member &amp; Head of Media
+                    </h3>
+                    <p className="text-gray-400 text-xs sm:text-sm">
+                      Yantra IoT Club, REVA University · 2025
+                    </p>
+                    <p className="text-gray-500 text-xs sm:text-sm">
+                      Bengaluru, Karnataka, India
+                    </p>
+                  </div>
+                </div>
+
+                <ul className="mt-3 list-disc list-outside space-y-1 text-gray-300 text-sm sm:text-base ml-9 sm:ml-12">
+                  <li>
+                    Led media and outreach for the club, running promotional
+                    campaigns for 2 robotics events — ROBONEMESIS microcontroller
+                    training and a Follow Bot Competition — that drew 17K+
+                    combined views.
+                  </li>
+                  <li>
+                    Coordinated technical workshops and career panels with
+                    professionals from Amazon and Google, reaching 100+ students
+                    across university events.
+                  </li>
+                </ul>
               </div>
 
               {/* Open to opportunities */}

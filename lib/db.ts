@@ -271,7 +271,7 @@ async function seed(): Promise<void> {
     })
   );
   [
-    ["Deep Learning — 12-Week Academic Programme", "IIT Ropar / NPTEL", "2025"],
+    ["Deep Learning — 12-Week Academic Programme (Proctored)", "IIT Ropar / NPTEL", "2026"],
     ["Software Engineering Fundamentals", "Microsoft", "2025"],
     ["LLM-Driven AI Engineering Bootcamp", "REVA University", "2025"],
     ["Prompt Engineering Certification", "Infosys Springboard", "2025"],
@@ -281,29 +281,29 @@ async function seed(): Promise<void> {
     push("certificates", { title, description, date })
   );
   [
-    ["B.Tech — Artificial Intelligence & Machine Learning", "REVA University, Bengaluru. CGPA: 7.5. Expected 2027.", "2023 – 2027"],
+    ["B.Tech — Artificial Intelligence & Machine Learning", "REVA University, Bengaluru. Expected 2027.", "2023 – 2027"],
     ["PUC (PCMB)", "MES College of Arts, Science & Commerce, Bengaluru. 82.5%.", "2023"],
     ["ICSE — Class X", "Mount Senoria School, Bengaluru. 88.8%.", "2021"],
   ].forEach(([title, description, date]) =>
     push("education", { title, description, date })
   );
   push("experience", {
-    title: "AI/ML Engineer — Independent Projects & Open-Source",
+    title: "Independent AI/ML Engineering — Self-Directed Projects",
     description:
-      "Design, build, and ship full-stack AI products end to end — from a 4-stage Gemini prompt-chaining platform (ArchAgent) to MLOps pipelines and LLM-powered web apps (11+ shipped). Integrate real production stacks (Google Gemini, Hugging Face, Firebase, Supabase, Three.js), and continuously explore the open-source ecosystem on GitHub — evaluating new frameworks, plugins, and tooling and turning them into production-grade builds. Open to AI/ML internships and placements.",
-    date: "2025 – Present",
+      "Design, build, and ship full-stack AI products end to end — from a 4-stage Gemini prompt-chaining platform (ArchAgent) to MLOps pipelines and LLM-powered web apps (12 shipped). Integrate real production stacks (Google Gemini, Hugging Face, Firebase, Supabase, Three.js), and continuously explore the open-source ecosystem on GitHub — evaluating new frameworks, plugins, and tooling and turning them into production-grade builds. Open to AI/ML internships and placements.",
+    date: "Self-directed · 2025 – Present",
   });
   push("experience", {
     title: "Core Member & Head of Media — Yantra IoT Club, REVA University",
     description:
-      "Lead digital outreach and technical branding for university-wide events. Organised 2 hands-on technical workshops and coordinated career panels for 100+ students, owning everything from planning to delivery.",
-    date: "2024 – Present",
+      "Led media and outreach for the club, running promotional campaigns for 2 robotics events — ROBONEMESIS microcontroller training and a Follow Bot Competition — that drew 17K+ combined views. Coordinated technical workshops and career panels with professionals from Amazon and Google, reaching 100+ students across university events.",
+    date: "2025",
     sortOrder: 1,
   });
   push("achievements", {
     title: "Certified — Deep Learning (IIT Ropar / NPTEL)",
-    description: "Completed the 12-week academic programme.",
-    date: "2025",
+    description: "Completed the 12-week proctored academic programme.",
+    date: "2026",
   });
   push("connect", {
     title: "Email",

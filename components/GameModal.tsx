@@ -264,7 +264,7 @@ export default function GameModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-xl overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
+            className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -376,10 +376,12 @@ export default function GameModal() {
                   [arrows / WASD] move · [Esc] menu
                 </p>
 
-                {/* Touch D-pad — the only way to play on mobile (no keyboard).
-                    Shown on touch/small screens; harmless on desktop. */}
+                {/* Touch D-pad — the only way to play without a keyboard.
+                    Gated on pointer capability, NOT width: a landscape phone is
+                    >=640px wide, so the old `sm:hidden` hid the only controls
+                    there and left the game unplayable. */}
                 {screen === "playing" && (
-                  <div className="mx-auto mt-3 grid w-[150px] grid-cols-3 grid-rows-3 gap-1.5 sm:hidden">
+                  <div className="mx-auto mt-3 grid w-[150px] grid-cols-3 grid-rows-3 gap-1.5 [@media(hover:hover)]:hidden">
                     {(
                       [
                         [null, { r: -1, c: 0, k: "↑", a: "Up" }, null],

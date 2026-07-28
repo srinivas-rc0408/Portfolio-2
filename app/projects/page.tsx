@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Projects | AI / ML Engineer Portfolio",
   description:
-    "Explore Srinivas RC's portfolio: Archagent, an autonomous AI agent for architecture and interior design tasks, and Language Detector, a minimalist single-page ML web application. Built with Python, LLMs, and agentic frameworks.",
+    "Explore Srinivas RC's portfolio: ArchAgent, an AI architectural design platform built on a 4-stage Google Gemini prompt-chaining pipeline; AI Travel Planner; and AI Finance Assistant. Built with Python, TypeScript, React/Next.js, LLMs, and agentic frameworks.",
   keywords: [
     "Software Developer Projects",
     "Developer Portfolio",

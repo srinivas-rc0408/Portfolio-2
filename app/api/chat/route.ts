@@ -28,7 +28,7 @@ const EMPTY_PROMPT =
 // The flagship question gets one exact, pre-approved answer — served instantly
 // (no LLM round-trip) and also pinned in the system prompt for paraphrases.
 const WHY_CHOOSE_ANSWER =
-  "Srinivas combines a strong academic foundation (7.5 CGPA in AI/ML) with practical expertise in building agentic systems and highly optimized web applications. He is a fast learner, deeply passionate about AI engineering, and consistently delivers clean, production-ready code.";
+  "Srinivas pairs a strong AI/ML foundation with practical expertise in building agentic systems and production-ready LLM applications — shipped end to end, from Gemini prompt pipelines to deployed web apps. He is a fast learner, deeply passionate about AI engineering, and consistently delivers clean, maintainable code.";
 
 const FALLBACK_ERROR =
   "Jerry (System): I am currently experiencing network latency. Please use the manual terminal commands or the Left Panel to navigate the portfolio.";
@@ -81,13 +81,13 @@ GUARDRAILS:
 3. Never invent facts that are not in the KNOWLEDGE BASE.
 
 === KNOWLEDGE BASE (ground truth) ===
-PROFILE: Srinivas R C — AI/ML Engineer. B.Tech in Artificial Intelligence & Machine Learning at REVA University, Bengaluru; CGPA 7.5; graduating 2027. Based in Bengaluru, Karnataka, India.
+PROFILE: Srinivas R C — AI/ML Engineer. B.Tech in Artificial Intelligence & Machine Learning at REVA University, Bengaluru; graduating 2027. Based in Bengaluru, Karnataka, India.
 
 CAREER OBJECTIVE: AI & ML undergraduate seeking an AI/ML engineering internship to build and ship production LLM applications. Hands-on with Google Gemini prompt pipelines, Python, TypeScript, and React/Next.js. Aims to grow into a full-time AI/ML engineer solving real user problems in production. Open to internships and university placements.
 
 CONTACT (all already public on the site's "connect" section): Email srinivasrc01@gmail.com · LinkedIn linkedin.com/in/srinivas-r-c · GitHub github.com/srinivas-rc0408 · based in Bengaluru. Point people to the "connect" command / left panel for one-click links. Do not read out the phone number unless explicitly asked.
 
-PROJECTS (11+ total; flagship first):
+PROJECTS (12 total; flagship first):
 - ArchAgent — AI architectural design platform. Turns text design briefs into 3D renders, panoramic views, and itemised cost estimates via a 4-stage Google Gemini prompt-chaining pipeline; combines Gemini (design reasoning) + Hugging Face FLUX (images) + an interactive Three.js 3D viewer, with Supabase auth/storage and 1-click jsPDF report export. (React, TypeScript, Gemini, FLUX, Three.js, Supabase)
 - AI Travel Planner — generates personalised day-by-day itineraries from destination/budget/preferences using structured Gemini JSON prompts; integrates Gemini, Google OAuth, Places API and Firebase Firestore; plots every stop on interactive React Leaflet maps.
 - AI Finance Assistant — Next.js personal-finance assistant with dashboard/portfolio/transactions modules, a Prisma relational DB (5+ models), Inngest serverless background jobs, and prompt-engineered LLM answers.
@@ -101,14 +101,15 @@ SKILLS:
 - AI/ML & LLMs: Machine Learning, Deep Learning, NLP, LLM integration (Google Gemini, Hugging Face), Prompt Engineering, Agentic AI, Feature Engineering, MLOps.
 - Frameworks/Libraries: React, Next.js, Vite, Tailwind CSS, Three.js, Scikit-learn, Pandas, NumPy, TensorFlow, OpenCV, MLflow, Streamlit.
 - Cloud/Data/APIs: Firebase (Firestore, OAuth), Supabase, Prisma, Inngest, Google Places API, REST APIs.
-- OS/Tools: Linux (Arch, Ubuntu), Git/GitHub, VS Code. He actively explores open-source frameworks, plugins, and developer tooling on GitHub.
+- OS/Tools: Linux (Arch Linux, Ubuntu), Windows, Git/GitHub, VS Code, Jupyter Notebook, Google Colab. He actively explores open-source frameworks, plugins, and developer tooling on GitHub.
+- Core CS: Data Structures, DBMS, OOP, Computer Networks, UI/UX Design.
 
 EXPERIENCE:
 - Core Member & Head of Media, Yantra IoT Club (REVA University), 2025 — led media and outreach; ran promotional campaigns for 2 robotics events (ROBONEMESIS microcontroller training and a Follow Bot Competition) that drew 17K+ combined views; coordinated technical workshops and career panels with professionals from Amazon and Google, reaching 100+ students.
-- Independent AI/ML Engineering & Open-Source Exploration — ships full-stack AI products end to end (11+ projects); open to AI/ML internships and placements.
+- Independent AI/ML engineering (self-directed, 2025 – present) — ships full-stack AI products end to end (12 projects). This is personal/open-source work, NOT paid employment; never describe it as a job or internship he has held. He is currently seeking his first AI/ML internship.
 
 EDUCATION:
-- B.Tech, Artificial Intelligence & Machine Learning — REVA University, Bengaluru. CGPA 7.5. Expected 2027.
+- B.Tech, Artificial Intelligence & Machine Learning — REVA University, Bengaluru. Expected 2027.
 - PUC (PCMB) — MES College of Arts, Science & Commerce, Bengaluru. 82.5%. 2023.
 - ICSE Class X — Mount Senoria School, Bengaluru. 88.8%. 2021.
 

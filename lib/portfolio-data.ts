@@ -21,13 +21,13 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    name: "ArchAgent — Agentic AI",
+    name: "ArchAgent — AI Architectural Design Platform",
     description:
-      "A modular agentic AI framework that automates structured dataset generation, cutting manual data-creation time by an estimated 40%. Built production-ready workflows with prompt chaining and custom tool integrations to execute 5+ sequential reasoning tasks autonomously, with configurable memory and a responsive Streamlit interface.",
+      "An AI platform that turns text design briefs into 3D renders, panoramic views, and itemised cost estimates through a 4-stage Google Gemini prompt-chaining pipeline. Combines two AI models — Gemini for design reasoning and Hugging Face FLUX for image generation — with an interactive Three.js 3D viewer, plus Supabase login and project storage. Fixed inaccurate cost estimates (LLM hallucinations) using few-shot prompting with real INR price examples, and added 1-click PDF report export with jsPDF.",
     imageUrl: "/images/projects/archagent.png",
     liveUrl: "#",
     githubUrl: "https://github.com/srinivas-rc0408/ArchAgent---Agentic-AI",
-    tech: ["Python", "LLM APIs", "Prompt Engineering", "Agentic AI", "Streamlit", "Git"],
+    tech: ["React", "TypeScript", "Google Gemini", "Hugging Face FLUX", "Three.js", "Supabase", "jsPDF"],
   },
   {
     name: "AI Travel Planner",
@@ -36,7 +36,7 @@ export const projects: Project[] = [
     imageUrl: "/images/projects/ai-travel-planner.png",
     liveUrl: "#",
     githubUrl: "https://github.com/srinivas-rc0408/AI-travel-planner-final",
-    tech: ["React", "Vite", "Firebase Firestore", "Google Gemini", "Google Places API", "Leaflet", "Shadcn UI"],
+    tech: ["React", "Vite", "Firebase Firestore", "Google Gemini", "Google Places API", "React Leaflet"],
   },
   {
     name: "Health Risk MLOps",
@@ -95,11 +95,11 @@ export const projects: Project[] = [
   {
     name: "AI Finance Assistant",
     description:
-      "An AI-driven personal finance assistant that answers finance questions, explains budgeting and savings concepts in structured plain language, and demonstrates applied prompt engineering in a real-world domain.",
+      "A personal-finance assistant built on Next.js with 3 modules — dashboard, portfolio, and transactions — that answers finance questions using prompt-engineered LLM responses. Backed by a relational Prisma database with 5+ models (accounts, transactions, stocks, portfolios) served through dedicated REST API endpoints, with Inngest serverless functions running background jobs so the dashboard stays responsive under load.",
     imageUrl: "/images/projects/ai-finance.png",
     liveUrl: "#",
-    githubUrl: "https://github.com/srinivas-rc0408",
-    tech: ["Python", "LLMs", "Prompt Engineering"],
+    githubUrl: "https://github.com/srinivas-rc0408/AI-Finance-Assistant",
+    tech: ["Next.js", "React", "Prisma", "Inngest", "Tailwind CSS"],
   },
   {
     name: "Flappy Duck — AI Mode",
@@ -143,7 +143,7 @@ export interface SkillsCategory {
 }
 
 export const skills: SkillsCategory = {
-  languages: ["Python", "TypeScript", "JavaScript", "Java", "C++", "SQL"],
+  languages: ["Python", "TypeScript", "JavaScript", "Java", "C", "C++", "SQL"],
   ai_ml: [
     "Machine Learning",
     "Deep Learning",
@@ -151,11 +151,14 @@ export const skills: SkillsCategory = {
     "Prompt Engineering",
     "Agentic AI",
     "NLP",
+    "Feature Engineering",
     "MLOps",
+    "OpenCV",
   ],
   frameworks: [
     "React",
     "Next.js",
+    "Vite",
     "Tailwind CSS",
     "Three.js",
     "TensorFlow",
@@ -168,9 +171,13 @@ export const skills: SkillsCategory = {
     "Firebase",
     "Supabase",
     "Prisma",
+    "Inngest",
+    "Google Places API",
     "REST APIs",
     "MLflow",
     "VS Code",
+    "Jupyter Notebook",
+    "Google Colab",
   ],
   // Distros daily-driven / distro-hopped over the years (Arch-family is home base).
   linux: [
@@ -227,7 +234,7 @@ export const socialLinks: SocialLinkData[] = [
   { name: "GitHub", href: "https://github.com/srinivas-rc0408", color: "#a78bfa" },
   {
     name: "LinkedIn",
-    href: "https://www.linkedin.com/in/srinivas-r-c-169406294",
+    href: "https://www.linkedin.com/in/srinivas-r-c",
     color: "#38bdf8",
   },
   {
@@ -250,7 +257,7 @@ export const socialLinks: SocialLinkData[] = [
 // Compact set for the left-panel footer (one Instagram, plus a direct email).
 export const footerLinks = [
   { name: "GitHub", href: "https://github.com/srinivas-rc0408" },
-  { name: "LinkedIn", href: "https://www.linkedin.com/in/srinivas-r-c-169406294" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/in/srinivas-r-c" },
   { name: "Email", href: `mailto:${CONTACT_EMAIL}` },
   { name: "Instagram", href: "https://www.instagram.com/ntg_much_69" },
   { name: "Steam", href: "https://steamcommunity.com/profiles/76561199545795989/" },

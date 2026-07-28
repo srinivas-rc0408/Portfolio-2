@@ -9,7 +9,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Experience | Independent AI Project Work · Open to Placements",
-  description: `Experience of ${SITE_NAME}: independent project work building agentic AI systems (Archagent — an autonomous agent for architecture and interior design tasks) and machine learning web applications (Language Detector). Open to internships and university placements in AI engineering.`,
+  description: `Experience of ${SITE_NAME}: Core Member & Head of Media at the Yantra IoT Club (REVA University), plus self-directed project work building LLM-powered and agentic AI systems (ArchAgent, AI Travel Planner, AI Finance Assistant). Open to internships and university placements in AI engineering.`,
   keywords: [
     `${SITE_NAME} Experience`,
     "AI / ML Engineer",
@@ -158,39 +158,87 @@ export default function Experience() {
                 </p>
               </header>
 
-              {/* Archagent */}
+              {/* ArchAgent */}
               <section aria-labelledby="archagent-heading">
                 <h3 id="archagent-heading">
-                  Archagent — Autonomous AI Agent · Agentic systems
+                  ArchAgent — AI Architectural Design Platform · Apr – Jun 2026
                 </h3>
                 <ul itemProp="description">
                   <li>
-                    Designed and built an autonomous AI agent that handles
-                    architecture and interior design tasks end to end.
+                    Built an AI platform that turns text design briefs into 3D
+                    renders, panoramic views and itemised cost estimates through
+                    a 4-stage Google Gemini prompt-chaining pipeline.
                   </li>
                   <li>
-                    Applied agentic frameworks (CrewAI), LLM orchestration, and
-                    prompt engineering to a real-world domain.
+                    Combined two AI models — Gemini for design reasoning and
+                    Hugging Face FLUX for images — with an interactive Three.js
+                    3D viewer, plus Supabase login and project storage.
+                  </li>
+                  <li>
+                    Fixed inaccurate cost estimates (LLM hallucinations) using
+                    few-shot prompting with real INR price examples, and added
+                    1-click PDF report export with jsPDF.
                   </li>
                 </ul>
               </section>
 
-              {/* Language Detector */}
-              <section aria-labelledby="langdetector-heading">
-                <h3 id="langdetector-heading">
-                  Language Detector — ML Web App · Machine learning
-                </h3>
+              {/* AI Travel Planner */}
+              <section aria-labelledby="travel-heading">
+                <h3 id="travel-heading">AI Travel Planner · Jun 2026</h3>
                 <ul itemProp="description">
                   <li>
-                    Built a minimalist, single-page language detection web
-                    application requiring no login.
+                    Generated personalised, day-by-day itineraries from three
+                    inputs — destination, budget and preferences — using
+                    structured JSON prompts with Google Gemini.
                   </li>
                   <li>
-                    Focused on a friction-free user experience: paste text, get
-                    the language — nothing else in the way.
+                    Integrated 4 Google services (Gemini, OAuth, Places API,
+                    Firebase Firestore) for secure sign-in, live location data
+                    and trips saved across sessions.
                   </li>
                 </ul>
               </section>
+
+              {/* AI Finance Assistant */}
+              <section aria-labelledby="finance-heading">
+                <h3 id="finance-heading">AI Finance Assistant · 2026</h3>
+                <ul itemProp="description">
+                  <li>
+                    Built a personal-finance assistant on Next.js with 3 modules
+                    (dashboard, portfolio, transactions) that answers finance
+                    questions using prompt-engineered LLM responses.
+                  </li>
+                  <li>
+                    Designed a relational Prisma database with 5+ models served
+                    through dedicated REST endpoints, with Inngest serverless
+                    functions running background jobs.
+                  </li>
+                </ul>
+              </section>
+            </article>
+
+            {/* Leadership — Yantra IoT Club */}
+            <article aria-labelledby="yantra-heading">
+              <header>
+                <h2 id="yantra-heading">Core Member &amp; Head of Media</h2>
+                <p>
+                  <strong>Yantra IoT Club, REVA University · 2025</strong> ·
+                  Bengaluru, Karnataka, India
+                </p>
+              </header>
+              <ul>
+                <li>
+                  Led media and outreach for the club, running promotional
+                  campaigns for 2 robotics events — ROBONEMESIS microcontroller
+                  training and a Follow Bot Competition — that drew 17K+
+                  combined views.
+                </li>
+                <li>
+                  Coordinated technical workshops and career panels with
+                  professionals from Amazon and Google, reaching 100+ students
+                  across university events.
+                </li>
+              </ul>
             </article>
 
             {/* Open to opportunities */}

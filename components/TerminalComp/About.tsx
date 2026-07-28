@@ -149,7 +149,7 @@ const About: React.FC = () => {
                 </p>
                 <div className="mt-2">
                   <span className="px-2 py-1 bg-cyan-900/30 border border-cyan-800/50 rounded-full text-white text-xs font-mono">
-                    CGPA: 7.5
+                    Expected 2027
                   </span>
                 </div>
               </div>

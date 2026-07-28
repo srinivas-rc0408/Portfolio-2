@@ -77,8 +77,9 @@
   min-width: 0;
 }
 
-/* Mobile only: on desktop the identity pane is always on screen and the body
-   already shows the root@srinivas prompt, so a second host label is noise. */
+/* PORTRAIT PHONES ONLY. In landscape (and on desktop) the identity pane sits
+   side-by-side and is always on screen, and the body already prints the
+   root@srinivas prompt — a second host label there is just noise. */
 .terminal-title {
   display: none;
   min-width: 0;
@@ -90,7 +91,7 @@
   color: var(--text-secondary);
   opacity: 0.72;
 }
-@media (max-width: 1024px) {
+@media (max-width: 1024px) and (orientation: portrait) {
   .terminal-title {
     display: block;
   }
@@ -109,6 +110,7 @@
 
 /* Interactive window dots — glossy RGB traffic lights, each with a function */
 .dot {
+  position: relative;
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 9999px;
@@ -120,6 +122,14 @@
   /* glossy top highlight + crisp edge, so each dot reads as a raised bead */
   box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.45),
     0 0 0 0.5px rgba(0, 0, 0, 0.4);
+}
+
+/* The bead is only ~14px, well under the 44px touch minimum. Expand the hit
+   area with a transparent overlay instead of resizing the visual dot. */
+.dot::before {
+  content: "";
+  position: absolute;
+  inset: -15px -8px;
 }
 
 .dot:hover {
@@ -162,12 +172,26 @@
 
 /* Row 2 — command bar: an even grid of runnable commands. auto-fit collapses
    from a single wide row on desktop down to 3 tidy columns on a phone. */
+/* 9 commands. An `auto-fit` track count is derived from available width, which
+   stranded orphans at common sizes (8+1 at 1280px — the most common laptop
+   width — and 4+4+1 at 769px). An explicit ladder keeps every row evenly
+   filled: 3x3 -> 5+4 -> 9 across one row. */
 .terminal-nav {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.4rem;
   width: 100%;
   min-width: 0;
+}
+@media (min-width: 769px) {
+  .terminal-nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1400px) {
+  .terminal-nav {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
 }
 
 /* A command chip: quiet by default, lit by the accent on hover — an underline
@@ -244,10 +268,12 @@
 
 /* Main content area of the terminal */
 .terminal-body {
+  /* position:relative (with z-index:auto) is deliberate: it paints above the
+     ::before backdrop by DOM order — keeping text on its own layer, which is
+     what prevents the mobile repaint ghosting — WITHOUT creating a stacking
+     context. An explicit z-index here would trap in-body overlays (the project
+     detail modal) below the z-20 terminal header, no matter their own z-index. */
   position: relative;
-  /* Sit ABOVE the ::before backdrop so text renders on its own layer and is
-     never composited under an overlay (prevents mobile repaint ghosting). */
-  z-index: 1;
   flex: 1 1 auto;
   min-height: 0;
   padding: 1rem;
@@ -489,13 +515,14 @@
   }
 }
 
-/* "Back to profile" — mobile only (desktop always shows the identity pane).
-   Returns to the landing/profile view without wiping terminal history.
-   Sits BELOW the dots via the .window-dots column layout below. */
+/* "Back to profile" — PORTRAIT PHONES ONLY. That's the only layout where the
+   identity pane is stacked off-screen above the terminal. In landscape and on
+   desktop the pane is side-by-side and permanently visible, so the button would
+   be a dead control. Returns to the profile without wiping terminal history. */
 .home-nav-btn {
   display: none;
 }
-@media (max-width: 1024px) {
+@media (max-width: 1024px) and (orientation: portrait) {
   .home-nav-btn {
     display: inline-flex;
     align-items: center;

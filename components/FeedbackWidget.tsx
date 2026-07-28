@@ -126,7 +126,7 @@ export default function FeedbackWidget() {
               armIdleTimer();
             }}
             aria-label="Send feedback"
-            className="group fixed bottom-5 left-4 z-40 flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--border)] bg-black/80 px-4 py-2.5 font-mono text-xs font-medium text-[var(--text-secondary)] shadow-lg shadow-black/40 backdrop-blur-xl transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)] active:scale-95 min-[1025px]:left-[calc(30%+1rem)]"
+            className="group fixed bottom-5 left-4 z-40 flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--border)] bg-black/80 px-4 py-2.5 font-mono text-xs font-medium text-[var(--text-secondary)] shadow-lg shadow-black/40 backdrop-blur-xl transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)] active:scale-95 min-[1025px]:left-[calc(30%+1rem)] landscape:max-[1024px]:left-[calc(34%+1rem)]"
           >
             <MessageSquare
               size={15}
@@ -161,7 +161,7 @@ export default function FeedbackWidget() {
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
               onSubmit={submit}
-              className="w-full max-w-md rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/75 p-5 font-mono backdrop-blur-xl"
+              className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/75 p-5 font-mono backdrop-blur-xl"
             >
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-sm font-bold text-white">

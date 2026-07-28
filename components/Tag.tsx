@@ -276,7 +276,7 @@ export default function Tag() {
           onTouchCancel={onPicPressEnd}
           onContextMenu={(e) => e.preventDefault()}
           aria-label="View profile picture"
-          className="group relative h-36 w-36 cursor-pointer select-none overflow-hidden rounded-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-150 ease-out active:scale-[0.98] sm:h-[290px] sm:w-[232px]"
+          className="profile-frame group relative h-36 w-36 cursor-pointer select-none overflow-hidden rounded-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-150 ease-out active:scale-[0.98] sm:h-[290px] sm:w-[232px]"
         >
           <Image
             src={profileSrc}
@@ -520,7 +520,7 @@ export default function Tag() {
                   <span className="text-[var(--accent)]">{"//"}</span> find me on
                 </p>
                 <nav
-                  className="grid grid-cols-4 gap-2"
+                  className="grid grid-cols-5 gap-1.5"
                   aria-label="Social links"
                 >
                   {footerLinks.map((link, i) => (
