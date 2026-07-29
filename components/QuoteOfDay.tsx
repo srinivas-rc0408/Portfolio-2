@@ -80,10 +80,36 @@ const quotes: Quote[] = [
  *     the next one is genuinely unpredictable.
  * Hover reveals the author; click springs open the meaning.
  */
-const APPEAR_FIRST_MS = 15_000; // first appearance after load
-const APPEAR_AGAIN_MS = 30_000; // after ✕ it returns in 30s with a new quote
+// First appearance is deliberately organic: a random delay in this window
+// rather than a fixed beat, so it never feels like a scripted pop-up.
+const APPEAR_MIN_MS = 15_000;
+const APPEAR_MAX_MS = 30_000;
 const VISIBLE_MS = 600_000; // if left alone, it stays for 10 minutes
 const RETRY_MS = 4_000; // blocked (popup open / not home) → check again soon
+
+/** Dismissing with ✕ silences the quote for 5 minutes (per tab). */
+const DISMISS_KEY = "quoteDismissedAt";
+const COOLDOWN_MS = 300_000;
+
+/** A random first-appearance delay inside the organic window. */
+const firstDelay = () =>
+  APPEAR_MIN_MS + Math.random() * (APPEAR_MAX_MS - APPEAR_MIN_MS);
+
+/**
+ * Remaining cooldown in ms, or 0 if the quote may show.
+ * Guarded for SSR and for private mode, where sessionStorage can throw.
+ */
+function cooldownLeft(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = sessionStorage.getItem(DISMISS_KEY);
+    if (!raw) return 0;
+    const left = COOLDOWN_MS - (Date.now() - Number(raw));
+    return left > 0 ? left : 0;
+  } catch {
+    return 0;
+  }
+}
 
 /** Fisher–Yates shuffle → an unpredictable, repeat-free order. */
 function shuffled(pool: Quote[]): Quote[] {
@@ -135,6 +161,12 @@ export default function QuoteOfDay() {
     };
 
     const show = () => {
+      // User dismissed recently → wait out the remaining cooldown.
+      const left = cooldownLeft();
+      if (left > 0) {
+        showTimer.current = window.setTimeout(show, left);
+        return;
+      }
       if (!canShow()) {
         showTimer.current = window.setTimeout(show, RETRY_MS);
         return;
@@ -160,13 +192,27 @@ export default function QuoteOfDay() {
       }, VISIBLE_MS);
     };
 
+    // Auto-hide / "a dialog opened" — no cooldown, just come back later.
     const hideAndReschedule = () => {
       setVisible(false);
       window.clearTimeout(hideTimer.current);
       window.setTimeout(() => setQuote(null), 400); // after the exit transition
-      showTimer.current = window.setTimeout(show, APPEAR_AGAIN_MS);
+      showTimer.current = window.setTimeout(show, firstDelay());
     };
-    dismissRef.current = hideAndReschedule;
+
+    // Explicit ✕ — the user said "not now". Record it and stay quiet for 5 min.
+    const dismissByUser = () => {
+      try {
+        sessionStorage.setItem(DISMISS_KEY, String(Date.now()));
+      } catch {
+        /* private mode — the in-memory timer below still applies */
+      }
+      setVisible(false);
+      window.clearTimeout(hideTimer.current);
+      window.setTimeout(() => setQuote(null), 400); // let the exit anim finish
+      showTimer.current = window.setTimeout(show, COOLDOWN_MS);
+    };
+    dismissRef.current = dismissByUser;
 
     // If a popup opens while the quote is up, let it slip away (return later).
     const observer = new MutationObserver(() => {
@@ -179,7 +225,7 @@ export default function QuoteOfDay() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    showTimer.current = window.setTimeout(show, APPEAR_FIRST_MS);
+    showTimer.current = window.setTimeout(show, firstDelay());
     return () => {
       window.clearTimeout(showTimer.current);
       window.clearTimeout(hideTimer.current);
@@ -238,9 +284,9 @@ export default function QuoteOfDay() {
             onPointerDown={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              dismissRef.current(); // hide now, return in 30s with a new quote
+              dismissRef.current(); // hide + 5-minute cooldown
             }}
-            className="pointer-events-auto absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full text-white/50 transition-all hover:bg-white/10 hover:text-white active:scale-90"
+            className="pointer-events-auto absolute right-1.5 top-1.5 z-10 flex h-11 w-11 items-center justify-center rounded-full text-white/50 transition-all hover:bg-white/10 hover:text-white active:scale-90"
           >
             ✕
           </button>

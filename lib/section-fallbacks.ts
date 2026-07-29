@@ -17,13 +17,38 @@ export interface SectionEntry {
   description: string;
   date?: string;
   link?: string;
+  /** Credential / certificate ID, shown in the certificate viewer. */
+  credentialId?: string;
 }
 
+/** The combined, verifiable certificate pack (all scans in one PDF). */
+export const CERTIFICATES_PDF = "/certificates/srinivas-rc-certificates.pdf";
+
+// Newest first. Dates and credential IDs transcribed from the certificate
+// scans in CERTIFICATES_PDF, so the site matches the verifiable documents.
 export const CERTIFICATES: SectionEntry[] = [
+  {
+    title: "Copado AI Certification",
+    description: "Copado — Copado Certified (Salesforce DevOps)",
+    date: "July 2026",
+    credentialId: "074453",
+  },
+  {
+    title: "MLOps Zero to Hero",
+    description: "Udemy — 12.5 hours, instructor Abhishek Veeramalla",
+    date: "March 2026",
+    credentialId: "UC-6a75c9fb-585d-4de8-aae4-100f48720ec4",
+  },
   {
     title: "Deep Learning — 12-Week Academic Programme (Proctored)",
     description: "IIT Ropar / NPTEL",
     date: "2026",
+  },
+  {
+    title: "Computer Networking by The New Boston",
+    description: "Cursa — 4h 01m",
+    date: "November 2025",
+    credentialId: "u5292829",
   },
   {
     title: "Software Engineering Fundamentals",
@@ -31,21 +56,23 @@ export const CERTIFICATES: SectionEntry[] = [
     date: "2025",
   },
   {
-    title: "LLM-Driven AI Engineering Bootcamp",
-    description: "REVA University",
-    date: "2025",
-  },
-  {
     title: "Prompt Engineering Certification",
     description: "Infosys Springboard",
     date: "2025",
   },
+  { title: "Python Programming", description: "Certification", date: "2025" },
+  {
+    title: "LLM-Driven AI Engineering Bootcamp",
+    description: "REVA Academy for Corporate Excellence, REVA University",
+    date: "March 2024",
+    credentialId: "LDAIE/W24-523",
+  },
   {
     title: "Machine Learning Certification",
     description: "Rinex Organization, NSDC / Skill India — Grade: A+",
-    date: "2024",
+    date: "November 2023",
+    credentialId: "ML23-RNC0-1124",
   },
-  { title: "Python Programming", description: "Certification", date: "2025" },
 ];
 
 export const EDUCATION: SectionEntry[] = [
