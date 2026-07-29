@@ -61,9 +61,10 @@ export default function WelcomePopup() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 50, opacity: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          // z-30: a toast must sit BELOW dialogs (z-50+). At z-55 it punched
-          // through the backdrop of the very Jerry chat its own button opens.
-          className="fixed bottom-20 left-1/2 z-30 w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2 sm:bottom-6 sm:left-auto sm:right-6 sm:translate-x-0"
+          // z-50 = toast layer. Must stay BELOW the z-[100] modal layer: at
+          // z-55 it punched through the backdrop of the very Jerry chat its
+          // own button opens.
+          className="fixed bottom-20 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2 sm:bottom-6 sm:left-auto sm:right-6 sm:translate-x-0"
         >
           <div className="relative overflow-hidden rounded-2xl border border-zinc-800 border-l-4 border-l-[var(--theme-accent)] bg-zinc-950/80 p-4 shadow-[0_10px_45px_-8px_rgba(var(--theme-accent-rgb),0.25)] backdrop-blur-md">
             {/* Close */}

@@ -1,5 +1,6 @@
 import "server-only";
 import { projects as seedProjects } from "@/lib/portfolio-data";
+import { CERTIFICATES, EDUCATION } from "@/lib/section-fallbacks";
 
 /**
  * Fluxbase data layer (REST POST /api/execute-sql). Server-only — never
@@ -270,23 +271,12 @@ async function seed(): Promise<void> {
       sortOrder: i,
     })
   );
-  [
-    ["Deep Learning — 12-Week Academic Programme (Proctored)", "IIT Ropar / NPTEL", "2026"],
-    ["Software Engineering Fundamentals", "Microsoft", "2025"],
-    ["LLM-Driven AI Engineering Bootcamp", "REVA University", "2025"],
-    ["Prompt Engineering Certification", "Infosys Springboard", "2025"],
-    ["Machine Learning Certification", "Rinex Organization, NSDC / Skill India — Grade: A+", "2024"],
-    ["Python Programming", "Certification", "2025"],
-  ].forEach(([title, description, date]) =>
-    push("certificates", { title, description, date })
+  // Seeded from lib/section-fallbacks.ts — the same module the public sections
+  // fall back to, so the DB copy and the offline copy can never drift.
+  CERTIFICATES.forEach((e, i) =>
+    push("certificates", { ...e, sortOrder: i })
   );
-  [
-    ["B.Tech — Artificial Intelligence & Machine Learning", "REVA University, Bengaluru. Expected 2027.", "2023 – 2027"],
-    ["PUC (PCMB)", "MES College of Arts, Science & Commerce, Bengaluru. 82.5%.", "2023"],
-    ["ICSE — Class X", "Mount Senoria School, Bengaluru. 88.8%.", "2021"],
-  ].forEach(([title, description, date]) =>
-    push("education", { title, description, date })
-  );
+  EDUCATION.forEach((e, i) => push("education", { ...e, sortOrder: i }));
   push("experience", {
     title: "Independent AI/ML Engineering — Self-Directed Projects",
     description:

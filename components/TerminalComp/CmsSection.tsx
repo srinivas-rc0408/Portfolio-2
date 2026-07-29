@@ -15,6 +15,30 @@ import {
   type CmsSection,
   getItems,
 } from "@/lib/cms";
+import { fallbackFor } from "@/lib/section-fallbacks";
+
+/**
+ * CMS entries for a section, with a static fallback.
+ *
+ * The CMS copy is authoritative (admin edits, private filtering), but it only
+ * exists once /api/bootstrap resolves. When that fails or is slow — a cold or
+ * unreachable DB — these sections used to render "no public entries yet", which
+ * looks broken. The fallback is the same content the DB seeds from, so it's
+ * truthful and the section is never empty.
+ */
+function readSection(section: string): CmsItem[] {
+  const fromCms = getItems(section);
+  if (fromCms.length > 0) return fromCms;
+  return fallbackFor(section).map((e, i) => ({
+    id: `fallback-${section}-${i}`,
+    section,
+    title: e.title,
+    description: e.description,
+    date: e.date,
+    link: e.link,
+    private: false,
+  }));
+}
 
 // Per-section leading icon — gives education/certificates/etc. a visual
 // identity (accent-colored badge) instead of plain bullet text.
@@ -34,10 +58,11 @@ const SECTION_ICONS: Partial<Record<string, React.ReactNode>> = {
  * Re-reads live when the admin panel saves (cms:updated event).
  */
 const CmsSectionOutput: React.FC<{ section: CmsSection }> = ({ section }) => {
+  // Seeded synchronously so a cold CMS never flashes the empty state.
   const [items, setItems] = useState<CmsItem[] | null>(null);
 
   useEffect(() => {
-    const read = () => setItems(getItems(section));
+    const read = () => setItems(readSection(section));
     read();
     window.addEventListener(CMS_UPDATED_EVENT, read);
     return () => window.removeEventListener(CMS_UPDATED_EVENT, read);

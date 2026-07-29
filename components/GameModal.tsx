@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Gamepad2, Heart, Play, X } from "lucide-react";
+import { useScrollLock } from "@/lib/useScrollLock";
 
 /**
  * ARCH-MAN — popup arcade game (opened via the `play archman` command or the
@@ -69,6 +70,8 @@ const DIRS = [
 
 export default function GameModal() {
   const [open, setOpen] = useState(false);
+  // Lock background scrolling while this modal is open.
+  useScrollLock(open);
   const [screen, setScreen] = useState<Screen>("menu");
   const [mode, setMode] = useState<Mode>("easy");
   // HUD mirror of the ref state — a fresh object per tick re-renders the grid.
@@ -253,7 +256,7 @@ export default function GameModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[55] flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={close}
           role="dialog"
           aria-modal="true"
@@ -262,8 +265,8 @@ export default function GameModal() {
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 18 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 12 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
             onClick={(e) => e.stopPropagation()}
           >

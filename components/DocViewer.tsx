@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@vercel/analytics";
 import { Download, ExternalLink, FileText, X } from "lucide-react";
+import { useScrollLock } from "@/lib/useScrollLock";
 
 /**
  * Fullscreen document viewer — a transparent glass popup that previews a PDF
@@ -28,6 +29,8 @@ export function openDoc(detail: DocViewDetail): void {
 
 export default function DocViewer() {
   const [doc, setDoc] = useState<DocViewDetail | null>(null);
+  // Lock background scrolling while this modal is open.
+  useScrollLock(doc !== null);
   const [loaded, setLoaded] = useState(false);
   // Error state: iframes don't fire onError for failed PDFs, so a load that
   // hasn't completed after the timeout is treated as failed — the viewer then
@@ -100,7 +103,7 @@ export default function DocViewer() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-8"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm sm:p-8"
           onClick={() => setDoc(null)}
           role="dialog"
           aria-modal="true"
@@ -109,8 +112,8 @@ export default function DocViewer() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 14 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 10 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="flex h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/60 font-mono backdrop-blur-xl"
             onClick={(e) => e.stopPropagation()}
           >

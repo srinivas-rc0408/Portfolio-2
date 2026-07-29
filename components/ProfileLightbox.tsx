@@ -2,12 +2,14 @@
 
 import SmartImage from "@/components/ui/SmartImage";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   SETTINGS_UPDATED_EVENT,
   type SiteSettings,
   DEFAULT_SETTINGS,
   loadSettings,
 } from "@/lib/cms";
+import { useScrollLock } from "@/lib/useScrollLock";
 
 /**
  * Fullscreen profile-picture viewer. Opens on the window `profile:view`
@@ -16,6 +18,8 @@ import {
  */
 export default function ProfileLightbox() {
   const [open, setOpen] = useState(false);
+  // Lock background scrolling while this modal is open.
+  useScrollLock(open);
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
@@ -33,22 +37,28 @@ export default function ProfileLightbox() {
     };
   }, []);
 
-  if (!open) return null;
-
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Profile picture"
-      onClick={() => setOpen(false)}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-6 backdrop-blur-sm"
-      style={{ animation: "qotd-fade 250ms ease" }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="relative"
-        style={{ animation: "lightbox-in 320ms cubic-bezier(0.22,1,0.36,1)" }}
-      >
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Profile picture"
+          onClick={() => setOpen(false)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm sm:p-6"
+        >
+          <motion.div
+            onClick={(e) => e.stopPropagation()}
+            className="relative"
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          >
         <SmartImage
           src={settings.profileImage ?? "/profile.jpg"}
           alt={settings.displayName}
@@ -61,15 +71,17 @@ export default function ProfileLightbox() {
           {settings.displayName}
           <span className="text-white/50"> · {settings.title}</span>
         </p>
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          aria-label="Close"
-          className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-black/80 font-mono text-white transition-all hover:border-[var(--theme-accent)] active:scale-90"
-        >
-          ✕
-        </button>
-      </div>
-    </div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close"
+              className="absolute -right-3 -top-3 flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-black/80 font-mono text-white transition-all hover:border-[var(--theme-accent)] active:scale-90"
+            >
+              ✕
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@vercel/analytics";
 import { Send, Trash2, X } from "lucide-react";
 import { docUrl } from "@/lib/cms";
+import { useScrollLock } from "@/lib/useScrollLock";
 
 /**
  * Jerry's logo — a rounded accent badge with a chat bubble + spark (an AI
@@ -212,6 +213,8 @@ function sampleChips(): string[] {
 }
 
 export default function JerryChat({ open, onClose, initialQuestion }: JerryChatProps) {
+  // Lock background scrolling while this modal is open.
+  useScrollLock(open);
   const [messages, setMessages] = useState<Msg[]>(chatCache);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -219,7 +222,6 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const revealTimerRef = useRef<number | null>(null);
   const sentInitialRef = useRef(false);
 
   const setAndCache = useCallback((updater: (prev: Msg[]) => Msg[]) => {
@@ -241,30 +243,18 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
     [setAndCache]
   );
 
-  // The API buffers the full reply server-side (so the output-guard can vet it
-  // before a single byte reaches us). We re-create a premium "typing" feel on
-  // the client: reveal the vetted text progressively, faster for longer answers.
+  // Paint the vetted reply immediately.
+  //
+  // This previously ran a client-side "typewriter" that stepped through the
+  // text on a 16ms timer — roughly 2.2s of purely cosmetic latency on a normal
+  // answer. The API already buffers the full reply server-side so the output
+  // guard can vet it, so that delay bought nothing but a slower agent. Rendering
+  // in one commit is the fastest correct behaviour.
   const revealText = useCallback(
-    (full: string, signal: AbortSignal) =>
-      new Promise<void>((resolve) => {
-        const chunk = Math.max(2, Math.round(full.length / 140));
-        let i = 0;
-        const step = () => {
-          if (signal.aborted) {
-            setLastJerry(full);
-            resolve();
-            return;
-          }
-          i = Math.min(full.length, i + chunk);
-          setLastJerry(full.slice(0, i));
-          if (i >= full.length) {
-            resolve();
-            return;
-          }
-          revealTimerRef.current = window.setTimeout(step, 16);
-        };
-        step();
-      }),
+    (full: string) => {
+      setLastJerry(full);
+      return Promise.resolve();
+    },
     [setLastJerry]
   );
 
@@ -335,7 +325,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
           full += decoder.decode(value, { stream: true });
         }
         // Reveal the vetted reply with a smooth typewriter cadence.
-        await revealText(full.trim() || OFFLINE_MSG, controller.signal);
+        await revealText(full.trim() || OFFLINE_MSG);
       } catch {
         if (!controller.signal.aborted) {
           setAndCache((prev) => {
@@ -369,7 +359,6 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       window.clearTimeout(t);
       window.removeEventListener("keydown", onKey);
       abortRef.current?.abort();
-      if (revealTimerRef.current) window.clearTimeout(revealTimerRef.current);
     };
   }, [open, onClose]);
 
@@ -397,7 +386,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-3 backdrop-blur-[2px] sm:items-center sm:p-6"
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center sm:p-6"
           onClick={onClose}
           role="dialog"
           aria-modal="true"
@@ -407,8 +396,8 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
             key="jerry-panel"
             initial={{ opacity: 0, scale: 0.94, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 12 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             style={{ willChange: "transform, opacity" }}
             className="flex h-[78vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-md sm:h-[600px] sm:max-h-[85vh]"
             onClick={(e) => e.stopPropagation()}

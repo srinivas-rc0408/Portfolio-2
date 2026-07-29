@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { projects as staticProjects, type Project } from "@/lib/portfolio-data";
 import { CMS_UPDATED_EVENT, getItems } from "@/lib/cms";
 import WindowDots from "@/components/WindowDots";
+import { useScrollLock } from "@/lib/useScrollLock";
 
 /** A public project plus the `starred` featured flag from the CMS. */
 type PublicProject = Project & { starred?: boolean };
@@ -149,6 +150,8 @@ const Projects: React.FC = () => {
     readPublicProjects
   );
   const [detailProject, setDetailProject] = useState<Project | null>(null);
+  // Lock background scrolling while this modal is open.
+  useScrollLock(detailProject !== null);
 
   // Close the detail modal on Escape.
   useEffect(() => {
@@ -565,7 +568,7 @@ const Projects: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 backdrop-blur-sm sm:items-center sm:p-6"
+            className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center sm:p-6"
             onClick={() => setDetailProject(null)}
             role="dialog"
             aria-modal="true"
@@ -574,8 +577,8 @@ const Projects: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.94, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 12 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
               onClick={(e) => e.stopPropagation()}
             >

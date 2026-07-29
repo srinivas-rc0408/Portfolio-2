@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, Loader2, MessageSquare, Send, X } from "lucide-react";
+import { useScrollLock } from "@/lib/useScrollLock";
 
 /**
  * Floating Feedback button + popup form.
@@ -21,6 +22,8 @@ const NEAR_PX = 170; // pointer distance from the button corner that re-reveals
 export default function FeedbackWidget() {
   const [visible, setVisible] = useState(true);
   const [open, setOpen] = useState(false);
+  // Lock background scrolling while this modal is open.
+  useScrollLock(open);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -148,7 +151,7 @@ export default function FeedbackWidget() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-3 backdrop-blur-sm sm:items-center"
+            className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
             onClick={() => setOpen(false)}
             role="dialog"
             aria-modal="true"
@@ -157,8 +160,8 @@ export default function FeedbackWidget() {
             <motion.form
               initial={{ opacity: 0, scale: 0.94, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 12 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
               onSubmit={submit}
               className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/75 p-5 font-mono backdrop-blur-xl"
