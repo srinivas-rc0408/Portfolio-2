@@ -283,37 +283,66 @@ export default function Tag() {
               with a blinking caret, over a bottom-up gradient so the face still
               reads through. */}
           <div
-            className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-end gap-1.5 bg-gradient-to-t from-black/90 via-black/45 to-transparent pb-5 transition-opacity duration-300 ease-out ${
+            className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-end overflow-hidden bg-gradient-to-t from-black/92 via-black/55 to-transparent pb-5 transition-opacity duration-300 ease-out ${
               greet ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             }`}
           >
+            {/* Accent hairline that draws outward as the answer lands. */}
             <span
-              className={`font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--theme-accent)] transition-all duration-300 ease-out ${
+              aria-hidden
+              className={`absolute inset-x-7 bottom-[4.6rem] h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)] to-transparent transition-transform duration-500 ease-out ${
+                greet ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+              }`}
+            />
+
+            {/* The shell prompt asking the question. */}
+            <span
+              className={`font-mono text-[10px] uppercase tracking-[0.32em] text-white/45 transition-all duration-300 ease-out ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
               }`}
             >
-              &gt; whoami
+              <span className="text-[var(--theme-accent)]">&#10095;</span> whoami
             </span>
+
+            {/* The answer. Quotes carry the accent; "Him" gets the glow. Not a
+                flex row — `.block-cursor` relies on vertical-align to sit on
+                the text baseline, same caret as the hero tagline. */}
             <span
-              className={`flex items-center font-mono text-lg font-bold tracking-wide text-white transition-all delay-75 duration-300 ease-out sm:text-xl ${
+              className={`mt-1.5 whitespace-nowrap font-mono text-lg font-bold tracking-tight text-white transition-all delay-75 duration-300 ease-out sm:text-xl ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
               }`}
             >
-              I am Him
-              <span className="ml-1 inline-block h-4 w-[3px] animate-pulse bg-[var(--theme-accent)]" />
+              I am{" "}
+              <span className="text-[var(--theme-accent)]">&ldquo;</span>
+              <span
+                style={{
+                  textShadow: "0 0 22px rgba(var(--theme-accent-rgb), 0.55)",
+                }}
+              >
+                Him
+              </span>
+              <span className="text-[var(--theme-accent)]">&rdquo;</span>
+              <span className="block-cursor" aria-hidden />
             </span>
+
             <span
-              className={`mt-1 rounded-full border border-white/25 bg-black/40 px-3 py-1 font-mono text-[10px] text-white/80 backdrop-blur-sm transition-all delay-150 duration-300 ease-out ${
+              className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/[0.07] px-3 py-1 font-mono text-[10px] tracking-wide text-white/85 backdrop-blur-md transition-all delay-150 duration-300 ease-out ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
               }`}
             >
-              tap to view ↗
+              tap to view
+              <span
+                aria-hidden
+                className="transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              >
+                &#8599;
+              </span>
             </span>
           </div>
         </button>
