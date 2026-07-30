@@ -276,7 +276,7 @@ export default function Tag() {
             priority
             unoptimized
             draggable={false}
-            className="object-cover transition-transform duration-150 ease-out group-hover:scale-[1.03]"
+            className="object-cover transition-transform duration-150 ease-out [@media(hover:hover)]:group-hover:scale-[1.03]"
           />
           {/* Greeting — "I am Him" on hover (desktop) or long-press (mobile).
               Terminal-style reveal: `> whoami` in the accent, then the answer
@@ -284,14 +284,14 @@ export default function Tag() {
               reads through. */}
           <div
             className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-end overflow-hidden bg-gradient-to-t from-black/92 via-black/55 to-transparent pb-5 transition-opacity duration-300 ease-out ${
-              greet ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              greet ? "opacity-100" : "opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
             }`}
           >
             {/* Accent hairline that draws outward as the answer lands. */}
             <span
               aria-hidden
               className={`absolute inset-x-7 bottom-[4.6rem] h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)] to-transparent transition-transform duration-500 ease-out ${
-                greet ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                greet ? "scale-x-100" : "scale-x-0 [@media(hover:hover)]:group-hover:scale-x-100"
               }`}
             />
 
@@ -300,7 +300,7 @@ export default function Tag() {
               className={`font-mono text-[10px] uppercase tracking-[0.32em] text-white/45 transition-all duration-300 ease-out ${
                 greet
                   ? "translate-y-0 opacity-100"
-                  : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                  : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
               }`}
             >
               <span className="text-[var(--theme-accent)]">&#10095;</span> whoami
@@ -313,7 +313,7 @@ export default function Tag() {
               className={`mt-1.5 whitespace-nowrap font-mono text-lg font-bold tracking-tight text-white transition-all delay-75 duration-300 ease-out sm:text-xl ${
                 greet
                   ? "translate-y-0 opacity-100"
-                  : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                  : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
               }`}
             >
               I am{" "}
@@ -333,7 +333,7 @@ export default function Tag() {
               className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/[0.07] px-3 py-1 font-mono text-[10px] tracking-wide text-white/85 backdrop-blur-md transition-all delay-150 duration-300 ease-out ${
                 greet
                   ? "translate-y-0 opacity-100"
-                  : "translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                  : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
               }`}
             >
               tap to view

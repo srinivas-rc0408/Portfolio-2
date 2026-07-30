@@ -52,23 +52,56 @@ interface FluxResponse {
   error?: { message?: string; code?: string };
 }
 
+// Hard ceilings. A serverless invocation dies at ~10s, so an unbounded DB call
+// takes the whole page down with a 500/504 instead of degrading. Every request
+// is bounded, and the retry budget is bounded too — callers that can fall back
+// (the SSR theme, the public sections) would rather fail fast than hang.
+const REQUEST_TIMEOUT_MS = 4_000;
+const TOTAL_BUDGET_MS = 8_000;
+const MAX_ATTEMPTS = 3;
+
 /**
- * POST a raw SQL string to Fluxbase and return result.rows. Retries a few times
- * on HTTP 429 — the project rate limit is 30 requests / 10 seconds.
+ * POST a raw SQL string to Fluxbase and return result.rows.
+ *
+ * Retries a few times on HTTP 429 (the project limit is 30 requests / 10s), but
+ * never past TOTAL_BUDGET_MS, and each individual attempt is aborted after
+ * REQUEST_TIMEOUT_MS. A cold or unreachable database therefore surfaces as a
+ * thrown error in a few seconds — which every caller already handles — rather
+ * than hanging the request until the platform kills it.
  */
 async function exec<T = Record<string, unknown>>(query: string): Promise<T[]> {
+  const deadline = Date.now() + TOTAL_BUDGET_MS;
+
   for (let attempt = 0; ; attempt++) {
-    const res = await fetch(FLUXBASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${FLUXBASE_API_KEY}`,
-      },
-      body: JSON.stringify({ projectId: FLUXBASE_PROJECT_ID, query }),
-      cache: "no-store",
-    });
-    if (res.status === 429 && attempt < 3) {
-      await new Promise((r) => setTimeout(r, 1200));
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) throw new Error("Fluxbase request timed out");
+
+    let res: Response;
+    try {
+      res = await fetch(FLUXBASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${FLUXBASE_API_KEY}`,
+        },
+        body: JSON.stringify({ projectId: FLUXBASE_PROJECT_ID, query }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(Math.min(REQUEST_TIMEOUT_MS, remaining)),
+      });
+    } catch (e) {
+      // AbortError (timeout) or a network failure — both are terminal for this
+      // call. Surface a clear error so callers can fall back immediately.
+      throw new Error(
+        e instanceof Error && e.name === "TimeoutError"
+          ? "Fluxbase request timed out"
+          : `Fluxbase unreachable: ${e instanceof Error ? e.message : String(e)}`
+      );
+    }
+
+    if (res.status === 429 && attempt < MAX_ATTEMPTS - 1) {
+      const backoff = Math.min(1200, Math.max(0, deadline - Date.now()));
+      if (backoff === 0) throw new Error("Fluxbase rate-limited (budget spent)");
+      await new Promise((r) => setTimeout(r, backoff));
       continue;
     }
     const json = (await res.json().catch(() => null)) as FluxResponse | null;

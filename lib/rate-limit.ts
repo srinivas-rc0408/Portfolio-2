@@ -65,6 +65,9 @@ async function upstashLimit(
         ["EXPIRE", rkey, windowSec, "NX"],
       ]),
       cache: "no-store",
+      // Never let a slow Redis hang the login/chat request into a 500 — fail
+      // open to the in-memory limiter instead.
+      signal: AbortSignal.timeout(2_000),
     });
     if (!res.ok) return null;
     const data = (await res.json()) as { result?: number }[];
