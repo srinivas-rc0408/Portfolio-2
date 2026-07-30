@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/BackToHome";
 import { jsonLd } from "@/lib/jsonld";
 import { SITE_URL, SITE_NAME, SITE_TAGLINE } from "@/lib/seo-config";
 import { CONTACT_EMAIL } from "@/lib/portfolio-data";
@@ -220,6 +221,7 @@ const breadcrumbStructuredData = {
 export default function About() {
   return (
     <>
+      <BackToHome />
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

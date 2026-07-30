@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/lib/seo-config";
+import BackToHome from "@/components/BackToHome";
 import { jsonLd } from "@/lib/jsonld";
 import { Metadata } from "next";
 import {
@@ -354,6 +355,7 @@ export default function Contact() {
 
   return (
     <>
+      <BackToHome />
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

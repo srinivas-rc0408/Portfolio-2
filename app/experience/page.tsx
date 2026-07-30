@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/BackToHome";
 import { jsonLd } from "@/lib/jsonld";
 import { SITE_URL, SITE_NAME } from "@/lib/seo-config";
 
@@ -120,6 +121,7 @@ export default function Experience() {
 
   return (
     <>
+      <BackToHome />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(personSchema) }}
