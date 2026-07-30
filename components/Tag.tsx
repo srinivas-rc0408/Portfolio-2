@@ -266,7 +266,7 @@ export default function Tag() {
           onTouchCancel={onPicPressEnd}
           onContextMenu={(e) => e.preventDefault()}
           aria-label="View profile picture"
-          className="profile-frame group relative h-36 w-36 cursor-pointer select-none overflow-hidden rounded-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-transform duration-150 ease-out active:scale-[0.98] sm:h-[290px] sm:w-[232px]"
+          className="profile-frame group relative h-36 w-36 cursor-pointer select-none overflow-hidden rounded-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.6)] transition-[transform,border-color,box-shadow] duration-300 ease-out active:scale-[0.98] [@media(hover:hover)]:group-hover:border-[rgba(var(--theme-accent-rgb),0.55)] [@media(hover:hover)]:group-hover:shadow-[0_10px_44px_rgba(var(--theme-accent-rgb),0.28)] sm:h-[290px] sm:w-[232px]"
         >
           <Image
             src={profileSrc}
@@ -276,8 +276,30 @@ export default function Tag() {
             priority
             unoptimized
             draggable={false}
-            className="object-cover transition-transform duration-150 ease-out [@media(hover:hover)]:group-hover:scale-[1.03]"
+            className="object-cover transition-transform duration-500 ease-out [@media(hover:hover)]:group-hover:scale-[1.05]"
           />
+
+          {/* HUD corner brackets — "lock on" from slightly inset to the corners
+              when the frame is focused. Shown on desktop hover or mobile
+              long-press (greet). */}
+          {(
+            [
+              "left-2 top-2 border-l-2 border-t-2 rounded-tl [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:translate-y-0 translate-x-1.5 translate-y-1.5",
+              "right-2 top-2 border-r-2 border-t-2 rounded-tr [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:translate-y-0 -translate-x-1.5 translate-y-1.5",
+              "bottom-2 left-2 border-b-2 border-l-2 rounded-bl [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:translate-y-0 translate-x-1.5 -translate-y-1.5",
+              "bottom-2 right-2 border-b-2 border-r-2 rounded-br [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:translate-y-0 -translate-x-1.5 -translate-y-1.5",
+            ] as const
+          ).map((pos, i) => (
+            <span
+              key={i}
+              aria-hidden
+              className={`pointer-events-none absolute h-4 w-4 border-[var(--theme-accent)] transition-all duration-300 ease-out ${
+                greet
+                  ? "translate-x-0 translate-y-0 opacity-100"
+                  : "opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+              } ${pos}`}
+            />
+          ))}
           {/* Greeting — "I am Him" on hover (desktop) or long-press (mobile).
               Terminal-style reveal: `> whoami` in the accent, then the answer
               with a blinking caret, over a bottom-up gradient so the face still
@@ -330,7 +352,7 @@ export default function Tag() {
             </span>
 
             <span
-              className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/[0.07] px-3 py-1 font-mono text-[10px] tracking-wide text-white/85 backdrop-blur-md transition-all delay-150 duration-300 ease-out ${
+              className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white/90 backdrop-blur-md transition-all delay-150 duration-300 ease-out ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
@@ -339,7 +361,7 @@ export default function Tag() {
               tap to view
               <span
                 aria-hidden
-                className="transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                className="text-[var(--theme-accent)] transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:translate-x-0.5 [@media(hover:hover)]:group-hover:-translate-y-0.5"
               >
                 &#8599;
               </span>
