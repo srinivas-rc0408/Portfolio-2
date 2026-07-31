@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@vercel/analytics";
 import { Download, ExternalLink, FileText, X } from "lucide-react";
 import { useScrollLock } from "@/lib/useScrollLock";
+import PdfCanvas from "@/components/ui/PdfCanvas";
 
 /**
  * Fullscreen document viewer — a transparent glass popup that previews a PDF
@@ -31,47 +32,24 @@ export default function DocViewer() {
   const [doc, setDoc] = useState<DocViewDetail | null>(null);
   // Lock background scrolling while this modal is open.
   useScrollLock(doc !== null);
-  const [loaded, setLoaded] = useState(false);
-  // Error state: iframes don't fire onError for failed PDFs, so a load that
-  // hasn't completed after the timeout is treated as failed — the viewer then
-  // offers a direct download instead of spinning forever.
-  const [failed, setFailed] = useState(false);
-  // iOS Safari fires an iframe's onLoad for a PDF but renders it blank (and
-  // there's no JS way to detect that), so ONLY on iOS we skip the frame and
-  // show a tap-to-open card. Desktop, Android, and Chrome all render the PDF
-  // inline in the iframe, so they get the real in-popup preview.
-  // Lazy init (not an effect): the viewer only mounts on a user action, well
-  // after hydration, so there's no SSR/client mismatch to worry about.
-  const [isIOS] = useState(() => {
-    if (typeof navigator === "undefined") return false;
-    const ua = navigator.userAgent;
-    return (
-      /iPad|iPhone|iPod/.test(ua) ||
-      // iPadOS 13+ reports as Macintosh but has touch points.
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-    );
-  });
+  // PdfCanvas reports its own load state; "error" swaps in the open/download
+  // fallback. Canvas rendering works on every device (incl. iOS), so there's
+  // no per-platform branching anymore.
+  const [status, setStatus] = useState<"loading" | "ready" | "error">(
+    "loading"
+  );
 
   useEffect(() => {
     const onView = (e: Event) => {
       const d = (e as CustomEvent<DocViewDetail>).detail;
       if (d?.url) {
-        setLoaded(false);
-        setFailed(false);
+        setStatus("loading");
         setDoc(d);
       }
     };
     window.addEventListener("doc:view", onView);
     return () => window.removeEventListener("doc:view", onView);
   }, []);
-
-  // Slow-load watchdog — only for the desktop iframe path. 8s covers slow
-  // networks without racing them; touch devices use the tap-to-open card.
-  useEffect(() => {
-    if (!doc || loaded || isIOS) return;
-    const t = window.setTimeout(() => setFailed(true), 8_000);
-    return () => window.clearTimeout(t);
-  }, [doc, loaded, isIOS]);
 
   useEffect(() => {
     if (!doc) return;
@@ -159,12 +137,14 @@ export default function DocViewer() {
               </div>
             </header>
 
-            {/* Document */}
+            {/* Document — rendered to canvas (works on every device) */}
             <div className="relative flex-1 bg-white/[0.02]">
-              {isIOS ? (
-                /* Mobile: browsers can't inline PDFs, so open in a new tab
-                   (native PDF viewer) or download. */
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
+              <PdfCanvas url={doc.url} onStatus={setStatus} />
+              {status === "error" && (
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/60 px-6 text-center backdrop-blur-sm"
+                  aria-live="polite"
+                >
                   <span
                     className="grid h-16 w-16 place-items-center rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-[rgba(var(--theme-accent-rgb),0.1)]"
                     style={{ color: "var(--theme-accent)" }}
@@ -173,10 +153,10 @@ export default function DocViewer() {
                     <FileText size={30} strokeWidth={1.8} />
                   </span>
                   <p className="max-w-xs text-sm leading-relaxed text-[var(--text)]">
-                    Open Srinivas RC&apos;s {doc.label} in your browser&apos;s
-                    PDF viewer, or download it.
+                    Couldn&apos;t render {doc.label} here. Open it in a new tab or
+                    download it instead.
                   </p>
-                  <div className="flex flex-col items-stretch gap-2">
+                  <div className="flex flex-col items-stretch gap-2 sm:flex-row">
                     <a
                       href={doc.url}
                       target="_blank"
@@ -196,57 +176,6 @@ export default function DocViewer() {
                     </button>
                   </div>
                 </div>
-              ) : (
-                <>
-                  {!loaded && !failed && (
-                    <div
-                      className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-                      aria-live="polite"
-                    >
-                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[rgba(var(--theme-accent-rgb),0.25)] border-t-[var(--theme-accent)]" />
-                      <p className="text-xs text-white/50">
-                        Loading {doc.label.toLowerCase()}…
-                      </p>
-                    </div>
-                  )}
-                  {!loaded && failed && (
-                    <div
-                      className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center"
-                      aria-live="polite"
-                    >
-                      <p className="text-sm text-[var(--text)]">
-                        {doc.label} preview is temporarily unavailable.
-                      </p>
-                      <div className="flex gap-2">
-                        <a
-                          href={doc.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-white/80 transition-colors duration-150 hover:text-white"
-                        >
-                          <ExternalLink size={14} strokeWidth={2.2} aria-hidden />
-                          Open in new tab
-                        </a>
-                        <button
-                          type="button"
-                          onClick={download}
-                          className="flex items-center gap-2 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] px-4 py-2 text-sm font-semibold text-[var(--theme-accent)] transition-colors duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.12)]"
-                        >
-                          <Download size={14} strokeWidth={2.2} aria-hidden />
-                          Download
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  <iframe
-                    src={doc.url}
-                    title={`Srinivas RC's ${doc.label}`}
-                    onLoad={() => setLoaded(true)}
-                    className={`h-full w-full transition-opacity duration-150 ${
-                      loaded ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
-                </>
               )}
             </div>
 

@@ -20,6 +20,7 @@ import {
 } from "@/lib/cms";
 import { CERTIFICATES_PDF, fallbackFor } from "@/lib/section-fallbacks";
 import { useScrollLock } from "@/lib/useScrollLock";
+import { openDoc } from "@/components/DocViewer";
 
 /** A section entry as rendered here — a CMS item plus an optional credential id. */
 type Entry = CmsItem & { credentialId?: string };
@@ -169,16 +170,17 @@ function CertificateModal({
             </div>
 
             <footer className="shrink-0 border-t border-zinc-800 bg-white/[0.02] p-3">
-              <a
-                href={CERTIFICATES_PDF}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.1)] px-4 text-xs font-semibold text-[var(--theme-accent)] transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.18)] active:scale-[0.98]"
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  openDoc({ label: "Certificates", url: CERTIFICATES_PDF });
+                }}
+                className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.1)] px-4 text-xs font-semibold text-[var(--theme-accent)] transition-all duration-200 hover:bg-[rgba(var(--theme-accent-rgb),0.18)] active:scale-[0.98]"
               >
                 <FileText size={15} strokeWidth={2.2} aria-hidden />
-                Open verification pack (PDF)
-                <ExternalLink size={13} strokeWidth={2.2} aria-hidden />
-              </a>
+                View verification pack
+              </button>
             </footer>
           </motion.div>
         </motion.div>
@@ -318,23 +320,24 @@ const CmsSectionOutput: React.FC<{ section: CmsSection }> = ({ section }) => {
 
       {isCerts && (
         <div className="mt-4">
-          <a
-            href={CERTIFICATES_PDF}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() =>
+              openDoc({ label: "Certificates", url: CERTIFICATES_PDF })
+            }
             className="group/pdf flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.5)] bg-gradient-to-b from-[rgba(var(--theme-accent-rgb),0.14)] to-[rgba(var(--theme-accent-rgb),0.04)] px-5 text-xs font-semibold uppercase tracking-wider text-[var(--theme-accent)] transition-all duration-200 hover:border-[var(--theme-accent)] hover:shadow-[0_0_24px_-8px_rgba(var(--theme-accent-rgb),0.9)] active:scale-[0.99]"
           >
             <FileText size={15} strokeWidth={2.2} aria-hidden />
-            View all certificates (PDF)
+            View all certificates
             <ExternalLink
               size={13}
               strokeWidth={2.2}
               aria-hidden
               className="transition-transform duration-200 group-hover/pdf:translate-x-0.5"
             />
-          </a>
+          </button>
           <p className="mt-2 text-center text-[11px] text-zinc-500">
-            Opens the signed scans in a new tab — verify any credential ID above.
+            Opens an in-page viewer — verify any credential ID above.
           </p>
         </div>
       )}
