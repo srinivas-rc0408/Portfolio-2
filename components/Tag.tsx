@@ -3,7 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { track } from "@vercel/analytics";
 import { ChevronUp, Download, Gamepad2, LogIn, Sparkles } from "lucide-react";
 import ProfileLightbox from "@/components/ProfileLightbox";
@@ -157,6 +164,36 @@ export default function Tag() {
   // CONNECT toggles the inline social/contact panel (anchored to this pane).
   const [connectOpen, setConnectOpen] = useState(false);
 
+  // --- 3D parallax tilt + mouse-tracking glow for the profile card ---
+  // px/py track the pointer (0..1) across the card; rotate* are spring-smoothed
+  // so the card eases rather than snapping. Pointer-only: touch never fires
+  // mouse events, and MotionConfig reducedMotion="user" (AppShell) neutralises
+  // the transforms for users who ask for less motion.
+  const px = useMotionValue(0.5);
+  const py = useMotionValue(0.5);
+  const spring = { stiffness: 220, damping: 18, mass: 0.6 };
+  const rotateY = useSpring(useTransform(px, [0, 1], [-9, 9]), spring);
+  const rotateX = useSpring(useTransform(py, [0, 1], [9, -9]), spring);
+  // Separate source value so onMouseLeave can spring the glow back to 0 — a
+  // spring must be driven through its source, not by setting its output.
+  const glowRaw = useMotionValue(0);
+  const glowOpacity = useSpring(glowRaw, { stiffness: 200, damping: 26 });
+  const glowX = useTransform(px, (v) => `${v * 100}%`);
+  const glowY = useTransform(py, (v) => `${v * 100}%`);
+  const glowBg = useMotionTemplate`radial-gradient(circle at ${glowX} ${glowY}, rgba(var(--theme-accent-rgb),0.4), transparent 62%)`;
+
+  const onCardMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    px.set((e.clientX - r.left) / r.width);
+    py.set((e.clientY - r.top) / r.height);
+    glowRaw.set(1);
+  };
+  const onCardLeave = () => {
+    px.set(0.5);
+    py.set(0.5);
+    glowRaw.set(0);
+  };
+
   const onPicClick = () => {
     // A long-press already handled this interaction — don't also open the image.
     if (longPressed.current) {
@@ -259,11 +296,26 @@ export default function Tag() {
 
       {/* Profile image — click to view fullscreen; hover shows greeting.
           Compact 144px square on mobile so the terminal peeks above the fold. */}
-      <div className="mt-3 flex justify-center sm:mt-8">
-        <button
-          type="button"
-          onClick={onPicClick}
-          onTouchStart={onPicPressStart}
+      <div
+        className="mt-3 flex justify-center sm:mt-8"
+        style={{ perspective: 1000 }}
+      >
+        <motion.div
+          className="relative [transform-style:preserve-3d]"
+          style={{ rotateX, rotateY }}
+          onMouseMove={onCardMove}
+          onMouseLeave={onCardLeave}
+        >
+          {/* Accent aura that tracks the pointer and fades in on hover. */}
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -inset-5 -z-10 rounded-[2rem] blur-2xl"
+            style={{ background: glowBg, opacity: glowOpacity }}
+          />
+          <button
+            type="button"
+            onClick={onPicClick}
+            onTouchStart={onPicPressStart}
           onTouchEnd={onPicPressEnd}
           onTouchCancel={onPicPressEnd}
           onContextMenu={(e) => e.preventDefault()}
@@ -382,6 +434,7 @@ export default function Tag() {
             </span>
           </div>
         </button>
+        </motion.div>
       </div>
 
       {/* Identity text — typewriter reveal (once, ~1s total; instant when

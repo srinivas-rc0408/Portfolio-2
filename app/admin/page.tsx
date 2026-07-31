@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
 import { Eye, EyeOff, Globe, Lock, Pin, Star, X } from "lucide-react";
 import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
+import AdminLoginReveal from "@/components/AdminLoginReveal";
 import { CardSkeletonList, RowSkeletonList } from "@/components/ui/Skeleton";
 import {
   CMS_SECTIONS,
@@ -274,6 +275,8 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
   // Press-and-hold reveal: true only while the eye button is held down.
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Plays the 1.5s "access granted" flourish before the dashboard mounts.
+  const [revealing, setRevealing] = useState(false);
 
   const isRegister = mode === "register";
 
@@ -282,12 +285,18 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
     setError(null);
   };
 
-  // Admin → into the dashboard (parent re-renders once the session is admin).
-  // A regular visitor is now signed in for the site → back to the terminal.
+  // Admin → play the reveal, then into the dashboard (parent re-renders once the
+  // session is admin). A regular visitor is now signed in → back to the terminal.
   const finish = () => {
-    if (currentUser()?.role === "admin") onSuccess();
-    else router.push("/");
+    if (currentUser()?.role === "admin") {
+      setRevealing(true);
+      window.setTimeout(onSuccess, 1500);
+    } else {
+      router.push("/");
+    }
   };
+
+  if (revealing) return <AdminLoginReveal />;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
