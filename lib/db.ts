@@ -200,8 +200,18 @@ async function init(): Promise<void> {
   }
 
   // Fast path — after the very first deploy the schema always exists, so a
-  // cold start pays ONE probe round-trip instead of the full 8-call setup.
+  // cold start pays just this probe + backfill instead of the full 8-call setup.
   try {
+    // Backfill columns added after the table may have first been created.
+    // CREATE TABLE IF NOT EXISTS never alters an existing table, so a table
+    // created before pin/star existed keeps 500-ing getAllEntries (which orders
+    // by `pinned`) until these run. Idempotent + concurrent (~1 round-trip),
+    // and once per process via ensureDb(). MUST live here, not only in the
+    // first-run branch below — that branch is skipped whenever the table exists.
+    await Promise.all([
+      sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false`,
+      sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS starred BOOLEAN NOT NULL DEFAULT false`,
+    ]);
     const [{ count }] = (await sql`SELECT COUNT(*)::int AS count FROM cms_entry`) as {
       count: number;
     }[];
