@@ -300,6 +300,18 @@ export default function Tag() {
               } ${pos}`}
             />
           ))}
+
+          {/* Scanline — sweeps down the frame while focused (hover / long-press).
+              Opacity-0 at rest; the keyframe drives its position + fade. */}
+          <span
+            aria-hidden
+            style={{ boxShadow: "0 0 12px 1px rgba(var(--theme-accent-rgb),0.7)" }}
+            className={`pointer-events-none absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--theme-accent)] to-transparent opacity-0 motion-reduce:hidden ${
+              greet
+                ? "[animation:profileScan_2s_linear_infinite]"
+                : "[@media(hover:hover)]:group-hover:[animation:profileScan_2s_linear_infinite]"
+            }`}
+          />
           {/* Greeting — "I am Him" on hover (desktop) or long-press (mobile).
               Terminal-style reveal: `> whoami` in the accent, then the answer
               with a blinking caret, over a bottom-up gradient so the face still

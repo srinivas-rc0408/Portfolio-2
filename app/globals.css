@@ -126,6 +126,14 @@ body:not(:has(.app-shell)) {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
+/* Profile "lock-on" scanline: a bright accent line that sweeps down the frame
+   while it's focused (paired with the HUD corner brackets in Tag.tsx). */
+@keyframes profileScan {
+  0% { top: 0%; opacity: 0; }
+  12% { opacity: 0.85; }
+  88% { opacity: 0.85; }
+  100% { top: 100%; opacity: 0; }
+}
 .type-line {
   display: inline-block;
   overflow: hidden;
