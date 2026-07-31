@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Eraser } from "lucide-react";
 import "@/public/css/TerminalComp.css";
 
 import About from "./TerminalComp/About";
@@ -1082,8 +1083,10 @@ export default function Terminal({
           )}
         </div>
         <nav className="terminal-nav" aria-label="Terminal navigation">
-          {/* 9 commands → a tidy 3×3 grid on phones. `clear` lives on the green
-              window dot (and still works as a typed command). */}
+          {/* 9 section commands + a Clear action. On desktop the Clear chip
+              fills the trailing grid cell; on phones it spans a full-width row
+              under the 3×3 section grid. `clear` still works as a typed command
+              and on the green window dot. */}
           {[
             "help",
             "about",
@@ -1105,6 +1108,16 @@ export default function Terminal({
               {cmd}
             </button>
           ))}
+          <button
+            onClick={() => void processCommand("clear")}
+            className="nav-button nav-clear"
+            type="button"
+            aria-label="Clear the terminal"
+            title="Clear terminal"
+          >
+            <Eraser className="nav-clear-icon" size={13} strokeWidth={2.2} aria-hidden />
+            <span>clear</span>
+          </button>
         </nav>
       </header>
       <main
