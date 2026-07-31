@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { File as FileIcon, Loader2, Upload } from "lucide-react";
+import { Check, File as FileIcon, Loader2, Upload } from "lucide-react";
 
 /**
  * Themed drag-and-drop upload zone for the admin panel. Native DnD (no extra
@@ -58,7 +58,9 @@ export default function AdminUpload({
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reading, setReading] = useState(false);
-  const [last, setLast] = useState<{ name: string; size: number } | null>(null);
+  const [last, setLast] = useState<
+    { name: string; size: number; dataUrl?: string } | null
+  >(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handle = async (file?: File | null) => {
@@ -85,7 +87,7 @@ export default function AdminUpload({
             size: file.size,
             dataUrl: await readAs(file, "dataURL"),
           };
-      setLast({ name: file.name, size: file.size });
+      setLast({ name: file.name, size: file.size, dataUrl: result.dataUrl });
       await onFile(result);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed. Please try again.");
@@ -121,10 +123,10 @@ export default function AdminUpload({
             inputRef.current?.click();
           }
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition-all duration-150 ${
+        className={`flex min-h-[44px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition-all duration-150 ${
           dragging
-            ? "border-[var(--theme-accent)] bg-[rgba(var(--theme-accent-rgb),0.1)]"
-            : "border-white/15 hover:border-[rgba(var(--theme-accent-rgb),0.55)] hover:bg-white/[0.02]"
+            ? "scale-[1.01] border-emerald-500 bg-emerald-500/10"
+            : "border-white/15 hover:border-emerald-500/50 hover:bg-emerald-500/[0.04]"
         } ${loading ? "pointer-events-none opacity-70" : ""}`}
       >
         <span
@@ -155,15 +157,25 @@ export default function AdminUpload({
       </div>
 
       {last && !error && (
-        <p className="mt-2 flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-gray-300">
-          <FileIcon
-            size={14}
-            style={{ color: "var(--theme-accent)" }}
-            aria-hidden
-          />
+        <div className="mt-2 flex items-center gap-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.06] px-3 py-2 text-xs text-gray-300">
+          {last.dataUrl?.startsWith("data:image/") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={last.dataUrl}
+              alt={last.name}
+              className="h-9 w-9 shrink-0 rounded-md border border-white/10 object-cover"
+            />
+          ) : (
+            <FileIcon
+              size={14}
+              className="shrink-0 text-emerald-400"
+              aria-hidden
+            />
+          )}
           <span className="min-w-0 flex-1 truncate">{last.name}</span>
-          <span className="text-white/40">{prettySize(last.size)}</span>
-        </p>
+          <Check size={14} className="shrink-0 text-emerald-400" aria-hidden />
+          <span className="shrink-0 text-white/40">{prettySize(last.size)}</span>
+        </div>
       )}
 
       {error && (

@@ -417,8 +417,12 @@ export default function Tag() {
               <span className="block-cursor" aria-hidden />
             </span>
 
+            {/* Ghost-glass "tap to view" chip. It's a label inside the card
+                button (the whole card is the tap target and carries the tilt/
+                tap physics), so its responsive states ride the card's
+                group-hover rather than its own pointer events. */}
             <span
-              className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white/90 backdrop-blur-md transition-all delay-150 duration-300 ease-out ${
+              className={`mt-2.5 inline-flex w-auto max-w-full items-center gap-1.5 whitespace-nowrap rounded-full border border-white/25 bg-transparent px-3.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-white/85 backdrop-blur-md transition-all delay-150 duration-300 ease-out [@media(hover:hover)]:group-hover:border-white/50 [@media(hover:hover)]:group-hover:bg-white/5 [@media(hover:hover)]:group-hover:text-white ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
@@ -427,7 +431,7 @@ export default function Tag() {
               tap to view
               <span
                 aria-hidden
-                className="text-[var(--theme-accent)] transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:translate-x-0.5 [@media(hover:hover)]:group-hover:-translate-y-0.5"
+                className="text-white/70 transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:translate-x-0.5 [@media(hover:hover)]:group-hover:-translate-y-0.5"
               >
                 &#8599;
               </span>
