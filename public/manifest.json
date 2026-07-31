@@ -1,5 +1,5 @@
 {
-  "name": "Srinivas RC — AI / ML Engineer",
+  "name": "Srinivas RC \u2014 AI / ML Engineer",
   "short_name": "Srinivas RC",
   "description": "AI / ML Engineer building LLM-powered web applications and agentic systems",
   "start_url": "/",
@@ -8,6 +8,12 @@
   "theme_color": "#22c55e",
   "scope": "/",
   "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
     {
       "src": "/images/logo.jpg",
       "sizes": "192x192",

@@ -44,8 +44,12 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   // Single source of truth — SITE_URL already resolves the stable prod domain.
   metadataBase: new URL(SITE_URL),
+  // Crisp SVG favicon (a lightning-bolt monogram matching the ".RC" brand mark)
+  // instead of the old JPG photo, which looked muddy in a browser tab. Apple
+  // home-screen keeps the photo, which reads fine at that larger size.
   icons: {
-    icon: "/images/logo.jpg",
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
     apple: "/images/logo.jpg",
   },
   title: {
@@ -158,7 +162,7 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <meta name="application-name" content={`${SITE_NAME} - Developer`} />
         <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
-        <link rel="icon" href="/images/logo.jpg" />
+        {/* Favicon is declared via the `metadata.icons` object above (SVG). */}
         <link rel="manifest" href="/manifest.json" />
         <link rel="canonical" href={SITE_URL} />
         <link

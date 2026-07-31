@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Srinivas RC">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#141414"/>
+      <stop offset="1" stop-color="#050505"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="20" y1="6" x2="44" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d8d8d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <rect x="1.25" y="1.25" width="61.5" height="61.5" rx="13.75" fill="none" stroke="#2a2a2a" stroke-width="1.5"/>
+  <!-- The site's ".RC" lightning bolt, recentred + scaled into the tile. -->
+  <g transform="translate(32,32.5) scale(1.42) translate(-19,-20)">
+    <path d="M29 3 H14 L9 17 H19 L7 37 L31 15 H20 L29 3 Z" fill="url(#bolt)"/>
+  </g>
+</svg>

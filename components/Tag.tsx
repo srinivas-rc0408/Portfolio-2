@@ -123,8 +123,10 @@ const QUICK_ACTIONS: QuickAction[] = [
 ];
 
 // Shared row chrome (hover strip + sheen) so doc rows and plain rows match.
+// Micro-interaction on hover: a small lift + scale and a soft accent glow, so
+// the rows feel tactile without competing with the accent bar (RowDecor).
 const ROW_CLASS =
-  "group/qa relative w-full overflow-hidden rounded-md border border-transparent bg-white/[0.04] px-4 py-2.5 min-h-[44px] text-left font-mono text-sm text-[var(--text)] transition-colors duration-150 ease-out hover:border-[var(--border)] hover:bg-white/[0.07]";
+  "group/qa relative w-full overflow-hidden rounded-md border border-transparent bg-white/[0.04] px-4 py-2.5 min-h-[44px] text-left font-mono text-sm text-[var(--text)] transition-[transform,background-color,border-color,box-shadow] duration-200 ease-out will-change-transform hover:-translate-y-px hover:scale-[1.02] hover:border-[var(--border)] hover:bg-white/[0.07] hover:shadow-[0_0_18px_-6px_rgba(var(--theme-accent-rgb),0.55)] active:scale-[0.99] motion-reduce:transform-none motion-reduce:transition-none";
 
 /* Restrained hover mark: a `$` prompt symbol in the single accent. */
 const RowDecor: React.FC = () => (
