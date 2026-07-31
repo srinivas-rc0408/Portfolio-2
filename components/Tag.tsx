@@ -512,8 +512,12 @@ export default function Tag() {
 
       {/* CONNECT — the identity pane's footer: a toggle that reveals a glass
           card of labeled social tiles + a sign-in entrance. Spring expand,
-          staggered tiles, lift-on-hover. */}
-      <div className="mx-auto mt-5 flex w-full max-w-[280px] flex-col items-center">
+          staggered tiles, lift-on-hover.
+          `mt-auto` pins it to the bottom of the pane so leftover vertical space
+          never pools below it (the pane is fixed to the viewport height); `pt-6`
+          guarantees breathing room above it when the pane is short and the auto
+          margin collapses to zero. */}
+      <div className="mx-auto mt-auto flex w-full max-w-[280px] flex-col items-center pt-6">
         <button
           type="button"
           onClick={() => setConnectOpen((o) => !o)}
