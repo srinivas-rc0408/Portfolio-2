@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { footerLinks } from "@/lib/portfolio-data";
 import { socialIcons } from "@/components/ui/SocialIcons";
+import LiveStatus from "@/components/LiveStatus";
 
 /**
  * Global status bar — a slim, always-on "control panel" pinned to the bottom of
@@ -21,32 +21,10 @@ import { socialIcons } from "@/components/ui/SocialIcons";
 const ICONS = socialIcons(15);
 
 export default function StatusFooter() {
-  // Rendered after mount only — a clock in SSR output would hydrate-mismatch.
-  const [time, setTime] = useState<string | null>(null);
-
-  useEffect(() => {
-    const tick = () =>
-      setTime(
-        new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      );
-    tick();
-    const id = window.setInterval(tick, 30_000);
-    return () => window.clearInterval(id);
-  }, []);
-
   return (
     <footer className="status-footer" aria-label="System status">
-      {/* Left — system status */}
-      <div className="sf-group">
-        <span className="relative flex h-2 w-2" aria-hidden>
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-        </span>
-        <span className="sf-status">STATUS: ALL SYSTEMS ONLINE</span>
-      </div>
+      {/* Left — live system status + per-second Bengaluru clock */}
+      <LiveStatus className="sf-status" />
 
       {/* Centre — social links */}
       <nav className="sf-links" aria-label="Social links">
@@ -65,16 +43,11 @@ export default function StatusFooter() {
         ))}
       </nav>
 
-      {/* Right — agent readiness + local clock */}
+      {/* Right — agent readiness */}
       <div className="sf-group sf-right">
         <span className="sf-agent">
           AI Agent (Jerry): <span className="sf-ready">Ready</span>
         </span>
-        {time && (
-          <span className="sf-time" aria-hidden>
-            {time}
-          </span>
-        )}
       </div>
     </footer>
   );
