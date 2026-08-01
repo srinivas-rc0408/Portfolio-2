@@ -10,6 +10,7 @@ import GameModal from "@/components/GameModal";
 import DocViewer from "@/components/DocViewer";
 import BootSequence from "@/components/boot/BootSequence";
 import StatusFooter from "@/components/StatusFooter";
+import CommandPalette from "@/components/CommandPalette";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
 
@@ -63,6 +64,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <FeedbackWidget />
       {/* Arch-Man arcade popup (opened by `play archman` / the Games button) */}
       <GameModal />
+      {/* ⌘K / Ctrl+K spotlight command palette */}
+      <CommandPalette />
       </MotionConfig>
     </>
   );
