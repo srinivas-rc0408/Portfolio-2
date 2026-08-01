@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import SmartImage from "@/components/ui/SmartImage";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { projects as staticProjects, type Project } from "@/lib/portfolio-data";
 import { CMS_UPDATED_EVENT, getItems } from "@/lib/cms";
 import WindowDots from "@/components/WindowDots";
 import { useScrollLock } from "@/lib/useScrollLock";
+import { SoundEngine } from "@/lib/sound";
 
 /** A public project plus the `starred` featured flag from the CMS. */
 type PublicProject = Project & { starred?: boolean };
@@ -233,6 +234,7 @@ const Projects: React.FC = () => {
   };
 
   return (
+    <LayoutGroup>
     <section
       className="text-white space-y-4 sm:space-y-8 max-w-7xl mx-auto p-3 sm:p-4"
       aria-label="Projects showcase"
@@ -338,13 +340,19 @@ const Projects: React.FC = () => {
 
                 {/* Project Image with overlay */}
                 <div className="relative h-40 sm:h-56 overflow-hidden">
-                  <SmartImage
-                    src={project.imageUrl}
-                    alt={`${project.name} project screenshot`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-150 group-hover:scale-110"
-                  />
+                  <motion.div
+                    layoutId={`project-img-${project.name}`}
+                    className="absolute inset-0"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  >
+                    <SmartImage
+                      src={project.imageUrl}
+                      alt={`${project.name} project screenshot`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-150 group-hover:scale-110"
+                    />
+                  </motion.div>
                   <div
                     className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"
                     aria-hidden="true"
@@ -365,7 +373,13 @@ const Projects: React.FC = () => {
                 <div className="p-4 sm:p-8 space-y-3 sm:space-y-5">
                   <div className="flex items-start justify-between">
                     <h3 className="font-semibold text-white text-base sm:text-xl mb-2 sm:mb-3 font-mono group-hover:text-white transition-colors leading-tight">
-                      {project.name}
+                      <motion.span
+                        layoutId={`project-title-${project.name}`}
+                        className="inline-block"
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      >
+                        {project.name}
+                      </motion.span>
                       {project.starred && (
                         <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.12)] px-2 py-0.5 align-middle text-[9px] font-bold uppercase tracking-wider text-[var(--theme-accent)]">
                           ★ Featured
@@ -396,7 +410,7 @@ const Projects: React.FC = () => {
                   </p>
                   <button
                     type="button"
-                    onClick={() => setDetailProject(project)}
+                    onClick={() => { setDetailProject(project); SoundEngine.whoosh(); }}
                     className="inline-flex items-center gap-1 font-mono text-xs sm:text-sm text-[var(--theme-accent)] transition-all duration-150 hover:gap-2 hover:brightness-125"
                     aria-label={`View full details for ${project.name}`}
                   >
@@ -583,13 +597,19 @@ const Projects: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative h-44 shrink-0 overflow-hidden">
-                <SmartImage
-                  src={detailProject.imageUrl}
-                  alt={`${detailProject.name} screenshot`}
-                  fill
-                  sizes="512px"
-                  className="object-cover"
-                />
+                <motion.div
+                  layoutId={`project-img-${detailProject.name}`}
+                  className="absolute inset-0"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  <SmartImage
+                    src={detailProject.imageUrl}
+                    alt={`${detailProject.name} screenshot`}
+                    fill
+                    sizes="512px"
+                    className="object-cover"
+                  />
+                </motion.div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                 <button
                   type="button"
@@ -602,7 +622,13 @@ const Projects: React.FC = () => {
                   </svg>
                 </button>
                 <h3 className="absolute bottom-3 left-4 right-4 text-lg font-bold text-white">
-                  {detailProject.name}
+                  <motion.span
+                    layoutId={`project-title-${detailProject.name}`}
+                    className="inline-block"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  >
+                    {detailProject.name}
+                  </motion.span>
                 </h3>
               </div>
               <div className="space-y-4 overflow-y-auto px-5 py-4">
@@ -645,6 +671,7 @@ const Projects: React.FC = () => {
         )}
       </AnimatePresence>
     </section>
+    </LayoutGroup>
   );
 };
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Eraser } from "lucide-react";
 import LiveStatus from "@/components/LiveStatus";
 import "@/public/css/TerminalComp.css";
+import { SoundEngine } from "@/lib/sound";
 
 import About from "./TerminalComp/About";
 import Projects from "./TerminalComp/Projects";
@@ -1295,6 +1296,7 @@ export default function Terminal({
                 setInput(e.target.value);
                 setHistoryIndex(-1);
                 setTabSuggestions(null);
+                SoundEngine.tick();
               }}
               onKeyDown={handleKeyDown}
               className="terminal-input"

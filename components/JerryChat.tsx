@@ -8,6 +8,7 @@ import { track } from "@vercel/analytics";
 import { Send, Trash2, X, Zap } from "lucide-react";
 import { docUrl } from "@/lib/cms";
 import { useScrollLock } from "@/lib/useScrollLock";
+import { SoundEngine } from "@/lib/sound";
 
 // Sentinel prepended by /api/chat when Jerry's highlightBackend tool fires.
 const TOOL_SENTINEL = "[TOOL:highlightBackend]";
@@ -317,6 +318,15 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
           body: JSON.stringify({ message: q }),
           signal: controller.signal,
         });
+        // Graceful 429 handling — polished rate-limit message.
+        if (res.status === 429) {
+          const body = await res.text().catch(() => "");
+          await revealText(
+            body ||
+              "[SYS] Network capacity reached. Please try again in a moment."
+          );
+          return;
+        }
         if (!res.body) throw new Error("no stream");
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
@@ -337,10 +347,15 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
             .replace(TOOL_SENTINEL, "")
             .trimStart();
           // Show the DOM override pill, then fire the UI event after 600ms.
-          setDomOverride(true);
-          window.setTimeout(() => {
-            window.dispatchEvent(new CustomEvent("jerry:highlight-backend"));
-          }, 600);
+          // Wrapped in try/catch so a tool-call failure never breaks the stream.
+          try {
+            setDomOverride(true);
+            window.setTimeout(() => {
+              window.dispatchEvent(new CustomEvent("jerry:highlight-backend"));
+            }, 600);
+          } catch {
+            /* tool-call failure — fail silently, text stream continues */
+          }
         }
         // Reveal the vetted reply.
         await revealText(displayText || OFFLINE_MSG);
@@ -612,6 +627,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                   onChange={(e) => {
                     setInput(e.target.value);
                     autosize();
+                    SoundEngine.tick();
                   }}
                   onKeyDown={(e) => {
                     // Enter sends; Shift+Enter inserts a newline.

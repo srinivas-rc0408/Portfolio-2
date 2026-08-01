@@ -22,6 +22,7 @@ import {
 import { docUrl } from "@/lib/cms";
 import { openDoc } from "@/components/DocViewer";
 import { useScrollLock } from "@/lib/useScrollLock";
+import { SoundEngine } from "@/lib/sound";
 
 /** Fire a terminal command from anywhere and scroll the terminal into view. */
 function execInTerminal(command: string): void {
@@ -101,7 +102,10 @@ export default function CommandPalette() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         if (open) close();
-        else setOpen(true);
+        else {
+          setOpen(true);
+          SoundEngine.whoosh();
+        }
       } else if (e.key === "Escape" && open) {
         e.preventDefault();
         close();

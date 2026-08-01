@@ -4,6 +4,7 @@ import { footerLinks } from "@/lib/portfolio-data";
 import { socialIcons } from "@/components/ui/SocialIcons";
 import LiveStatus from "@/components/LiveStatus";
 import XrayToggle from "@/components/XrayToggle";
+import SoundToggle from "@/components/SoundToggle";
 
 /**
  * Global status bar — a slim, always-on "control panel" pinned to the bottom of
@@ -16,7 +17,7 @@ import XrayToggle from "@/components/XrayToggle";
  *
  * Left  — live system status (emerald reads as "online" by convention).
  * Centre— social links, lit by the site accent on hover.
- * Right — Jerry's readiness, so the AI agent is legible as a live subsystem.
+ * Right — Sound toggle, X-Ray dev toggle, agent readiness.
  */
 
 const ICONS = socialIcons(15);
@@ -44,8 +45,9 @@ export default function StatusFooter() {
         ))}
       </nav>
 
-      {/* Right — X-Ray dev toggle + agent readiness */}
+      {/* Right — Sound toggle + X-Ray dev toggle + agent readiness */}
       <div className="sf-group sf-right">
+        <SoundToggle />
         <XrayToggle />
         <span className="sf-agent">
           AI Agent (Jerry): <span className="sf-ready">Ready</span>

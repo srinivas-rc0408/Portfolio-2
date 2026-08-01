@@ -156,10 +156,26 @@ const INJECTION_PATTERNS: RegExp[] = [
   /reveal|repeat|print.*(instructions?|prompt)/i,
   /new persona/i,
   /developer mode/i,
+  /disregard.*previous/i,
+  /override.*safety/i,
+  /bypass.*filter/i,
+  /translate.*instructions/i,
+  /summarize.*system.*message/i,
+  /output.*initialization/i,
+  /\bdo anything now\b/i,
 ];
 
 function looksLikeInjection(q: string): boolean {
   return INJECTION_PATTERNS.some((re) => re.test(q));
+}
+
+/** Strip HTML/script tags from user input to prevent XSS via the chat UI. */
+function sanitizeInput(raw: string): string {
+  return raw
+    .replace(/<[^>]*>/g, "")       // strip HTML tags
+    .replace(/javascript:/gi, "")  // strip javascript: URIs
+    .replace(/on\w+\s*=/gi, "")    // strip inline event handlers
+    .trim();
 }
 
 // A4 — output guard. If the model's reply echoes any prompt-internal marker,
@@ -276,7 +292,7 @@ export async function POST(req: NextRequest) {
   }
   const { message } = await req.json().catch(() => ({ message: "" }));
   const question =
-    typeof message === "string" ? message.trim().slice(0, 500) : "";
+    typeof message === "string" ? sanitizeInput(message).slice(0, 500) : "";
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
@@ -353,6 +369,8 @@ export async function POST(req: NextRequest) {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-store, no-transform",
       "X-Accel-Buffering": "no",
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "default-src 'none'",
     },
   });
 }
