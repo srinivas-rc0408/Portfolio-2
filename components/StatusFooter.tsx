@@ -3,6 +3,7 @@
 import { footerLinks } from "@/lib/portfolio-data";
 import { socialIcons } from "@/components/ui/SocialIcons";
 import LiveStatus from "@/components/LiveStatus";
+import XrayToggle from "@/components/XrayToggle";
 
 /**
  * Global status bar — a slim, always-on "control panel" pinned to the bottom of
@@ -22,7 +23,7 @@ const ICONS = socialIcons(15);
 
 export default function StatusFooter() {
   return (
-    <footer className="status-footer" aria-label="System status">
+    <footer className="status-footer" aria-label="System status" data-xray="<StatusFooter>">
       {/* Left — live system status + per-second Bengaluru clock */}
       <LiveStatus className="sf-status" />
 
@@ -43,8 +44,9 @@ export default function StatusFooter() {
         ))}
       </nav>
 
-      {/* Right — agent readiness */}
+      {/* Right — X-Ray dev toggle + agent readiness */}
       <div className="sf-group sf-right">
+        <XrayToggle />
         <span className="sf-agent">
           AI Agent (Jerry): <span className="sf-ready">Ready</span>
         </span>

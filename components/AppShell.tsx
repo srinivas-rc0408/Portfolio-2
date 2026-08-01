@@ -41,15 +41,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Honor the OS "reduce motion" setting across every framer animation. */}
       <MotionConfig reducedMotion="user">
       <BootSequence />
-      <main className="app-shell" role="main">
+      <main className="app-shell" role="main" data-xray="<AppShell>">
         <div className="main-content-area">
           <section
             className="identity-pane"
             aria-label="Developer identity — Srinivas RC"
+            data-xray="<IdentityPane>"
           >
             <Tag />
           </section>
-          <section className="terminal-pane">{children}</section>
+          <section className="terminal-pane" data-xray="<TerminalPane>">
+            {children}
+          </section>
         </div>
       </main>
       {/* Global status bar — desktop-only control panel pinned to the bottom */}

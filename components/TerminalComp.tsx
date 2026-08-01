@@ -1020,7 +1020,7 @@ export default function Terminal({
       role="application"
       aria-label="Interactive terminal"
     >
-      <header className="terminal-header">
+      <header className="terminal-header" data-xray="<TerminalHeader>">
         {/* Window title bar: traffic-light controls · host prompt · profile */}
         <div className="terminal-titlebar">
           {/* Traffic-light controls — glossy RGB beads, each with a function */}
@@ -1089,7 +1089,7 @@ export default function Terminal({
             </button>
           )}
         </div>
-        <nav className="terminal-nav" aria-label="Terminal navigation">
+        <nav className="terminal-nav" aria-label="Terminal navigation" data-xray="<CommandGrid>">
           {/* 9 section commands + a Clear action. On desktop the Clear chip
               fills the trailing grid cell; on phones it spans a full-width row
               under the 3×3 section grid. `clear` still works as a typed command

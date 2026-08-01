@@ -35,8 +35,26 @@ function luminance(hex: string): number {
 // Stable "am I on the client?" signal — false during SSR, true after hydration.
 const emptySubscribe = () => () => {};
 
+// First-visit gate. getBootedSnapshot reads sessionStorage exactly once and
+// caches it, so useSyncExternalStore returns a STABLE value for the whole page
+// load — it can't flip mid-boot when the flag is written. Server snapshot is
+// always false. The cache resets on a full reload; sessionStorage persists
+// across reloads within the same tab session.
+const BOOT_SESSION_KEY = "portfolio_booted";
+let bootedCache: boolean | undefined;
+function getBootedSnapshot(): boolean {
+  if (bootedCache === undefined) {
+    try {
+      bootedCache = sessionStorage.getItem(BOOT_SESSION_KEY) === "1";
+    } catch {
+      bootedCache = false;
+    }
+  }
+  return bootedCache;
+}
+
 /**
- * Two-stage, 1.5-second boot overlay — runs on every mount/reload.
+ * Two-stage, 1.5-second boot overlay — runs once per tab session (first visit).
  *   0.00–0.75s → GradientTracing (Lightning S, traced in the admin theme accent)
  *   0.75–1.50s → TerminalLoader (accent-bound text/cursor)
  *   1.50s max  → fade out, unmount → reveal the site underneath.
@@ -53,8 +71,22 @@ export default function BootSequence() {
     () => true,
     () => false
   );
+  // Stable for this page load: true only when the boot already ran this session.
+  const alreadyBooted = useSyncExternalStore(
+    emptySubscribe,
+    getBootedSnapshot,
+    () => false
+  );
 
   useEffect(() => {
+    // Mark this session as booted (a side effect, not state). The snapshot was
+    // cached at first render, so this write never flips `alreadyBooted` mid-boot.
+    try {
+      sessionStorage.setItem(BOOT_SESSION_KEY, "1");
+    } catch {
+      /* private mode — just play it */
+    }
+    if (getBootedSnapshot()) return; // repeat visit → no timers/listeners
     const t1 = window.setTimeout(() => setStage("terminal"), BOOT_STAGE1_MS);
     const t2 = window.setTimeout(() => setStage("done"), BOOT_TOTAL_MS);
     // Skip on any key, click, or tap.
@@ -77,6 +109,9 @@ export default function BootSequence() {
       <div className="boot-failsafe fixed inset-0 z-[999] bg-black" aria-hidden />
     );
   }
+
+  // First-visit gate: the boot already ran this session → reveal the site now.
+  if (alreadyBooted) return null;
 
   // Prefer the live CSS var (set by the pre-paint <head> script from the same
   // cache) so the boot always matches the site's actual theme — no cyan flash

@@ -640,6 +640,42 @@ html.scrolling * {
   color: #000000;
 }
 
+/* ── X-Ray developer mode ───────────────────────────────────────────────────
+   Toggled by <XrayToggle> (adds `xray-mode` to <body>). Reveals the app's
+   skeleton: a green wireframe outline on every element, plus floating React
+   component-name labels above the containers tagged with `data-xray`. Purely
+   presentational and scoped to the class, so it never affects the normal view. */
+body.xray-mode * {
+  outline: 1px solid rgba(16, 185, 129, 0.5) !important;
+  outline-offset: -1px;
+}
+body.xray-mode [data-xray] {
+  position: relative;
+}
+body.xray-mode [data-xray]::before {
+  content: attr(data-xray);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 900;
+  transform: translateY(-100%);
+  padding: 1px 5px;
+  font: 700 9px/1.5 var(--font-jetbrains-mono, ui-monospace, monospace);
+  letter-spacing: 0.05em;
+  color: #10b981;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(16, 185, 129, 0.6);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  white-space: nowrap;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body.xray-mode * {
+    transition: outline-color 0.2s ease;
+  }
+}
+
 
 @keyframes matrix-fall {
   0% {
