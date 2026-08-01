@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Eraser } from "lucide-react";
 import LiveStatus from "@/components/LiveStatus";
@@ -64,6 +64,85 @@ interface TerminalProps {
   /** Deep-link from /?cmd=help */
   initialCommand?: string | null;
 }
+
+// ============ Matrix Rain Easter Egg ============
+// Self-contained canvas-based Matrix digital rain.
+// Runs for `duration` ms then calls `onDone`.
+const MatrixRainOutput: React.FC<{ onDone: () => void; duration?: number }> = ({
+  onDone,
+  duration = 3000,
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+  const doneRef = useRef(false);
+  const stableDone = useCallback(onDone, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const W = canvas.offsetWidth || 560;
+    const H = 120;
+    canvas.width = W;
+    canvas.height = H;
+
+    const fontSize = 13;
+    const cols = Math.floor(W / fontSize);
+    const drops = Array<number>(cols).fill(1);
+    const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ";
+
+    const draw = () => {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+      ctx.fillRect(0, 0, W, H);
+      ctx.font = `${fontSize}px monospace`;
+      for (let i = 0; i < cols; i++) {
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        const bright = Math.random() > 0.92;
+        ctx.fillStyle = bright ? "#ffffff" : "#00ff41";
+        ctx.shadowBlur = bright ? 8 : 0;
+        ctx.shadowColor = "#00ff41";
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > H && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+      rafRef.current = requestAnimationFrame(draw);
+    };
+    rafRef.current = requestAnimationFrame(draw);
+
+    const timer = window.setTimeout(() => {
+      if (!doneRef.current) {
+        doneRef.current = true;
+        cancelAnimationFrame(rafRef.current);
+        stableDone();
+      }
+    }, duration);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.clearTimeout(timer);
+    };
+  }, [duration, stableDone]);
+
+  return (
+    <div className="my-1 overflow-hidden rounded-md border border-[#00ff41]/30 bg-black">
+      <div className="flex items-center gap-2 border-b border-[#00ff41]/20 px-3 py-1">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00ff41]" />
+        <span className="font-mono text-[10px] tracking-widest text-[#00ff41]/70">
+          MULTI-AGENT PROTOCOL BOOT SEQUENCE
+        </span>
+      </div>
+      <canvas
+        ref={canvasRef}
+        className="block w-full"
+        style={{ height: 120 }}
+        aria-label="Matrix rain animation"
+        aria-hidden
+      />
+    </div>
+  );
+};
 
 // ============ Typewriter Text Component ============
 const TypewriterText: React.FC<{ text: string; speed?: number; onComplete?: () => void }> = ({ text, speed = 20, onComplete }) => {
@@ -190,6 +269,7 @@ const HELP_GROUPS: HelpGroup[] = [
     entries: [
       { command: "jerry", description: "Open the interactive AI chat interface." },
       { command: "play archman", description: "Play the terminal-based Arch-Man game." },
+      { command: "play flappy-duck", description: "Launch the autonomous PID-controlled Flappy Duck." },
       { command: "hire", description: "The recruiter's fast track. 😎" },
       { command: "theme", description: "Show the current accent color." },
     ],
@@ -246,6 +326,8 @@ const TAB_COMPLETIONS: string[] = [
   "achievements",
   "jerry",
   "play archman",
+  "play flappy-duck",
+  "archagent",
   "admin",
   "signin",
   "login",
@@ -656,9 +738,45 @@ export default function Terminal({
       return;
     }
 
-    // play <game> — opens the Arch-Man arcade popup (GameModal in AppShell)
+    // archagent easter egg — Matrix digital rain for 3s, then SYS message
+    if (lower === "archagent") {
+      const matrixKey = `matrix-${Date.now()}`;
+      const afterMatrix = () => {
+        setHistory((prev) => {
+          // Replace the matrix line with the success message
+          const next = prev.map((l) =>
+            l.type === "output" && (l as { _matrixKey?: string })._matrixKey === matrixKey
+              ? {
+                  type: "output" as const,
+                  content: (
+                    <span className="font-mono text-sm">
+                      <span style={{ color: "var(--theme-accent)" }}>
+                        [SYS]
+                      </span>{" "}
+                      <span className="text-white/90">
+                        Multi-Agent Architecture protocol initialized.
+                      </span>
+                    </span>
+                  ),
+                }
+              : l
+          );
+          return next;
+        });
+      };
+      const matrixLine: HistoryLine & { _matrixKey: string } = {
+        type: "output",
+        content: <MatrixRainOutput onDone={afterMatrix} duration={3000} />,
+        _matrixKey: matrixKey,
+      };
+      newHist.push(matrixLine);
+      setHistory(newHist);
+      return;
+    }
+
+    // play <game> — opens arcade popups dispatched via CustomEvents
     if (commandName === "play") {
-      const game = (args[0] ?? "").toLowerCase();
+      const game = args.join("-").toLowerCase();
       if (game === "archman") {
         window.dispatchEvent(new CustomEvent("game:open"));
         newHist.push({
@@ -672,14 +790,27 @@ export default function Terminal({
         setHistory(newHist);
         return;
       }
+      if (game === "flappy-duck") {
+        window.dispatchEvent(new CustomEvent("game:open-flappy"));
+        newHist.push({
+          type: "output",
+          content: (
+            <span style={{ color: "var(--theme-accent)" }}>
+              Launching FLAPPY DUCK — autonomous PID agent engaged…
+            </span>
+          ),
+        });
+        setHistory(newHist);
+        return;
+      }
       newHist.push({
         type: "output",
         content:
           game.length === 0
-            ? "usage: play archman"
+            ? "usage: play <archman|flappy-duck>"
             : (
               <span className="terminal-stderr">
-                play: unknown game &apos;{game}&apos;. Available: archman
+                play: unknown game &apos;{game}&apos;. Available: archman, flappy-duck
               </span>
             ),
       });

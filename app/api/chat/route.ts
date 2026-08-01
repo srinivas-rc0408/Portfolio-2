@@ -37,6 +37,13 @@ const FALLBACK_ERROR =
 const RATE_LIMIT_MESSAGE =
   "Jerry is taking a quick break to cool his servers 🧊 — you've asked a lot of great questions! Please try again in a little while, or explore the portfolio with the terminal commands meanwhile.";
 
+// Tool-call trigger: deterministic keyword matching for UI override.
+// When matched, the stream is prefixed with a special sentinel the client
+// strips and uses to trigger the `highlightBackend` UI override action.
+const BACKEND_TRIGGER =
+  /\b(show|tell|list|give|what|see).{0,30}(backend|server[-\s]?side|api|database|db|backend project)/i;
+const TOOL_PREFIX = "[TOOL:highlightBackend]\n";
+
 // Canned refusal — served verbatim by the injection pre-filter (A2), the
 // output guard (A4), and instructed inside the prompt itself (A3).
 const CANNED_REFUSAL =
@@ -301,6 +308,10 @@ export async function POST(req: NextRequest) {
         return;
       }
 
+      // Tool-call layer: if the user is asking about backend projects, inject
+      // the `highlightBackend` sentinel so the client can override the UI.
+      const useToolCall = BACKEND_TRIGGER.test(question);
+
       const tiers: (() => Promise<string>)[] = [];
       if (NVIDIA_API_KEY_1) {
         const k = NVIDIA_API_KEY_1;
@@ -320,6 +331,8 @@ export async function POST(req: NextRequest) {
             console.warn("[chat] output guard tripped (prompt leak blocked)");
             send(CANNED_REFUSAL);
           } else {
+            // Prepend the tool sentinel if matched; client strips it.
+            if (useToolCall) send(TOOL_PREFIX);
             send(answer);
           }
           controller.close();

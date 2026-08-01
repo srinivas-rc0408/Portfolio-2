@@ -35,6 +35,25 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Jerry UI Override: activates X-Ray mode for 4s and auto-navigates to
+  // Projects when Jerry calls the `highlightBackend` tool.
+  useEffect(() => {
+    let xrayTimer: number;
+    const onHighlight = () => {
+      document.body.classList.add("xray-mode");
+      // Also trigger the Projects terminal command so the section auto-opens.
+      window.dispatchEvent(new CustomEvent("terminal:exec", { detail: "projects" }));
+      xrayTimer = window.setTimeout(() => {
+        document.body.classList.remove("xray-mode");
+      }, 4000);
+    };
+    window.addEventListener("jerry:highlight-backend", onHighlight);
+    return () => {
+      window.removeEventListener("jerry:highlight-backend", onHighlight);
+      window.clearTimeout(xrayTimer);
+      document.body.classList.remove("xray-mode");
+    };
+  }, []);
 
   return (
     <>

@@ -1,9 +1,190 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Gamepad2, Heart, Play, X } from "lucide-react";
+import { Gamepad2, Heart, Play, X, Bot } from "lucide-react";
 import { useScrollLock } from "@/lib/useScrollLock";
+
+// ── Flappy Duck PID Game ─────────────────────────────────────────────────────
+// A canvas-based endless-runner where the bird is steered by an autonomous
+// PID controller. P-term: vertical offset to gap centre. D-term: velocity.
+const FD_W = 400;
+const FD_H = 320;
+const FD_GRAVITY = 0.38;
+const FD_FLAP = -6.5;
+const FD_PIPE_W = 52;
+const FD_GAP = 110;
+const FD_PIPE_SPEED = 2.4;
+const FD_PIPE_INTERVAL = 1500; // ms
+
+interface FDPipe { x: number; gapTop: number; scored: boolean; }
+
+const FlappyDuckCanvas: React.FC<{ onScore: (s: number) => void; onDead: () => void; running: boolean }> = ({ onScore, onDead, running }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+  const stateRef = useRef({
+    y: FD_H / 2,
+    vy: 0,
+    pipes: [] as FDPipe[],
+    score: 0,
+    lastPipe: 0,
+    dead: false,
+  });
+  const stableScore = useCallback(onScore, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const stableDead = useCallback(onDead, []);   // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Manual flap
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.code === "Space" || e.key === " ") && !stateRef.current.dead) {
+        stateRef.current.vy = FD_FLAP;
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    if (!running) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const s = stateRef.current;
+    s.y = FD_H / 2; s.vy = 0; s.pipes = []; s.score = 0; s.lastPipe = 0; s.dead = false;
+
+    let lastTime = performance.now();
+
+    const loop = (now: number) => {
+      const dt = now - lastTime;
+      lastTime = now;
+
+      if (s.dead) return;
+
+      // Spawn pipes
+      if (s.lastPipe === 0 || now - s.lastPipe > FD_PIPE_INTERVAL) {
+        const gapTop = 60 + Math.random() * (FD_H - FD_GAP - 80);
+        s.pipes.push({ x: FD_W, gapTop, scored: false });
+        s.lastPipe = now;
+      }
+
+      // PID controller — target: centre of the nearest incoming pipe gap
+      const nextPipe = s.pipes.find(p => p.x + FD_PIPE_W > 60);
+      const target = nextPipe ? nextPipe.gapTop + FD_GAP / 2 : FD_H / 2;
+      const error = target - s.y;
+      const kP = 0.045, kD = 1.2;
+      const pidOutput = kP * error - kD * s.vy;
+      if (pidOutput > 0.55 && s.vy > -3) s.vy = FD_FLAP * 0.82;
+
+      // Physics
+      s.vy += FD_GRAVITY * (dt / 16);
+      s.y += s.vy * (dt / 16);
+
+      // Move pipes
+      for (const p of s.pipes) p.x -= FD_PIPE_SPEED * (dt / 16);
+      s.pipes = s.pipes.filter(p => p.x + FD_PIPE_W > 0);
+
+      // Score
+      for (const p of s.pipes) {
+        if (!p.scored && p.x + FD_PIPE_W < 60) {
+          p.scored = true; s.score++;
+          stableScore(s.score);
+        }
+      }
+
+      // Collision
+      const bx = 60, by = s.y, bR = 12;
+      if (by - bR < 0 || by + bR > FD_H) { s.dead = true; stableDead(); return; }
+      for (const p of s.pipes) {
+        const inX = bx + bR > p.x && bx - bR < p.x + FD_PIPE_W;
+        const inGap = by - bR > p.gapTop && by + bR < p.gapTop + FD_GAP;
+        if (inX && !inGap) { s.dead = true; stableDead(); return; }
+      }
+
+      // Draw
+      ctx.fillStyle = "#0a0a12";
+      ctx.fillRect(0, 0, FD_W, FD_H);
+
+      // Grid
+      ctx.strokeStyle = "rgba(255,255,255,0.04)";
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx < FD_W; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, FD_H); ctx.stroke(); }
+      for (let gy = 0; gy < FD_H; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(FD_W, gy); ctx.stroke(); }
+
+      // Pipes
+      for (const p of s.pipes) {
+        ctx.fillStyle = "#1a2e1a";
+        ctx.strokeStyle = "rgba(34,197,94,0.5)";
+        ctx.lineWidth = 1;
+        // top
+        ctx.fillRect(p.x, 0, FD_PIPE_W, p.gapTop);
+        ctx.strokeRect(p.x, 0, FD_PIPE_W, p.gapTop);
+        // bottom
+        ctx.fillRect(p.x, p.gapTop + FD_GAP, FD_PIPE_W, FD_H - p.gapTop - FD_GAP);
+        ctx.strokeRect(p.x, p.gapTop + FD_GAP, FD_PIPE_W, FD_H - p.gapTop - FD_GAP);
+        // gap line
+        ctx.strokeStyle = "rgba(34,197,94,0.15)";
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(p.x + FD_PIPE_W / 2, p.gapTop); ctx.lineTo(p.x + FD_PIPE_W / 2, p.gapTop + FD_GAP); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // PID trajectory arc
+      if (nextPipe) {
+        ctx.strokeStyle = "rgba(34,197,94,0.25)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 5]);
+        ctx.beginPath();
+        ctx.moveTo(bx, by);
+        ctx.lineTo(nextPipe.x, nextPipe.gapTop + FD_GAP / 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Bird body
+      ctx.save();
+      ctx.translate(bx, by);
+      ctx.rotate(Math.max(-0.5, Math.min(0.6, s.vy * 0.07)));
+      ctx.fillStyle = "#facc15";
+      ctx.shadowBlur = 12; ctx.shadowColor = "#fbbf24";
+      ctx.beginPath(); ctx.arc(0, 0, bR, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      // eye
+      ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(5, -3, 2.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(5.5, -3.5, 1, 0, Math.PI * 2); ctx.fill();
+      // wing pulse
+      const wingY = Math.sin(now / 120) * 3;
+      ctx.fillStyle = "#f59e0b";
+      ctx.beginPath(); ctx.ellipse(-4, wingY, 7, 4, 0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // PID HUD overlay
+      ctx.fillStyle = "rgba(34,197,94,0.7)";
+      ctx.font = "9px monospace";
+      ctx.fillText(`P=${(error * 0.045).toFixed(2)} D=${(-s.vy * 1.2).toFixed(2)}`, 6, 12);
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [running, stableScore, stableDead]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={FD_W}
+      height={FD_H}
+      className="block w-full rounded-lg"
+      style={{ imageRendering: "pixelated", maxHeight: FD_H }}
+      onPointerDown={(e) => { e.preventDefault(); if (!stateRef.current.dead) stateRef.current.vy = FD_FLAP; }}
+      aria-label="Flappy Duck game canvas"
+    />
+  );
+};
+
 
 /**
  * ARCH-MAN — popup arcade game (opened via the `play archman` command or the
@@ -70,12 +251,18 @@ const DIRS = [
 
 export default function GameModal() {
   const [open, setOpen] = useState(false);
+  const [game, setGame] = useState<"archman" | "flappy">("archman");
   // Lock background scrolling while this modal is open.
   useScrollLock(open);
   const [screen, setScreen] = useState<Screen>("menu");
   const [mode, setMode] = useState<Mode>("easy");
   // HUD mirror of the ref state — a fresh object per tick re-renders the grid.
   const [hud, setHud] = useState({ score: 0, lives: 3 });
+
+  // Flappy Duck state
+  const [fdScore, setFdScore] = useState(0);
+  const [fdRunning, setFdRunning] = useState(false);
+  const [fdDead, setFdDead] = useState(false);
 
   // Mutable game state (refs: the loop never re-creates the interval mid-game).
   const player = useRef<Pos>({ ...PLAYER_START });
@@ -111,14 +298,26 @@ export default function GameModal() {
     [resetPositions]
   );
 
-  // Open via the global event.
+  // Open via the global events.
   useEffect(() => {
     const onOpen = () => {
+      setGame("archman");
       setScreen("menu");
       setOpen(true);
     };
+    const onOpenFlappy = () => {
+      setGame("flappy");
+      setFdScore(0);
+      setFdRunning(true);
+      setFdDead(false);
+      setOpen(true);
+    };
     window.addEventListener("game:open", onOpen);
-    return () => window.removeEventListener("game:open", onOpen);
+    window.addEventListener("game:open-flappy", onOpenFlappy);
+    return () => {
+      window.removeEventListener("game:open", onOpen);
+      window.removeEventListener("game:open-flappy", onOpenFlappy);
+    };
   }, []);
 
   // Keyboard: arrows/WASD steer; Esc → menu (or closes from the menu).
@@ -210,7 +409,10 @@ export default function GameModal() {
     return () => window.clearInterval(id);
   }, [open, screen, mode, resetPositions]);
 
-  const close = () => setOpen(false);
+  const close = () => {
+    setOpen(false);
+    setFdRunning(false);
+  };
 
   // --- Cell rendering ---
   const cell = (r: number, c: number) => {
@@ -273,24 +475,34 @@ export default function GameModal() {
             {/* Header */}
             <header className="flex items-center justify-between border-b border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-4 py-2.5">
               <h2 className="flex items-center gap-2 text-sm font-bold tracking-[0.2em] text-white">
-                <Gamepad2 size={16} style={{ color: "var(--theme-accent)" }} aria-hidden />
-                ARCH-MAN
+                {game === "flappy" ? (
+                  <><Bot size={16} style={{ color: "var(--theme-accent)" }} aria-hidden /> FLAPPY DUCK</>
+                ) : (
+                  <><Gamepad2 size={16} style={{ color: "var(--theme-accent)" }} aria-hidden /> ARCH-MAN</>
+                )}
               </h2>
               <div className="flex items-center gap-3">
-                {screen !== "menu" && (
-                  <span className="flex items-center gap-3 text-xs text-white/70">
-                    <span>
-                      score{" "}
-                      <span className="font-bold text-[var(--theme-accent)]">
-                        {hud.score}
+                {game === "flappy" ? (
+                  <span className="text-xs text-white/70">
+                    score{" "}
+                    <span className="font-bold" style={{ color: "var(--theme-accent)" }}>{fdScore}</span>
+                  </span>
+                ) : (
+                  screen !== "menu" && (
+                    <span className="flex items-center gap-3 text-xs text-white/70">
+                      <span>
+                        score{" "}
+                        <span className="font-bold text-[var(--theme-accent)]">
+                          {hud.score}
+                        </span>
+                      </span>
+                      <span className="flex items-center gap-1" aria-label={`${hud.lives} lives`}>
+                        {Array.from({ length: hud.lives }).map((_, i) => (
+                          <Heart key={i} size={11} className="fill-red-500 text-red-500" aria-hidden />
+                        ))}
                       </span>
                     </span>
-                    <span className="flex items-center gap-1" aria-label={`${hud.lives} lives`}>
-                      {Array.from({ length: hud.lives }).map((_, i) => (
-                        <Heart key={i} size={11} className="fill-red-500 text-red-500" aria-hidden />
-                      ))}
-                    </span>
-                  </span>
+                  )
                 )}
                 <button
                   type="button"
@@ -303,6 +515,34 @@ export default function GameModal() {
                 </button>
               </div>
             </header>
+
+            {/* Flappy Duck sub-screen */}
+            {game === "flappy" && (
+              <div className="relative px-4 pb-4 pt-3">
+                <p className="mb-2 text-center text-[10px] tracking-widest text-white/40">
+                  AUTONOMOUS PID AGENT ACTIVE · Space/Tap to override
+                </p>
+                <FlappyDuckCanvas
+                  running={fdRunning && !fdDead}
+                  onScore={setFdScore}
+                  onDead={() => setFdDead(true)}
+                />
+                {fdDead && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-lg bg-black/75 backdrop-blur-sm">
+                    <p className="text-2xl" aria-hidden>💀</p>
+                    <p className="font-bold tracking-widest text-red-400">PID AGENT TERMINATED</p>
+                    <p className="text-sm text-white/60">Score: {fdScore}</p>
+                    <button
+                      type="button"
+                      onClick={() => { setFdScore(0); setFdDead(false); setFdRunning(true); }}
+                      className="mt-1 rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.1)] px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-[rgba(var(--theme-accent-rgb),0.22)] active:scale-95"
+                    >
+                      <span className="flex items-center gap-2"><Play size={13} aria-hidden /> Restart Agent</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Menu screen */}
             {screen === "menu" && (

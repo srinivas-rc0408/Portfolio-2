@@ -5,9 +5,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { track } from "@vercel/analytics";
-import { Send, Trash2, X } from "lucide-react";
+import { Send, Trash2, X, Zap } from "lucide-react";
 import { docUrl } from "@/lib/cms";
 import { useScrollLock } from "@/lib/useScrollLock";
+
+// Sentinel prepended by /api/chat when Jerry's highlightBackend tool fires.
+const TOOL_SENTINEL = "[TOOL:highlightBackend]";
+const TOOL_SENTINEL_NL = TOOL_SENTINEL + "\n";
 
 /**
  * Jerry's logo — a rounded accent badge with a chat bubble + spark (an AI
@@ -208,6 +212,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [chips, setChips] = useState<string[]>([]);
+  const [domOverride, setDomOverride] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -321,8 +326,24 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
           if (done) break;
           full += decoder.decode(value, { stream: true });
         }
-        // Reveal the vetted reply with a smooth typewriter cadence.
-        await revealText(full.trim() || OFFLINE_MSG);
+        // Tool-call: detect and strip the highlightBackend sentinel.
+        let displayText = full.trim();
+        const hasTool =
+          displayText.startsWith(TOOL_SENTINEL_NL) ||
+          displayText.startsWith(TOOL_SENTINEL);
+        if (hasTool) {
+          displayText = displayText
+            .replace(TOOL_SENTINEL_NL, "")
+            .replace(TOOL_SENTINEL, "")
+            .trimStart();
+          // Show the DOM override pill, then fire the UI event after 600ms.
+          setDomOverride(true);
+          window.setTimeout(() => {
+            window.dispatchEvent(new CustomEvent("jerry:highlight-backend"));
+          }, 600);
+        }
+        // Reveal the vetted reply.
+        await revealText(displayText || OFFLINE_MSG);
       } catch {
         if (!controller.signal.aborted) {
           setAndCache((prev) => {
@@ -336,6 +357,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
         }
       } finally {
         setBusy(false);
+        setDomOverride(false);
       }
     },
     [busy, onClose, setAndCache, revealText]
@@ -463,6 +485,43 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                 {INTRO}
               </motion.div>
 
+              {/* Tool-call status pill — shown when Jerry overrides DOM state */}
+              <AnimatePresence>
+                {domOverride && (
+                  <motion.div
+                    key="dom-override-pill"
+                    initial={{ opacity: 0, y: -8, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.92 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                    className="flex max-w-[88%] items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-2 text-[11px] font-mono text-emerald-400"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <motion.span
+                      animate={{ rotate: [0, 15, -15, 10, -10, 0] }}
+                      transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 0.8 }}
+                    >
+                      <Zap size={13} fill="currentColor" aria-hidden />
+                    </motion.span>
+                    <span>Jerry is overriding DOM state&hellip;</span>
+                    <motion.span
+                      className="ml-1 flex gap-0.5"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      {[0, 1, 2].map((d) => (
+                        <motion.span
+                          key={d}
+                          className="h-1 w-1 rounded-full bg-emerald-400"
+                          animate={{ opacity: [0.3, 1, 0.3] }}
+                          transition={{ duration: 0.7, repeat: Infinity, delay: d * 0.2 }}
+                        />
+                      ))}
+                    </motion.span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {messages.map((m, i) =>
                 m.role === "user" ? (
                   <motion.div
