@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { track } from "@vercel/analytics";
 import { Send, Trash2, X } from "lucide-react";
 import { docUrl } from "@/lib/cms";
@@ -51,78 +47,71 @@ function JerryLogo({ size = 30, live = true }: { size?: number; live?: boolean }
   );
 }
 
-/** Inline markdown: **bold** and `code`. Everything else is plain text. */
-function renderInline(text: string): ReactNode[] {
-  return text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((p, i) => {
-    if (p.length > 4 && p.startsWith("**") && p.endsWith("**"))
-      return (
-        <strong key={i} className="font-semibold text-white">
-          {p.slice(2, -2)}
-        </strong>
-      );
-    if (p.length > 2 && p.startsWith("`") && p.endsWith("`"))
-      return (
-        <code
-          key={i}
-          className="rounded bg-white/10 px-1 py-0.5 text-[12px] text-[var(--theme-accent)]"
-        >
-          {p.slice(1, -1)}
-        </code>
-      );
-    return <span key={i}>{p}</span>;
-  });
-}
-
 /**
- * Lightweight markdown for Jerry's replies — bullets (`- `), **bold**, `code`,
- * and an accented "→ visit the … section" pointer line. No dependency; keeps
- * the structured answers looking clean and professional instead of raw text.
+ * Renders Jerry's replies as full markdown — **bold**, bullet + numbered lists,
+ * `inline code`, fenced code blocks and links — via react-markdown + GFM, themed
+ * to the terminal. Raw HTML is ignored (no rehype-raw plugin), so it stays
+ * injection-safe. Only rendered on a completed message, never mid-stream, so
+ * partial/unclosed markdown never flickers.
  */
 function JerryMarkdown({ text }: { text: string }) {
-  const out: ReactNode[] = [];
-  let bullets: ReactNode[] = [];
-  const flush = () => {
-    if (!bullets.length) return;
-    const items = bullets;
-    bullets = [];
-    out.push(
-      <ul key={`ul-${out.length}`} className="my-1 space-y-1">
-        {items.map((b, i) => (
-          <li key={i} className="flex gap-2">
-            <span className="mt-[3px] text-[var(--theme-accent)]" aria-hidden>
-              ▹
-            </span>
-            <span className="min-w-0 flex-1">{b}</span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  text.split("\n").forEach((line, idx) => {
-    const t = line.trimStart();
-    const bullet = /^[-•]\s+(.*)$/.exec(t);
-    if (bullet) {
-      bullets.push(renderInline(bullet[1]));
-      return;
-    }
-    flush();
-    if (!t) {
-      out.push(<div key={`sp-${idx}`} className="h-1.5" />);
-      return;
-    }
-    const pointer = /(visit|check|see|explore)\b.*\b(section|panel|top)\b/i.test(t);
-    out.push(
-      <p
-        key={`p-${idx}`}
-        className={pointer ? "mt-1.5 text-[var(--theme-accent)]" : ""}
+  return (
+    <div className="space-y-2 leading-relaxed break-words">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          strong: ({ children }) => (
+            <strong className="font-semibold text-white">{children}</strong>
+          ),
+          em: ({ children }) => <em className="italic text-white/90">{children}</em>,
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--theme-accent)] underline underline-offset-2 transition-opacity hover:opacity-75"
+            >
+              {children}
+            </a>
+          ),
+          ul: ({ children }) => (
+            <ul className="my-1 list-disc space-y-1 pl-5 marker:text-[var(--theme-accent)]">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="my-1 list-decimal space-y-1 pl-5 marker:text-[var(--theme-accent)]">
+              {children}
+            </ol>
+          ),
+          li: ({ children }) => <li className="pl-0.5">{children}</li>,
+          h1: ({ children }) => <p className="font-bold text-white">{children}</p>,
+          h2: ({ children }) => <p className="font-bold text-white">{children}</p>,
+          h3: ({ children }) => <p className="font-semibold text-white">{children}</p>,
+          pre: ({ children }) => (
+            <pre className="my-2 overflow-x-auto rounded-lg border border-white/10 bg-black/50 p-3 text-[12px] leading-relaxed [scrollbar-width:thin]">
+              {children}
+            </pre>
+          ),
+          code: ({ className, children }) => {
+            // In a fenced block react-markdown sets a `language-*` class; inline
+            // code has none. Block code inherits the <pre> styling above; inline
+            // code gets the pill treatment.
+            const isBlock = /language-/.test(className ?? "");
+            return isBlock ? (
+              <code className={className}>{children}</code>
+            ) : (
+              <code className="rounded bg-white/10 px-1 py-0.5 text-[12px] text-[var(--theme-accent)]">
+                {children}
+              </code>
+            );
+          },
+        }}
       >
-        {renderInline(t)}
-      </p>
-    );
-  });
-  flush();
-  return <div className="space-y-0.5">{out}</div>;
+        {text}
+      </ReactMarkdown>
+    </div>
+  );
 }
 
 /**
@@ -220,7 +209,15 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
   const [busy, setBusy] = useState(false);
   const [chips, setChips] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-grow the textarea to fit its content, capped so it scrolls past ~5 rows.
+  const autosize = useCallback(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${Math.min(el.scrollHeight, 132)}px`;
+  }, []);
   const abortRef = useRef<AbortController | null>(null);
   const sentInitialRef = useRef(false);
 
@@ -350,7 +347,10 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
     track("jerry_opened"); // analytics: recruiter engaged the AI assistant
     setMessages(chatCache);
     setChips(sampleChips());
-    const t = window.setTimeout(() => inputRef.current?.focus(), 350);
+    const t = window.setTimeout(() => {
+      inputRef.current?.focus();
+      autosize(); // settle the textarea to its true single-row height from the start
+    }, 350);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -360,7 +360,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       window.removeEventListener("keydown", onKey);
       abortRef.current?.abort();
     };
-  }, [open, onClose]);
+  }, [open, onClose, autosize]);
 
   // Legacy `ai <question>` → auto-send once per open.
   useEffect(() => {
@@ -372,10 +372,18 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialQuestion]);
 
-  // Keep the newest message in view while streaming.
+  // Keep the newest message in view while streaming. Smooth when a new message
+  // arrives; instant during a burst of streamed tokens so it never lags behind.
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages, open]);
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: busy ? "auto" : "smooth" });
+  }, [messages, open, busy]);
+
+  // Collapse the textarea back to one row after it clears (e.g. after sending).
+  useEffect(() => {
+    if (!input) autosize();
+  }, [input, autosize]);
 
   return (
     <AnimatePresence>
@@ -529,25 +537,37 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
               ))}
             </div>
 
-            {/* Input */}
+            {/* Input — auto-resizing textarea with an accent focus glow */}
             <form
-              className="flex shrink-0 items-center gap-2 border-t border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-3 py-3"
+              className="flex shrink-0 items-end gap-2 border-t border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] p-3"
               onSubmit={(e) => {
                 e.preventDefault();
                 void send(input);
               }}
             >
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask Jerry anything… (type 'exit' to close)"
-                aria-label="Message Jerry"
-                autoComplete="off"
-                spellCheck={false}
-                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-[13px] text-white placeholder-white/30 outline-none transition-all duration-150 [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
-              />
+              <div className="flex min-w-0 flex-1 items-end rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 transition-all duration-150 focus-within:border-[rgba(var(--theme-accent-rgb),0.6)] focus-within:ring-2 focus-within:ring-[rgba(var(--theme-accent-rgb),0.35)] focus-within:shadow-[0_0_15px_rgba(var(--theme-accent-rgb),0.2)]">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  rows={1}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    autosize();
+                  }}
+                  onKeyDown={(e) => {
+                    // Enter sends; Shift+Enter inserts a newline.
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      void send(input);
+                    }
+                  }}
+                  placeholder="Ask Jerry anything… (Shift+Enter for a new line)"
+                  aria-label="Message Jerry"
+                  autoComplete="off"
+                  spellCheck={false}
+                  className="max-h-[132px] min-h-[24px] w-full resize-none self-center bg-transparent py-1 text-[13px] leading-relaxed text-white placeholder-white/30 outline-none [caret-color:var(--theme-accent)] [scrollbar-width:thin]"
+                />
+              </div>
               <motion.button
                 type="submit"
                 disabled={busy || !input.trim()}
@@ -556,12 +576,12 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                   scale: input.trim() && !busy ? 1 : 0.9,
                   opacity: input.trim() && !busy ? 1 : 0.45,
                 }}
-                whileHover={input.trim() && !busy ? { scale: 1.08 } : undefined}
-                whileTap={{ scale: 0.82 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
-                className="rounded-lg border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] p-2 text-[var(--theme-accent)] transition-shadow duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.25)] disabled:hover:shadow-none"
+                whileHover={input.trim() && !busy ? { scale: 1.05 } : undefined}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] text-[var(--theme-accent)] transition-colors duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.25)]"
               >
-                <Send size={15} strokeWidth={2.2} aria-hidden />
+                <Send size={16} strokeWidth={2.2} aria-hidden />
               </motion.button>
             </form>
           </motion.div>

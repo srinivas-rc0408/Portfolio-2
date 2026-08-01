@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Eraser } from "lucide-react";
+import LiveStatus from "@/components/LiveStatus";
 import "@/public/css/TerminalComp.css";
 
 import About from "./TerminalComp/About";
@@ -1063,6 +1064,12 @@ export default function Terminal({
             srinivas<span className="tt-accent">@</span>rc
             <span className="tt-path">:~</span>
           </span>
+          {/* Live Bengaluru clock — only below 1025px, where the desktop status
+              footer (which carries the full version) isn't rendered. */}
+          <LiveStatus
+            compact
+            className="ml-auto mr-2 shrink-0 min-[1025px]:hidden"
+          />
           {/* Mobile-only: return to the profile pane without clearing history. */}
           {onShowIdentity && (
             <button
