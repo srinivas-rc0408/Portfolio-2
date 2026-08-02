@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { track } from "@vercel/analytics";
 import { Send, Trash2, X, Zap } from "lucide-react";
-import { docUrl } from "@/lib/cms";
+import { docUrl, PRIVATE_RESOURCE } from "@/lib/cms";
 import { useScrollLock } from "@/lib/useScrollLock";
 import { SoundEngine } from "@/lib/sound";
 
@@ -281,6 +281,18 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       if (docAsk) {
         const section = docAsk === "CV" ? "cv" : "resume";
         const url = docUrl(section);
+        if (url === PRIVATE_RESOURCE) {
+          // Document is private — do NOT open the viewer or leak any URL.
+          setAndCache((prev) => [
+            ...prev,
+            { role: "user", text: q },
+            {
+              role: "jerry",
+              text: `I'm sorry — Srinivas's ${docAsk} has been marked as **private** by the administrator. I can't open it right now. Please reach out to him directly if you need access!`,
+            },
+          ]);
+          return;
+        }
         window.dispatchEvent(
           new CustomEvent("doc:view", { detail: { label: docAsk, url } })
         );

@@ -19,10 +19,11 @@ import {
   User2,
   Zap,
 } from "lucide-react";
-import { docUrl } from "@/lib/cms";
+import { docUrl, PRIVATE_RESOURCE } from "@/lib/cms";
 import { openDoc } from "@/components/DocViewer";
 import { useScrollLock } from "@/lib/useScrollLock";
 import { SoundEngine } from "@/lib/sound";
+import { showToast } from "@/components/Toast";
 
 /** Fire a terminal command from anywhere and scroll the terminal into view. */
 function execInTerminal(command: string): void {
@@ -57,8 +58,8 @@ const COMMANDS: Command[] = [
   { id: "focus", label: "Currently Building", hint: "focus", group: "Navigate", keywords: "now building aquasentinel status focus", icon: <Target {...IC} />, run: () => execInTerminal("focus") },
   { id: "contact", label: "Contact", hint: "contact", group: "Navigate", keywords: "email github linkedin connect reach socials", icon: <Mail {...IC} />, run: () => execInTerminal("contact") },
 
-  { id: "resume", label: "View Resume", hint: "PDF", group: "Documents", keywords: "cv pdf download hire", icon: <FileText {...IC} />, run: () => openDoc({ label: "Resume", url: docUrl("resume") }) },
-  { id: "cv", label: "View CV", hint: "PDF", group: "Documents", keywords: "resume pdf curriculum", icon: <FileText {...IC} />, run: () => openDoc({ label: "CV", url: docUrl("cv") }) },
+  { id: "resume", label: "View Resume", hint: "PDF", group: "Documents", keywords: "cv pdf download hire", icon: <FileText {...IC} />, run: () => { const u = docUrl("resume"); if (u === PRIVATE_RESOURCE) { showToast("Authentication required. Resource is private."); return; } openDoc({ label: "Resume", url: u }); } },
+  { id: "cv", label: "View CV", hint: "PDF", group: "Documents", keywords: "resume pdf curriculum", icon: <FileText {...IC} />, run: () => { const u = docUrl("cv"); if (u === PRIVATE_RESOURCE) { showToast("Authentication required. Resource is private."); return; } openDoc({ label: "CV", url: u }); } },
 
   { id: "jerry", label: "Ask Jerry (AI Chat)", hint: "jerry", group: "Actions", keywords: "ai assistant chat bot question help", icon: <Sparkles {...IC} />, run: () => execInTerminal("jerry") },
   { id: "games", label: "Play Arch-Man", hint: "play archman", group: "Actions", keywords: "game arcade fun play", icon: <Gamepad2 {...IC} />, run: () => execInTerminal("play archman") },

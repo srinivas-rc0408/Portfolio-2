@@ -69,6 +69,15 @@ export const CMS_UPDATED_EVENT = "cms:updated";
 export const AUTH_UPDATED_EVENT = "auth:updated";
 export const SETTINGS_UPDATED_EVENT = "settings:updated";
 
+/** Sentinel URL returned by docUrl() when the document exists but is private. */
+export const PRIVATE_RESOURCE = "__PRIVATE_RESOURCE__";
+
+/**
+ * Error code returned by API endpoints when a resource exists but is private.
+ * UI consumers check for this code to render the "Access Denied" state.
+ */
+export const PRIVATE_RESOURCE_CODE = "PRIVATE_RESOURCE" as const;
+
 // --- In-memory cache (per page load) ---
 let cacheSettings: SiteSettings = DEFAULT_SETTINGS;
 let cachePublic: CmsItem[] = [];
@@ -166,18 +175,38 @@ export function getItems(
   return opts.includePrivate ? list : list.filter((i) => !i.private);
 }
 
+/**
+ * Check if a section has items that exist but are all private.
+ * Returns true only when the admin has marked every entry in the section as
+ * private — the bootstrap cache holds all entries (including private ones for
+ * admin sessions), so we check against the full cache.
+ */
+export function isItemPrivate(section: CmsSection | string): boolean {
+  const all = cachePublic.filter((i) => i.section === section);
+  if (all.length === 0) return false; // no entries at all — not "private"
+  return all.every((i) => i.private);
+}
+
 /** Static fallback shipped in /public — always exists even if the CMS is down. */
 export const STATIC_RESUME_URL = "/srinivas-rc-resume.pdf";
 
 /**
  * Single source of truth for the resume/CV URL — admin uploads write the CMS
  * entry's `link` (a data URL), and every viewer resolves through here.
- * Data URLs are self-cache-busting (new upload = new URL); the static
- * fallback only changes with a redeploy, which busts via a fresh ETag.
+ *
+ * If the entry exists but is marked private, returns the PRIVATE_RESOURCE
+ * sentinel so callers can show the "Access Denied" state instead of
+ * silently falling back to the static PDF (which would defeat the purpose
+ * of marking it private).
  */
 export function docUrl(section: "resume" | "cv"): string {
-  const linked = getItems(section).find((i) => i.link && i.link !== "#");
-  return linked?.link ?? STATIC_RESUME_URL;
+  const publicItems = getItems(section);
+  const linked = publicItems.find((i) => i.link && i.link !== "#");
+  if (linked) return linked.link!;
+  // If there are no public items but the section HAS items (all private),
+  // signal the lock state.
+  if (isItemPrivate(section)) return PRIVATE_RESOURCE;
+  return STATIC_RESUME_URL;
 }
 
 export function loadSettings(): SiteSettings {

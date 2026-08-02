@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import {
   getAllEntries,
+  getEntryById,
   createEntry,
   updateEntry,
   deleteEntry,
@@ -58,13 +59,49 @@ function parseEntry(b: Record<string, unknown>): Omit<DbCmsEntry, "id"> | null {
   };
 }
 
-// Public read — private entries only for an authenticated admin.
-export async function GET() {
+/**
+ * Public read — two modes:
+ *   1. `?id=<entryId>` → single item. If the item exists but is private and
+ *      the requester is NOT an admin, return a 403 with the PRIVATE_RESOURCE
+ *      code (no item data leaked).
+ *   2. No params → full list. Private entries are only included for admins.
+ */
+export async function GET(req: NextRequest) {
+  const itemId = new URL(req.url).searchParams.get("id");
+
   try {
     const session = await getSession();
-    const entries = await getAllEntries(session?.role === "admin");
+    const isAdmin = session?.role === "admin";
+
+    // --- Single-item query (e.g. fetching a specific resume/project by ID) ---
+    if (itemId) {
+      // First check if it exists at all (including private).
+      const full = await getEntryById(itemId, true);
+      if (!full) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+      // Exists but private — 403 with the PRIVATE_RESOURCE code.
+      if (full.isPrivate && !isAdmin) {
+        return NextResponse.json(
+          {
+            success: false,
+            code: "PRIVATE_RESOURCE",
+            message: "Admin has made this Private.",
+          },
+          { status: 403, headers: { "Cache-Control": "no-store" } }
+        );
+      }
+      // Public or admin — return the entry.
+      return NextResponse.json(
+        { entry: full },
+        { headers: { "Cache-Control": "no-store, must-revalidate" } }
+      );
+    }
+
+    // --- Full list query ---
+    const entries = await getAllEntries(isAdmin);
     return NextResponse.json(
-      { entries, admin: session?.role === "admin" },
+      { entries, admin: isAdmin },
       { headers: { "Cache-Control": "no-store, must-revalidate" } }
     );
   } catch (e) {

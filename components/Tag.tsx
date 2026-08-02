@@ -18,6 +18,7 @@ import { footerLinks } from "@/lib/portfolio-data";
 import {
   AUTH_UPDATED_EVENT,
   SETTINGS_UPDATED_EVENT,
+  PRIVATE_RESOURCE,
   type SessionUser,
   type SiteSettings,
   DEFAULT_SETTINGS,
@@ -28,6 +29,7 @@ import {
 } from "@/lib/cms";
 import { openDoc } from "@/components/DocViewer";
 import { socialIcons } from "@/components/ui/SocialIcons";
+import { showToast } from "@/components/Toast";
 
 /** Direct download with a branded filename ("Srinivas RC's Resume.pdf"). */
 function downloadDoc(url: string, label: string): void {
@@ -507,7 +509,14 @@ export default function Tag() {
           // Document rows: label click → view; download icon → direct download.
           if (doc) {
             const url = docUrl(doc.section);
-            const view = () => openDoc({ label: doc.label, url });
+            const locked = url === PRIVATE_RESOURCE;
+            const view = () => {
+              if (locked) {
+                showToast("Authentication required. Resource is private.");
+                return;
+              }
+              openDoc({ label: doc.label, url });
+            };
             return (
               <div
                 key={label}
@@ -520,30 +529,38 @@ export default function Tag() {
                     view();
                   }
                 }}
-                className={`${ROW_CLASS} cursor-pointer`}
-                aria-label={`View ${doc.label}`}
+                className={`${ROW_CLASS} ${locked ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                aria-label={locked ? `${doc.label} — locked` : `View ${doc.label}`}
               >
                 <RowDecor />
                 <span className="relative flex items-center justify-between text-[var(--text)]">
                   <span>
                     <span className="text-[var(--accent)]">$ </span>
                     {label.toLowerCase()}
-                    <span className="ml-2 text-[10px] text-[var(--text-secondary)] transition-colors duration-150 ease-out group-hover/qa:text-[var(--accent)]">
-                      view
-                    </span>
+                    {locked ? (
+                      <span className="ml-2 text-[10px] text-amber-500 transition-colors duration-150 ease-out">
+                        [ LOCKED ]
+                      </span>
+                    ) : (
+                      <span className="ml-2 text-[10px] text-[var(--text-secondary)] transition-colors duration-150 ease-out group-hover/qa:text-[var(--accent)]">
+                        view
+                      </span>
+                    )}
                   </span>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      downloadDoc(url, doc.label);
-                    }}
-                    aria-label={`Download ${doc.label}`}
-                    title={`Download ${doc.label}`}
-                    className="-my-2 -mr-2 grid min-h-[44px] min-w-[44px] place-items-center rounded-md text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:text-[var(--accent)]"
-                  >
-                    <DownloadIcon />
-                  </button>
+                  {!locked && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        downloadDoc(url, doc.label);
+                      }}
+                      aria-label={`Download ${doc.label}`}
+                      title={`Download ${doc.label}`}
+                      className="-my-2 -mr-2 grid min-h-[44px] min-w-[44px] place-items-center rounded-md text-[var(--text-secondary)] transition-colors duration-150 ease-out hover:text-[var(--accent)]"
+                    >
+                      <DownloadIcon />
+                    </button>
+                  )}
                 </span>
               </div>
             );

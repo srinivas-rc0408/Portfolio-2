@@ -16,7 +16,7 @@ import Focus from "./TerminalComp/Focus";
 import CmsSectionOutput from "./TerminalComp/CmsSection";
 import JerryChat from "./JerryChat";
 import type { CmsSection } from "@/lib/cms";
-import { docUrl } from "@/lib/cms";
+import { docUrl, PRIVATE_RESOURCE } from "@/lib/cms";
 import {
   HOME_DIR,
   FILE_CONTENTS,
@@ -833,10 +833,23 @@ export default function Terminal({
     }
 
     // resume / cv — open the in-page document viewer (CMS link first, static fallback)
+    // If the admin has marked the document private, print an access-denied error
+    // in the terminal and do NOT open the viewer (no data leak).
     if (commandName === "resume" || commandName === "cv") {
       const label = commandName === "cv" ? "CV" : "Resume";
-      // Single shared resolver — same source the admin upload writes to.
       const url = docUrl(commandName);
+      if (url === PRIVATE_RESOURCE) {
+        newHist.push({
+          type: "output",
+          content: (
+            <span className="text-red-500">
+              ❌ [ACCESS DENIED] Admin has made this item Private.
+            </span>
+          ),
+        });
+        setHistory(newHist);
+        return;
+      }
       window.dispatchEvent(
         new CustomEvent("doc:view", { detail: { label, url } })
       );

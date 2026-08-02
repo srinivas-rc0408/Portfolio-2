@@ -11,6 +11,7 @@ import DocViewer from "@/components/DocViewer";
 import BootSequence from "@/components/boot/BootSequence";
 import StatusFooter from "@/components/StatusFooter";
 import CommandPalette from "@/components/CommandPalette";
+import Toast from "@/components/Toast";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
 
@@ -88,6 +89,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <GameModal />
       {/* ⌘K / Ctrl+K spotlight command palette */}
       <CommandPalette />
+      {/* Bottom-right toast notifications (private resource warnings, etc.) */}
+      <Toast />
       </MotionConfig>
     </>
   );
