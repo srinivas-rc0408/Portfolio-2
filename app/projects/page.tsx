@@ -3,7 +3,12 @@ import BackToHome from "@/components/BackToHome";
 import { jsonLd } from "@/lib/jsonld";
 import { Metadata } from "next";
 import Image from "next/image";
-import { projects as projectsData } from "@/lib/portfolio-data";
+import { projects as seedProjects } from "@/lib/portfolio-data";
+import { getPublicEntriesBySection, type DbCmsEntry } from "@/lib/db";
+
+// Force dynamic rendering — admin edits (especially isPrivate toggles) must
+// never be served from a stale SSR cache.
+export const dynamic = "force-dynamic";
 
 // Enhanced SEO Metadata
 export const metadata: Metadata = {
@@ -132,42 +137,30 @@ const TerminalIcon = () => (
   </svg>
 );
 
-// Enhanced JSON-LD Structured Data
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  name: "Software Development Projects Portfolio",
-  description:
-    "Portfolio of web applications, AI, and machine learning projects by Srinivas RC",
-  author: {
-    "@type": "Person",
-    name: "Srinivas RC",
-    url: SITE_URL,
-  },
-  itemListElement: projectsData.map((project, index) => ({
-    "@type": "ListItem",
-    position: index + 1,
-    item: {
-      "@type": "SoftwareApplication",
-      name: project.name,
-      description: project.description,
-      applicationCategory: "WebApplication",
-      operatingSystem: "Web Browser",
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "USD",
-      },
-      url: project.liveUrl !== "#" ? project.liveUrl : project.githubUrl,
-      codeRepository: project.githubUrl,
-      programmingLanguage: project.tech,
-      creator: {
-        "@type": "Person",
-        name: "Srinivas RC",
-      },
-    },
-  })),
-};
+/**
+ * Map a CMS DB entry to a shape the template can render. Falls back to the
+ * seed-data format so the page works whether items come from the DB or from
+ * the static fallback.
+ */
+interface ProjectView {
+  name: string;
+  description: string;
+  imageUrl: string;
+  liveUrl: string;
+  githubUrl: string;
+  tech: string[];
+}
+
+function cmsEntryToProject(e: DbCmsEntry): ProjectView {
+  return {
+    name: e.title,
+    description: e.description,
+    imageUrl: e.imageUrl || "/images/logo.jpg",
+    liveUrl: e.link || "#",
+    githubUrl: e.githubUrl || "#",
+    tech: e.tech,
+  };
+}
 
 // Breadcrumb Structured Data
 const breadcrumbStructuredData = {
@@ -189,8 +182,72 @@ const breadcrumbStructuredData = {
   ],
 };
 
-// Main Server Component - Lightweight Version
-export default function Projects() {
+// Main Server Component — queries the DB for PUBLIC items only.
+// Falls back to seed data if the DB is unreachable (graceful degradation).
+export default async function Projects() {
+  let projectsData: ProjectView[];
+
+  try {
+    const dbEntries = await getPublicEntriesBySection("projects");
+    projectsData = dbEntries.length > 0
+      ? dbEntries.map(cmsEntryToProject)
+      : seedProjects.map((p) => ({
+          name: p.name,
+          description: p.description,
+          imageUrl: p.imageUrl,
+          liveUrl: p.liveUrl,
+          githubUrl: p.githubUrl,
+          tech: p.tech,
+        }));
+  } catch {
+    // DB unreachable — degrade to the static seed data so the page still renders.
+    projectsData = seedProjects.map((p) => ({
+      name: p.name,
+      description: p.description,
+      imageUrl: p.imageUrl,
+      liveUrl: p.liveUrl,
+      githubUrl: p.githubUrl,
+      tech: p.tech,
+    }));
+  }
+
+  // Enhanced JSON-LD — only includes PUBLIC projects (never leaks private items).
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Software Development Projects Portfolio",
+    description:
+      "Portfolio of web applications, AI, and machine learning projects by Srinivas RC",
+    author: {
+      "@type": "Person",
+      name: "Srinivas RC",
+      url: SITE_URL,
+    },
+    itemListElement: projectsData.map((project, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "SoftwareApplication",
+        name: project.name,
+        description: project.description,
+        applicationCategory: "WebApplication",
+        operatingSystem: "Web Browser",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+        url: project.liveUrl !== "#" ? project.liveUrl : project.githubUrl,
+        codeRepository: project.githubUrl,
+        programmingLanguage: project.tech,
+        creator: {
+          "@type": "Person",
+          name: "Srinivas RC",
+        },
+      },
+    })),
+  };
+
   return (
     <>
       <BackToHome />
@@ -330,6 +387,7 @@ export default function Projects() {
                     <p itemProp="description">{project.description}</p>
 
                     {/* Terminal command */}
+                    {project.githubUrl && project.githubUrl !== "#" && (
                     <div
                       data-clone-cmd={`git clone ${project.githubUrl}.git`}
                       role="button"
@@ -363,6 +421,7 @@ export default function Projects() {
                         Click to copy
                       </span>
                     </div>
+                    )}
 
                     {/* Links Section */}
                     <footer>

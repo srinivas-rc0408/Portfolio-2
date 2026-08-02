@@ -1214,6 +1214,8 @@ function Workspace({ section }: { section: CmsSection }) {
                           ? "border-red-900/40 bg-red-950/20"
                           : isSel
                           ? "border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.06)]"
+                          : item.private
+                          ? "border-amber-800/30 bg-amber-950/10 opacity-60 hover:opacity-90"
                           : "border-white/10 bg-black/40 hover:border-[rgba(var(--theme-accent-rgb),0.3)]"
                       }`}
                     >
@@ -1258,8 +1260,9 @@ function Workspace({ section }: { section: CmsSection }) {
                               </span>
                             )}
                             {item.private && !deleted && (
-                              <span className="ml-2 rounded bg-yellow-900/50 px-1.5 py-0.5 align-middle text-[10px] text-yellow-400">
-                                PRIVATE
+                              <span className="ml-2 inline-flex items-center gap-1 rounded bg-yellow-900/50 px-1.5 py-0.5 align-middle text-[10px] text-yellow-400">
+                                <EyeOff size={10} strokeWidth={2.2} aria-hidden className="inline" />
+                                HIDDEN
                               </span>
                             )}
                           </p>
@@ -1411,6 +1414,7 @@ function Workspace({ section }: { section: CmsSection }) {
         saved={saved}
         onSave={save}
         onDiscard={discard}
+        savedLabel="[SYS] Item visibility updated & cache cleared."
         selectedCount={selected.size}
         onDeleteSelected={deleteSelected}
         onClearSelection={() => setSelected(new Set())}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSettings, updateSettings, type DbSettings } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 
@@ -48,7 +49,12 @@ export async function PUT(req: NextRequest) {
     patch.profileImage = body.profileImage;
   }
   try {
-    return NextResponse.json({ settings: await updateSettings(patch) });
+    const result = await updateSettings(patch);
+    // Settings affect the theme accent, display name, and title across all pages.
+    revalidatePath("/");
+    revalidatePath("/projects");
+    revalidatePath("/about");
+    return NextResponse.json({ settings: result });
   } catch (e) {
     console.error("settings PUT error:", e);
     return NextResponse.json({ error: "Failed to save settings" }, { status: 500 });

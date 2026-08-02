@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import {
   getAllEntries,
   createEntry,
@@ -7,6 +8,16 @@ import {
   type DbCmsEntry,
 } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+
+/** Purge stale SSR cache for every public-facing route after a CMS mutation. */
+function invalidatePublicPages(): void {
+  revalidatePath("/");
+  revalidatePath("/projects");
+  revalidatePath("/skills");
+  revalidatePath("/experience");
+  revalidatePath("/about");
+  revalidatePath("/contact");
+}
 
 // Admin CMS edits (resume link, projects, …) must be fresh on next load.
 export const dynamic = "force-dynamic";
@@ -79,7 +90,9 @@ export async function POST(req: NextRequest) {
   const parsed = parseEntry(body);
   if (!parsed) return NextResponse.json({ error: "Invalid entry — a title is required." }, { status: 400 });
   try {
-    return NextResponse.json({ entry: await createEntry(parsed) });
+    const entry = await createEntry(parsed);
+    invalidatePublicPages();
+    return NextResponse.json({ entry });
   } catch (e) {
     console.error("cms POST error:", e);
     return NextResponse.json({ error: "Could not save the entry. Please try again." }, { status: 500 });
@@ -101,6 +114,7 @@ export async function PUT(req: NextRequest) {
   }
   try {
     await updateEntry({ ...parsed, id: body.id });
+    invalidatePublicPages();
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("cms PUT error:", e);
@@ -113,5 +127,6 @@ export async function DELETE(req: NextRequest) {
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
   await deleteEntry(id);
+  invalidatePublicPages();
   return NextResponse.json({ ok: true });
 }

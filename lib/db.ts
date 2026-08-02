@@ -420,6 +420,36 @@ export async function getAllEntries(
   return rows.map(mapEntry);
 }
 
+/**
+ * Public-only entries for a single section — used by SSR pages so they query
+ * the DB (with the is_private filter) instead of rendering stale seed data.
+ * Falls back to an empty array on error so callers can degrade gracefully.
+ */
+export async function getPublicEntriesBySection(
+  section: string
+): Promise<DbCmsEntry[]> {
+  await ensureDb();
+  const rows = (await sql`SELECT * FROM cms_entry WHERE section = ${section} AND is_private = false ORDER BY pinned DESC, sort_order, created_at`) as CmsRow[];
+  return rows.map(mapEntry);
+}
+
+/**
+ * Fetch a single entry by id. When includePrivate is false, private entries
+ * return null — callers should render notFound() to mask the item's existence.
+ */
+export async function getEntryById(
+  entryId: string,
+  includePrivate: boolean
+): Promise<DbCmsEntry | null> {
+  await ensureDb();
+  const rows = (
+    includePrivate
+      ? await sql`SELECT * FROM cms_entry WHERE id = ${entryId}`
+      : await sql`SELECT * FROM cms_entry WHERE id = ${entryId} AND is_private = false`
+  ) as CmsRow[];
+  return rows.length > 0 ? mapEntry(rows[0]) : null;
+}
+
 export async function createEntry(
   e: Omit<DbCmsEntry, "id">
 ): Promise<DbCmsEntry> {
