@@ -62,6 +62,7 @@ const EMPTY_FORM = {
   title: "",
   description: "",
   link: "",
+  githubUrl: "",
   date: "",
   tech: "",
   private: false,
@@ -963,6 +964,7 @@ function Workspace({ section }: { section: CmsSection }) {
       title: form.title.trim(),
       description: form.description.trim(),
       link: form.link.trim() || undefined,
+      githubUrl: form.githubUrl.trim() || undefined,
       date: form.date.trim() || undefined,
       tech: form.tech.trim()
         ? form.tech.split(",").map((t) => t.trim()).filter(Boolean)
@@ -981,6 +983,7 @@ function Workspace({ section }: { section: CmsSection }) {
       title: item.title,
       description: item.description,
       link: item.link ?? "",
+      githubUrl: item.githubUrl ?? "",
       date: item.date ?? "",
       tech: item.tech?.join(", ") ?? "",
       private: item.private,
@@ -1033,12 +1036,23 @@ function Workspace({ section }: { section: CmsSection }) {
             aria-label="Description"
           />
           <input
-            placeholder="Link (https://…)"
+            placeholder={
+              section === "projects" ? "Live demo URL (https://…)" : "Link (https://…)"
+            }
             value={form.link}
             onChange={(e) => setForm({ ...form, link: e.target.value })}
             className={FIELD}
-            aria-label="Link"
+            aria-label={section === "projects" ? "Live demo URL" : "Link"}
           />
+          {section === "projects" && (
+            <input
+              placeholder="GitHub repo URL (https://github.com/…)"
+              value={form.githubUrl}
+              onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
+              className={FIELD}
+              aria-label="GitHub repository URL"
+            />
+          )}
           <input
             placeholder="Date (e.g. 2026, Ongoing)"
             value={form.date}

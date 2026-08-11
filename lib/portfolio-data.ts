@@ -30,6 +30,26 @@ export const projects: Project[] = [
     tech: ["React", "TypeScript", "Google Gemini", "Hugging Face FLUX", "Three.js", "Supabase", "jsPDF"],
   },
   {
+    name: "Debug.ext — Autonomous AI Bug Triage",
+    description:
+      "A full-stack AI bug-triage ecosystem that bridges QA and engineering. A Manifest V3 Chrome extension intercepts runtime errors, console exceptions and network failures from the browser and streams them to a FastAPI gateway, which uses Anthropic Claude's Tool-Use (with Pydantic schemas) to deterministically classify each bug into 6 categories, assign a P0–P3 severity, identify the root cause, and write a verified code patch. Results render live in a dark-mode Streamlit dashboard with interactive Plotly telemetry, multi-format log ingestion (.csv/.json/.log/.txt), and 1-click PDF reports (fpdf2) — all containerized with Docker Compose.",
+    imageUrl: "/images/projects/debug-ext.png",
+    liveUrl: "#",
+    githubUrl: "https://github.com/srinivas-rc0408",
+    tech: [
+      "Chrome Extension (MV3)",
+      "FastAPI",
+      "Python",
+      "Anthropic Claude",
+      "Pydantic",
+      "Streamlit",
+      "Plotly",
+      "Pandas",
+      "SQLite",
+      "Docker",
+    ],
+  },
+  {
     name: "AI Travel Planner",
     description:
       "A full-stack travel agent that generates personalized, day-by-day itineraries with Google Gemini. Smart destination autocomplete via the Places API, live interactive Leaflet maps with routed paths, Google OAuth login, and trips persisted to a personal dashboard on Firebase Firestore.",
