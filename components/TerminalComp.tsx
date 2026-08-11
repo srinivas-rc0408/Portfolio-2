@@ -1170,26 +1170,26 @@ export default function Terminal({
         <div className="terminal-titlebar">
           {/* Traffic-light controls — glossy RGB beads, each with a function */}
           <div className="dots-row">
-            {/* Red — view profile picture */}
+            {/* Red — clear the terminal (macOS-style: red closes/wipes) */}
             <button
               type="button"
               className="dot dot-red"
-              title="View profile picture"
-              aria-label="View profile picture"
-              onClick={(e) => {
-                e.stopPropagation();
-                window.dispatchEvent(new CustomEvent("profile:view"));
-              }}
-            />
-            {/* Green — clear the terminal (R·G·B order) */}
-            <button
-              type="button"
-              className="dot dot-green"
               title="Clear terminal"
               aria-label="Clear terminal"
               onClick={(e) => {
                 e.stopPropagation();
                 void processCommand("clear");
+              }}
+            />
+            {/* Green — view profile picture */}
+            <button
+              type="button"
+              className="dot dot-green"
+              title="View profile picture"
+              aria-label="View profile picture"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent("profile:view"));
               }}
             />
             {/* Blue — show help */}
