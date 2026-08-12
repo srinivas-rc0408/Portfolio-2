@@ -393,7 +393,7 @@ export default function Tag() {
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
               }`}
             >
-              <span className="text-[var(--theme-accent)]">&#10095;</span> whoami
+              <span className="text-[var(--theme-accent)]">$</span> whoami
             </span>
 
             {/* The answer. Quotes carry the accent; "Him" gets the glow. Not a
@@ -430,7 +430,13 @@ export default function Tag() {
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
               }`}
             >
-              tap to view
+              {/* One flex item, so the row's gap-1.5 sits between the label and
+                  the arrow rather than between the words. */}
+              <span>
+                <span className="[@media(hover:hover)]:hidden">tap</span>
+                <span className="hidden [@media(hover:hover)]:inline">click</span>{" "}
+                to view
+              </span>
               <span
                 aria-hidden
                 className="text-white/70 transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:translate-x-0.5 [@media(hover:hover)]:group-hover:-translate-y-0.5"

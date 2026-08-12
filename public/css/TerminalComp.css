@@ -61,6 +61,13 @@
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
+  /* The nav ladder below sizes off THIS element's width, not the viewport's —
+     the terminal sits beside a sidebar whose width tracks the viewport, so
+     viewport breakpoints were sizing the chips against space they never got.
+     Safe here: the header has no fixed/sticky descendants that would be
+     re-parented by the containing block this establishes. */
+  container-type: inline-size;
+  container-name: termhead;
   padding: 0.6rem 0.9rem;
   background: linear-gradient(180deg,
     rgba(255, 255, 255, 0.045),
@@ -170,12 +177,19 @@
     0 0 12px rgba(47, 216, 79, 0.9);
 }
 
-/* Row 2 — command bar: an even grid of runnable commands. auto-fit collapses
-   from a single wide row on desktop down to 3 tidy columns on a phone. */
-/* 9 commands. An `auto-fit` track count is derived from available width, which
-   stranded orphans at common sizes (8+1 at 1280px — the most common laptop
-   width — and 4+4+1 at 769px). An explicit ladder keeps every row evenly
-   filled: 3x3 -> 5+4 -> 9 across one row. */
+/* Row 2 — command bar: an even grid of runnable commands.
+   10 chips (9 sections + clear). An `auto-fit` track count strands orphans at
+   common sizes (8+1, 4+4+1), so the ladder is explicit and every row stays
+   evenly filled: 3x3+clear -> 5+5 -> 10 across one row.
+
+   The steps are CONTAINER widths, not viewport widths. The widest chip
+   ("$ certificates") measures ~130px, so a tier is only allowed once the nav
+   can actually give every track that much:
+     5 across -> 5*130 + 4*6.4 gap = ~672px   (stepped at 700)
+    10 across -> 10*130 + 9*6.4 gap = ~1350px (stepped at 1380)
+   Viewport queries got this wrong: the nav only receives what the sidebar
+   leaves it (~66% of the viewport), so the old 1400px step put 10 tracks in
+   ~1100px of nav and clipped `certificates`. */
 .terminal-nav {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -183,12 +197,12 @@
   width: 100%;
   min-width: 0;
 }
-@media (min-width: 769px) {
+@container termhead (min-width: 700px) {
   .terminal-nav {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
-@media (min-width: 1400px) {
+@container termhead (min-width: 1380px) {
   .terminal-nav {
     grid-template-columns: repeat(10, minmax(0, 1fr));
   }
@@ -252,7 +266,7 @@
    enough: phones run a 3-col grid at 0.68rem and have no width to spare, so
    they stay centred and label-only. The buttons carry an explicit aria-label,
    so this generated glyph never reaches the accessible name. */
-@media (min-width: 769px) {
+@container termhead (min-width: 700px) {
   .nav-button {
     justify-content: flex-start;
     padding-left: 0.65rem;
@@ -305,7 +319,10 @@
 .nav-clear:active .nav-clear-icon {
   transform: translateX(1px) rotate(8deg);
 }
-@media (max-width: 768px) {
+/* Below the 5-across step the grid is 3 wide, which would strand `clear` alone
+   in a 4th row — span it instead. Keyed to the container so it always agrees
+   with the ladder above. */
+@container termhead (max-width: 699.98px) {
   .nav-clear {
     grid-column: 1 / -1;
   }
@@ -667,9 +684,9 @@
     gap: 0.5rem;
   }
 
-  /* Guarantee a tidy 3-column command grid on phones. */
+  /* Column count is owned by the @container ladder above (a phone-width nav
+     always lands on the 3-across step); only the gap is a viewport concern. */
   .terminal-nav {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.4rem;
   }
 

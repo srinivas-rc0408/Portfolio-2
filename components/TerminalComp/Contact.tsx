@@ -319,7 +319,7 @@ const Contact: React.FC = () => {
             className="mr-3 sm:mr-4"
           />
           <h2 className="text-lg sm:text-2xl font-mono text-white font-bold tracking-wider">
-            <span className="text-gray-500">$</span> contact --connect
+            <span className="text-[var(--theme-accent)]">$</span> contact --connect
           </h2>
         </header>
 

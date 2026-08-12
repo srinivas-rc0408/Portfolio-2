@@ -34,7 +34,10 @@
   --surface: #0f0f0f;
   --border: #262626;
   --text: #e5e5e5;
-  --text-secondary: #737373;
+  /* 5.73:1 on --bg (#0a0a0a). Was #737373, which measured 4.18:1 and failed
+     the 4.5:1 AA floor everywhere it was used for real text — the whole shell
+     read washed out because of it. Still clearly secondary against --text. */
+  --text-secondary: #8a8a8a;
   --accent: #ffffff;
   --accent-rgb: 255, 255, 255;
 
