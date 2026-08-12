@@ -1283,6 +1283,11 @@ function Workspace({ section }: { section: CmsSection }) {
                           {item.date && !deleted && (
                             <p className="text-xs text-gray-500">{item.date}</p>
                           )}
+                          {item.updatedAt && !deleted && item._status !== "new" && (
+                            <p className="text-[11px] text-gray-600">
+                              Updated · {fmtDate(item.updatedAt)}
+                            </p>
+                          )}
                           {!deleted && (
                             <p className="mt-1 line-clamp-2 text-sm text-gray-400">
                               {item.description}

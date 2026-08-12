@@ -23,6 +23,8 @@ export interface CmsItem {
   private: boolean;
   pinned?: boolean;
   starred?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const CMS_SECTIONS = [
@@ -124,6 +126,8 @@ interface ApiEntry {
   isPrivate: boolean;
   pinned?: boolean;
   starred?: boolean;
+  createdAt?: string;
+  updatedAt?: string | null;
 }
 
 function toItem(e: ApiEntry): CmsItem {
@@ -140,6 +144,8 @@ function toItem(e: ApiEntry): CmsItem {
     private: e.isPrivate,
     pinned: !!e.pinned,
     starred: !!e.starred,
+    createdAt: e.createdAt,
+    updatedAt: e.updatedAt ?? e.createdAt ?? undefined,
   };
 }
 

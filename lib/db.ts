@@ -140,6 +140,8 @@ export interface DbCmsEntry {
   sortOrder: number;
   pinned: boolean;
   starred: boolean;
+  createdAt?: string;
+  updatedAt?: string | null;
 }
 
 export interface DbSettings {
@@ -211,6 +213,7 @@ async function init(): Promise<void> {
     await Promise.all([
       sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false`,
       sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS starred BOOLEAN NOT NULL DEFAULT false`,
+      sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`,
     ]);
     const [{ count }] = (await sql`SELECT COUNT(*)::int AS count FROM cms_entry`) as {
       count: number;
@@ -261,13 +264,15 @@ async function init(): Promise<void> {
       sort_order INT NOT NULL DEFAULT 0,
       pinned BOOLEAN NOT NULL DEFAULT false,
       starred BOOLEAN NOT NULL DEFAULT false,
-      created_at TIMESTAMPTZ DEFAULT now()
+      created_at TIMESTAMPTZ DEFAULT now(),
+      updated_at TIMESTAMPTZ DEFAULT now()
     )`,
   ]);
 
   // Migrate tables created before pin/star existed.
   await sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false`;
   await sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS starred BOOLEAN NOT NULL DEFAULT false`;
+  await sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
 
   await sql`INSERT INTO site_setting (id) VALUES (1) ON CONFLICT (id) DO NOTHING`;
   await seed();
@@ -387,6 +392,8 @@ interface CmsRow {
   sort_order: number;
   pinned: boolean;
   starred: boolean;
+  created_at: string;
+  updated_at: string | null;
 }
 
 function mapEntry(r: CmsRow): DbCmsEntry {
@@ -404,6 +411,8 @@ function mapEntry(r: CmsRow): DbCmsEntry {
     sortOrder: r.sort_order,
     pinned: !!r.pinned,
     starred: !!r.starred,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at ?? r.created_at,
   };
 }
 
@@ -469,7 +478,7 @@ export async function updateEntry(e: DbCmsEntry): Promise<void> {
     title = ${e.title}, description = ${e.description}, link = ${e.link},
     github_url = ${e.githubUrl}, date = ${e.date}, tech = ${JSON.stringify(e.tech)}::jsonb,
     image_url = ${e.imageUrl}, is_private = ${e.isPrivate}, sort_order = ${e.sortOrder},
-    pinned = ${e.pinned}, starred = ${e.starred}
+    pinned = ${e.pinned}, starred = ${e.starred}, updated_at = now()
     WHERE id = ${e.id}`;
 }
 
