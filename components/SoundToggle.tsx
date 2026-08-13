@@ -26,7 +26,7 @@ export default function SoundToggle() {
       aria-pressed={!off}
       title={off ? "Unmute UI sounds" : "Mute UI sounds"}
       className={`group flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
-        off ? "text-zinc-500 hover:text-zinc-300" : "text-emerald-400"
+        off ? "text-zinc-400 hover:text-zinc-300" : "text-emerald-400"
       }`}
     >
       <Icon size={12} strokeWidth={2} aria-hidden />

@@ -127,7 +127,7 @@ function CertificateModal({
                 type="button"
                 onClick={onClose}
                 aria-label="Close certificate"
-                className="absolute right-2 top-2 grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition-colors hover:bg-white/10 hover:text-white"
+                className="absolute right-2 top-2 grid h-11 w-11 place-items-center rounded-lg text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
               >
                 <X size={18} strokeWidth={2.4} aria-hidden />
               </button>
@@ -145,7 +145,7 @@ function CertificateModal({
                 <dl className="space-y-3 text-xs">
                   {entry.date && (
                     <div className="flex gap-3">
-                      <dt className="w-24 shrink-0 uppercase tracking-wider text-zinc-500">
+                      <dt className="w-24 shrink-0 uppercase tracking-wider text-zinc-400">
                         Issued
                       </dt>
                       <dd className="text-zinc-200">{entry.date}</dd>
@@ -153,7 +153,7 @@ function CertificateModal({
                   )}
                   {entry.credentialId && (
                     <div className="flex gap-3">
-                      <dt className="w-24 shrink-0 uppercase tracking-wider text-zinc-500">
+                      <dt className="w-24 shrink-0 uppercase tracking-wider text-zinc-400">
                         Credential
                       </dt>
                       <dd className="min-w-0 break-all text-zinc-200">
@@ -211,7 +211,7 @@ const CmsSectionOutput: React.FC<{ section: CmsSection }> = ({ section }) => {
 
   if (items.length === 0) {
     return (
-      <p className="font-mono text-sm text-gray-500">
+      <p className="font-mono text-sm text-gray-400">
         ~/{section}: no public entries yet.
       </p>
     );
@@ -224,7 +224,7 @@ const CmsSectionOutput: React.FC<{ section: CmsSection }> = ({ section }) => {
     <div className="font-mono" role="region" aria-label={section}>
       <header className="mb-3 flex items-center gap-3">
         <p className="text-sm text-white">~/{section}</p>
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-zinc-400">
           {items.length} {items.length === 1 ? "entry" : "entries"}
         </span>
         <div
@@ -261,7 +261,7 @@ const CmsSectionOutput: React.FC<{ section: CmsSection }> = ({ section }) => {
                   </span>
                 )}
                 {item.date && (
-                  <span className="mt-1.5 block text-[11px] uppercase tracking-wider text-zinc-500">
+                  <span className="mt-1.5 block text-[11px] uppercase tracking-wider text-zinc-400">
                     {item.date}
                   </span>
                 )}
@@ -336,7 +336,7 @@ const CmsSectionOutput: React.FC<{ section: CmsSection }> = ({ section }) => {
               className="transition-transform duration-200 group-hover/pdf:translate-x-0.5"
             />
           </button>
-          <p className="mt-2 text-center text-[11px] text-zinc-500">
+          <p className="mt-2 text-center text-[11px] text-zinc-400">
             Opens an in-page viewer — verify any credential ID above.
           </p>
         </div>

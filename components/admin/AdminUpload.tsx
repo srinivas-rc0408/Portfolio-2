@@ -145,7 +145,7 @@ export default function AdminUpload({
           </span>
           {!loading && " or click to choose a file"}
         </p>
-        {hint && <p className="mt-1 text-[11px] text-gray-500">{hint}</p>}
+        {hint && <p className="mt-1 text-[11px] text-gray-400">{hint}</p>}
         <p className="mt-1 text-[10px] text-gray-600">Max {maxSizeMB}MB per file</p>
         <input
           ref={inputRef}

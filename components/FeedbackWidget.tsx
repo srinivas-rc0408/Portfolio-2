@@ -201,7 +201,7 @@ export default function FeedbackWidget() {
                 </div>
               ) : (
                 <>
-                  <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-500">
+                  <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-400">
                     Name <span className="text-[var(--theme-accent)]">*</span>
                   </label>
                   <input
@@ -212,7 +212,7 @@ export default function FeedbackWidget() {
                     aria-label="Your name (required)"
                     className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
                   />
-                  <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-500">
+                  <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-400">
                     Email <span className="text-white/30">(optional)</span>
                   </label>
                   <input
@@ -224,7 +224,7 @@ export default function FeedbackWidget() {
                     aria-label="Your email (optional)"
                     className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
                   />
-                  <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-500">
+                  <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-400">
                     Feedback <span className="text-[var(--theme-accent)]">*</span>
                   </label>
                   <textarea

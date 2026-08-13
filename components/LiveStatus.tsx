@@ -48,7 +48,7 @@ export default function LiveStatus({
       {!compact && <span className="ml-0.5 text-zinc-300">SYS: ONLINE</span>}
       {/* Renders only after mount → guaranteed no hydration mismatch. */}
       {time && (
-        <span className="tabular-nums text-zinc-500">
+        <span className="tabular-nums text-zinc-400">
           {!compact && <span className="text-zinc-600">· </span>}BLR: {time}
         </span>
       )}

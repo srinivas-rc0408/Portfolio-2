@@ -26,7 +26,7 @@ export default function XrayToggle() {
       aria-pressed={on}
       title="Toggle X-Ray developer wireframe view"
       className={`group flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
-        on ? "text-emerald-400" : "text-zinc-500 hover:text-zinc-300"
+        on ? "text-emerald-400" : "text-zinc-400 hover:text-zinc-300"
       }`}
     >
       <ScanLine size={12} strokeWidth={2} aria-hidden />

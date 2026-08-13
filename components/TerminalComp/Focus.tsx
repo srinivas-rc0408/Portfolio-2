@@ -127,7 +127,7 @@ const Focus: React.FC = () => (
 
           {/* build progress */}
           <div>
-            <div className="mb-1 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-gray-500">
+            <div className="mb-1 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-gray-400">
               <span>build progress</span>
               <span className="text-gray-400">{item.progress}%</span>
             </div>
@@ -152,7 +152,7 @@ const Focus: React.FC = () => (
 
           {item.features && (
             <div>
-              <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-gray-500">
+              <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-gray-400">
                 core features
               </p>
               <ul className="space-y-1.5">
@@ -170,7 +170,7 @@ const Focus: React.FC = () => (
 
           {item.stack && (
             <div>
-              <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-gray-500">
+              <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-gray-400">
                 stack
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -190,7 +190,7 @@ const Focus: React.FC = () => (
       </motion.article>
     ))}
 
-    <p className="text-center font-mono text-xs text-gray-500">
+    <p className="text-center font-mono text-xs text-gray-400">
       └─$ these are live builds — ask{" "}
       <span className="text-[var(--theme-accent)]">jerry</span> about them, or run{" "}
       <span className="text-[var(--theme-accent)]">projects</span> for shipped work

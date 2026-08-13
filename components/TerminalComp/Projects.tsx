@@ -543,7 +543,7 @@ const Projects: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-4 text-xs sm:text-sm font-mono">
             <div className="flex items-center space-x-2">
               <span className="text-white">~/projects</span>
-              <span className="text-gray-500" aria-hidden="true">
+              <span className="text-gray-400" aria-hidden="true">
                 $
               </span>
             <span className="text-gray-400 hidden sm:inline">

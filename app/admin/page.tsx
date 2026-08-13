@@ -457,7 +457,7 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
             )}
           </button>
         </div>
-        <p className="mb-4 h-4 text-[10px] text-gray-500">
+        <p className="mb-4 h-4 text-[10px] text-gray-400">
           {isRegister ? "Minimum 8 characters." : ""}
         </p>
 
@@ -480,7 +480,7 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
           >
             {busy ? "…" : isRegister ? "create account →" : "authenticate →"}
           </button>
-          <Link href="/" className="text-xs text-gray-500 hover:text-white">
+          <Link href="/" className="text-xs text-gray-400 hover:text-white">
             ← back to terminal
           </Link>
         </div>
@@ -662,7 +662,7 @@ function GlobalSettingsPanel() {
           >
             <span className="mb-1 text-lg">⬆</span>
             Drop an image here or click to upload
-            <span className="mt-1 text-[10px] text-gray-500">
+            <span className="mt-1 text-[10px] text-gray-400">
               auto-resized · applied when you Save
             </span>
           </div>
@@ -718,7 +718,7 @@ function GlobalSettingsPanel() {
             />
           </label>
         </div>
-        <p className="mt-3 text-[11px] text-gray-500">
+        <p className="mt-3 text-[11px] text-gray-400">
           Accent color for prompts, links, and highlights across the site —
           applied when you Save.
         </p>
@@ -1188,7 +1188,7 @@ function Workspace({ section }: { section: CmsSection }) {
         {loading && draft.length === 0 ? (
           <CardSkeletonList count={3} />
         ) : draft.length === 0 ? (
-          <p className="font-mono text-sm text-gray-500">
+          <p className="font-mono text-sm text-gray-400">
             (no entries yet — add the first one)
           </p>
         ) : (
@@ -1201,7 +1201,7 @@ function Workspace({ section }: { section: CmsSection }) {
                 onChange={toggleSelectAll}
                 label={allSelected ? "Deselect all" : "Select all"}
               />
-              <span className="font-mono text-[11px] text-gray-500">
+              <span className="font-mono text-[11px] text-gray-400">
                 {selected.size > 0
                   ? `${selected.size} selected`
                   : `${selectableKeys.length} ${
@@ -1254,7 +1254,7 @@ function Workspace({ section }: { section: CmsSection }) {
                         <div className="min-w-0 flex-1">
                           <p
                             className={`truncate font-bold ${
-                              deleted ? "text-gray-500 line-through" : "text-white"
+                              deleted ? "text-gray-400 line-through" : "text-white"
                             }`}
                           >
                             {item.title}
@@ -1281,7 +1281,7 @@ function Workspace({ section }: { section: CmsSection }) {
                             )}
                           </p>
                           {item.date && !deleted && (
-                            <p className="text-xs text-gray-500">{item.date}</p>
+                            <p className="text-xs text-gray-400">{item.date}</p>
                           )}
                           {item.updatedAt && !deleted && item._status !== "new" && (
                             <p className="text-[11px] text-gray-600">
@@ -1325,7 +1325,7 @@ function Workspace({ section }: { section: CmsSection }) {
                                     className={`grid h-8 w-8 place-items-center rounded-md border transition-colors duration-150 ${
                                       item.pinned
                                         ? "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-[var(--theme-accent)]"
-                                        : "border-white/15 text-gray-500 hover:text-white"
+                                        : "border-white/15 text-gray-400 hover:text-white"
                                     }`}
                                   >
                                     <Pin
@@ -1350,7 +1350,7 @@ function Workspace({ section }: { section: CmsSection }) {
                                     className={`grid h-8 w-8 place-items-center rounded-md border transition-colors duration-150 ${
                                       item.starred
                                         ? "border-yellow-500/60 bg-yellow-500/15 text-yellow-400"
-                                        : "border-white/15 text-gray-500 hover:text-white"
+                                        : "border-white/15 text-gray-400 hover:text-white"
                                     }`}
                                   >
                                     <Star
@@ -1640,7 +1640,7 @@ function FeedbackPanel() {
               <h3 className="truncate text-base font-bold text-white">
                 {open.name}
               </h3>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-400">
                 {fmtDate(open.createdAt)}
                 {open.email && (
                   <>
@@ -1707,7 +1707,7 @@ function FeedbackPanel() {
         {loading ? (
           <RowSkeletonList count={4} />
         ) : sorted.length === 0 ? (
-          <p className="font-mono text-sm text-gray-500">
+          <p className="font-mono text-sm text-gray-400">
             {q ? "no feedback matches your search." : "no feedback yet — it will appear here when visitors send it."}
           </p>
         ) : (
@@ -1719,7 +1719,7 @@ function FeedbackPanel() {
                 onChange={toggleSelectAll}
                 label={allSelected ? "Deselect all" : "Select all"}
               />
-              <span className="font-mono text-[11px] text-gray-500">
+              <span className="font-mono text-[11px] text-gray-400">
                 {selected.size > 0
                   ? `${selected.size} selected`
                   : `${sorted.length} shown`}
@@ -1760,7 +1760,7 @@ function FeedbackPanel() {
                       {isStaged ? (
                         <div className="flex w-full items-center justify-between gap-3 rounded-xl border border-red-900/40 bg-red-950/20 p-3">
                           <div className="min-w-0">
-                            <p className="truncate font-bold text-gray-500 line-through">
+                            <p className="truncate font-bold text-gray-400 line-through">
                               {f.name}
                             </p>
                             <p className="mt-0.5 text-[11px] text-red-400">
@@ -1798,7 +1798,7 @@ function FeedbackPanel() {
                           <div className="flex items-center justify-between gap-3">
                             <p className="truncate font-bold text-white">{f.name}</p>
                             <span className="flex shrink-0 items-center gap-2">
-                              <span className="text-[10px] text-gray-500">
+                              <span className="text-[10px] text-gray-400">
                                 {fmtDate(f.createdAt)}
                               </span>
                               <StarButton entry={f} />
@@ -1984,7 +1984,7 @@ export default function AdminPage() {
         <header className="mb-6 flex items-center justify-between">
           <h1 className="text-lg font-bold text-white">$ manage --{title}</h1>
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-xs text-gray-500 hover:text-white">
+            <Link href="/" className="text-xs text-gray-400 hover:text-white">
               view site
             </Link>
             <button

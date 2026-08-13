@@ -54,7 +54,7 @@ const Experience: React.FC = () => {
                     <p className="text-gray-400 text-xs sm:text-sm">
                       Self-directed · Ongoing
                     </p>
-                    <p className="text-gray-500 text-xs sm:text-sm">
+                    <p className="text-gray-400 text-xs sm:text-sm">
                       Bengaluru, Karnataka, India
                     </p>
                   </div>
@@ -160,7 +160,7 @@ const Experience: React.FC = () => {
                     <p className="text-gray-400 text-xs sm:text-sm">
                       Yantra IoT Club, REVA University · 2025
                     </p>
-                    <p className="text-gray-500 text-xs sm:text-sm">
+                    <p className="text-gray-400 text-xs sm:text-sm">
                       Bengaluru, Karnataka, India
                     </p>
                   </div>
@@ -191,7 +191,7 @@ const Experience: React.FC = () => {
                     <p className="text-gray-400 text-xs sm:text-sm">
                       Internships · University placements
                     </p>
-                    <p className="text-gray-500 text-xs sm:text-sm">
+                    <p className="text-gray-400 text-xs sm:text-sm">
                       B.Tech AI &amp; ML · REVA University
                     </p>
                   </div>

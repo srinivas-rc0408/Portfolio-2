@@ -492,7 +492,7 @@ const Help: React.FC = () => (
               <span className={`inline-block min-w-[9.5rem] ${group.accent}`}>
                 {entry.command}
               </span>
-              <span className="text-gray-500">- </span>
+              <span className="text-gray-400">- </span>
               <span className="text-gray-300">{entry.description}</span>
             </li>
           ))}

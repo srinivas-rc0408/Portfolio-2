@@ -179,7 +179,7 @@ function TerminalCard({
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden"
             >
-              <p className="mt-3 font-mono text-[11px] text-zinc-500">
+              <p className="mt-3 font-mono text-[11px] text-zinc-400">
                 &gt; {data.skills.length} entries · press again to close
               </p>
               <div className="mt-2.5 flex flex-wrap gap-2">
@@ -227,7 +227,7 @@ const Skills: React.FC = () => {
             <span className="text-[var(--theme-accent)]">&lt;</span> TECH STACK{" "}
             <span className="text-[var(--theme-accent)]">/&gt;</span>
           </h1>
-          <p className="mt-3 font-mono text-xs text-zinc-500 sm:text-sm">
+          <p className="mt-3 font-mono text-xs text-zinc-400 sm:text-sm">
             $ ./skills --interactive --display-all
           </p>
         </header>
@@ -247,7 +247,7 @@ const Skills: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <footer className="mt-8 text-center font-mono text-xs text-zinc-500 sm:mt-10">
+        <footer className="mt-8 text-center font-mono text-xs text-zinc-400 sm:mt-10">
           └─$ Click on any terminal to explore skills
         </footer>
       </div>

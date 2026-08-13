@@ -394,7 +394,7 @@ const Contact: React.FC = () => {
                   )}
                 </div>
                 <div
-                  className="text-gray-500 group-hover:text-white transition-colors duration-150 flex-shrink-0"
+                  className="text-gray-400 group-hover:text-white transition-colors duration-150 flex-shrink-0"
                   aria-hidden="true"
                 >
                   <svg
@@ -457,7 +457,7 @@ const Contact: React.FC = () => {
                   </p>
                 </div>
                 <div
-                  className="text-gray-500 group-hover:text-orange-400 transition-colors duration-150 flex-shrink-0"
+                  className="text-gray-400 group-hover:text-orange-400 transition-colors duration-150 flex-shrink-0"
                   aria-hidden="true"
                 >
                   <svg
@@ -559,7 +559,7 @@ const Contact: React.FC = () => {
             <div className="flex items-center space-x-2 sm:space-x-4">
               <span className="text-white">✓ Srinivas RC </span>
               <span
-                className="text-gray-500 hidden sm:inline"
+                className="text-gray-400 hidden sm:inline"
                 aria-hidden="true"
               >
                 |

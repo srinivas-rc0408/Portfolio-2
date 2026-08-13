@@ -176,7 +176,7 @@ export default function CommandPalette() {
           >
             {/* Search input */}
             <div className="flex shrink-0 items-center gap-3 border-b border-white/10 px-4">
-              <Search size={18} className="shrink-0 text-zinc-500" aria-hidden />
+              <Search size={18} className="shrink-0 text-zinc-400" aria-hidden />
               <input
                 ref={inputRef}
                 value={query}
@@ -191,7 +191,7 @@ export default function CommandPalette() {
                 autoComplete="off"
                 spellCheck={false}
               />
-              <kbd className="hidden shrink-0 rounded border border-white/15 bg-white/[0.04] px-1.5 py-0.5 text-[10px] text-zinc-500 sm:block">
+              <kbd className="hidden shrink-0 rounded border border-white/15 bg-white/[0.04] px-1.5 py-0.5 text-[10px] text-zinc-400 sm:block">
                 ESC
               </kbd>
             </div>
@@ -199,7 +199,7 @@ export default function CommandPalette() {
             {/* Results */}
             <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto p-2">
               {results.length === 0 ? (
-                <p className="px-3 py-8 text-center text-sm text-zinc-500">
+                <p className="px-3 py-8 text-center text-sm text-zinc-400">
                   No matches for &ldquo;{query}&rdquo;
                 </p>
               ) : (
@@ -229,7 +229,7 @@ export default function CommandPalette() {
                           >
                             <span
                               className={`shrink-0 ${
-                                isActive ? "text-[var(--theme-accent)]" : "text-zinc-500"
+                                isActive ? "text-[var(--theme-accent)]" : "text-zinc-400"
                               }`}
                               aria-hidden
                             >
