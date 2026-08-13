@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Eraser } from "lucide-react";
 import LiveStatus from "@/components/LiveStatus";
 import "@/public/css/TerminalComp.css";
 import { SoundEngine } from "@/lib/sound";
+import { useEventCallback } from "@/lib/useEventCallback";
 
 import About from "./TerminalComp/About";
 import Projects from "./TerminalComp/Projects";
@@ -76,7 +77,9 @@ const MatrixRainOutput: React.FC<{ onDone: () => void; duration?: number }> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
   const doneRef = useRef(false);
-  const stableDone = useCallback(onDone, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Stable identity for the animation effect below, forwarding to the latest
+  // prop (`afterMatrix` is re-created on each call, so pinning it would stale).
+  const stableDone = useEventCallback(onDone);
 
   useEffect(() => {
     const canvas = canvasRef.current;

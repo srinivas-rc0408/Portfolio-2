@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Gamepad2, Heart, Play, X, Bot } from "lucide-react";
 import { useScrollLock } from "@/lib/useScrollLock";
+import { useEventCallback } from "@/lib/useEventCallback";
 
 // ── Flappy Duck PID Game ─────────────────────────────────────────────────────
 // A canvas-based endless-runner where the bird is steered by an autonomous
@@ -30,8 +31,11 @@ const FlappyDuckCanvas: React.FC<{ onScore: (s: number) => void; onDead: () => v
     lastPipe: 0,
     dead: false,
   });
-  const stableScore = useCallback(onScore, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const stableDead = useCallback(onDead, []);   // eslint-disable-line react-hooks/exhaustive-deps
+  // Stable identities for the game-loop effect's dep array. Must forward to the
+  // latest prop: the parent passes `onDead={() => setFdDead(true)}`, a fresh
+  // arrow every render, which a `useCallback(fn, [])` would freeze forever.
+  const stableScore = useEventCallback(onScore);
+  const stableDead = useEventCallback(onDead);
 
   // Manual flap
   useEffect(() => {
