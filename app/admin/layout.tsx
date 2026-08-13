@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import MotionProvider from "@/components/MotionProvider";
 
 // The admin CMS must never be indexed — page.tsx is a client component and
 // can't export metadata, so this server layout owns the robots directive.
@@ -17,5 +18,8 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  // Admin sits outside the (shell) route group, so it never inherited
+  // AppShell's MotionConfig — its panel and login animations were ignoring the
+  // user's reduce-motion preference.
+  return <MotionProvider>{children}</MotionProvider>;
 }

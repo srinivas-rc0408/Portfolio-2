@@ -191,9 +191,29 @@ body:not(:has(.app-shell)) {
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
 }
 
+/* Global reduced-motion guard.
+   The blocks above opt out specific animations by name, which meant every
+   Tailwind loop utility (animate-pulse / animate-spin / animate-bounce — 19 of
+   them across the tree) and every CSS transition still ran for users who asked
+   for less motion. This catches all of them, and any added later, instead of
+   relying on each new animation remembering to opt out.
+
+   Durations collapse to ~0 rather than `animation: none` so that anything
+   waiting on an animationend/transitionend event still fires and does not
+   deadlock — the motion is simply instant. framer-motion drives inline styles
+   from JS and is handled separately in the components via useReducedMotion. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
