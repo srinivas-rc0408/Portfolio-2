@@ -461,14 +461,15 @@ export default function Tag() {
         </p>
       </div>
 
-      {/* Current focus — the live "what I'm building now" signal. Opens the
+      {/* Current focus — the live “what I'm building now” signal. Opens the
           full board in the terminal. */}
-      <button
+      <motion.button
         type="button"
         onClick={() => execInTerminal("focus")}
-        aria-label="Current focus: AquaSentinel AI — open the full board"
+        whileTap={{ scale: 0.98 }}
+        aria-label="Current focus: Personal AI Agent — open the full board"
         title="What I'm building right now"
-        className="group/focus mx-auto mt-4 flex w-full max-w-[280px] min-h-[44px] items-center gap-2.5 rounded-xl border border-[rgba(var(--accent-rgb),0.28)] bg-gradient-to-b from-[rgba(var(--accent-rgb),0.08)] to-transparent px-3 py-2 text-left transition-all duration-200 ease-out hover:border-[rgba(var(--accent-rgb),0.65)] hover:shadow-[0_0_22px_-10px_rgba(var(--accent-rgb),0.9)] active:scale-[0.98]"
+        className="group/focus mx-auto mt-4 flex w-full max-w-[280px] min-h-[44px] cursor-pointer items-center gap-2.5 rounded-xl border border-[rgba(var(--accent-rgb),0.28)] bg-gradient-to-b from-[rgba(var(--accent-rgb),0.08)] to-transparent px-3 py-2 text-left transition-all duration-200 ease-out hover:border-white/20 hover:bg-zinc-800/60 active:scale-[0.98]"
       >
         <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-60" />
@@ -479,7 +480,7 @@ export default function Tag() {
             currently building
           </span>
           <span className="block truncate font-mono text-[13px] font-semibold text-[var(--text)]">
-            AquaSentinel AI
+            Personal AI Agent
           </span>
         </span>
         <span
@@ -488,7 +489,7 @@ export default function Tag() {
         >
           →
         </span>
-      </button>
+      </motion.button>
 
       {/* Quick action menu — flat rows, single accent on prompt + hover bar */}
       <nav

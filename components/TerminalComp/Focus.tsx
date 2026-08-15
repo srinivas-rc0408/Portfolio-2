@@ -19,53 +19,173 @@ interface FocusItem {
   /** 0–100 — how far along the build is. */
   progress: number;
   tagline: string;
-  summary: string;
-  features?: string[];
+  /** Rich overview paragraphs — rendered as text-zinc-200 prose. */
+  overview: React.ReactNode;
+  /** Labelled "Technical Highlights" — font-mono text-emerald-400/90 text-sm */
+  highlights?: React.ReactNode;
   stack?: string[];
   /** Where the work stands right now. */
   stage?: string;
 }
 
+/* ── Inline code helper — subtle mono chip for technical identifiers ──────── */
+const C: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <code className="rounded bg-zinc-800 px-1 py-0.5 font-mono text-xs text-zinc-300">
+    {children}
+  </code>
+);
+
 const FOCUS: FocusItem[] = [
   {
-    name: "AquaSentinel AI",
-    codename: "Project Aqua",
+    name: "Project Hornet & comb-llm",
+    codename: "Hornet",
     status: "In development",
-    progress: 35,
-    tagline: "Autonomous underwater inspection, driven by computer vision.",
-    summary:
-      "A software platform for an autonomous underwater inspection robot. It follows a planned path across a water body, streams live sensor data (pH, temperature, turbidity, depth), and runs every camera frame through a YOLOv8 vision model to spot pollutants like plastic bottles — all controlled and reviewed from a web dashboard. Scope is software only (backend, frontend, AI pipeline, database, reporting); a simulated robot script stands in for hardware, so the whole system builds and demos with zero hardware.",
-    features: [
-      "Mission planning — define an area; the backend generates a lawnmower coverage path",
-      "Live dashboard — 5s polling drives the grid map, telemetry cards, depth chart, gallery and alerts",
-      "AI inspection — every frame runs through YOLOv8; detections stored with bounding boxes",
-      "Burst Alert Mode — a pollutant at ≥85% confidence pauses the robot and triggers rapid evidence capture",
-      "Mission history & replay — every mission archived and re-viewable with a time scrubber",
-      "One-click PDF reports — stats, charts and detection evidence compiled into a document",
-    ],
+    progress: 42,
+    tagline: "Autonomous Terminal Orchestration Harness",
+    overview: (
+      <>
+        Designed and built an autonomous developer workspace and terminal
+        automation harness to orchestrate complex software engineering workflows
+        natively within a Linux environment.
+      </>
+    ),
+    highlights: (
+      <>
+        <p>
+          <strong className="text-zinc-200">Architecture &amp; Design:</strong>{" "}
+          Engineered <C>jcode</C>, a lightweight terminal wrapper that dispatches
+          concurrent sub-agents to manage multi-session git workflows, code
+          generation, and repository management. The system architecture
+          prioritises a bounded Recursive Self-Improvement (RSI) loop, where an
+          automated critic evaluates execution failures and generates corrected
+          training data without manual intervention.
+        </p>
+        <p>
+          <strong className="text-zinc-200">AI Integration:</strong> Fine-tuned
+          Microsoft&apos;s 3.8-billion parameter phi-4-mini model into a custom logic
+          coordinator (<C>comb-llm</C>) using Unsloth and QLoRA. Optimised the
+          model&apos;s vocabulary and tokenisation (specifically managing{" "}
+          <C>&lt;｜PAD▁TOKEN｜&gt;</C> integration) to ensure raw, perfectly
+          structured JSON output for tool orchestration while enforcing strict
+          confirmation gates for destructive terminal operations.
+        </p>
+      </>
+    ),
     stack: [
-      "FastAPI",
-      "SQLAlchemy",
-      "SQLite",
-      "React",
-      "Vite",
-      "TanStack Query",
-      "Tailwind",
-      "YOLOv8n / Ultralytics",
-      "JWT (rotating refresh)",
-      "ReportLab",
+      "Python",
+      "Unsloth",
+      "QLoRA",
+      "phi-4-mini",
+      "Linux",
+      "Git",
+      "JSON Tooling",
     ],
     stage:
-      "Specification locked — 11 documents (PRD, architecture, API contract, DB schema, frontend, AI, security, tickets, tests, design, reconciliation). Build is structured as 4 phases and ~45 tickets, each with tests and acceptance criteria. Roles: admin, operator, viewer.",
+      "RSI loop functional; comb-llm fine-tune converging. Next: multi-repo orchestration stress test.",
   },
   {
-    name: "A browser of my own",
-    status: "Early build",
-    progress: 10,
-    tagline: "Building a browser — with every exception feature I've wanted.",
-    summary:
-      "A from-scratch browser project loaded with the features other browsers leave out. Still early, and deliberately quiet for now.",
-    stage: "Stay tuned.",
+    name: "MiniTranslator",
+    status: "Active build",
+    progress: 55,
+    tagline: "Visual Layout Reconstruction Engine",
+    overview: (
+      <>
+        Developed a client-side visual engine designed to perform seamless canvas
+        inpainting and precise typography matching on images.
+      </>
+    ),
+    highlights: (
+      <>
+        Architected the engine to actively bypass generic OCR frameworks,
+        resolving traditional structural limitations in optical character
+        recognition by utilising advanced, custom layout reconstruction
+        algorithms.
+      </>
+    ),
+    stack: ["TypeScript", "Canvas API", "NLP", "Custom OCR"],
+  },
+  {
+    name: "ArchAgent",
+    codename: "Arch",
+    status: "In development",
+    progress: 60,
+    tagline: "Autonomous AI Agent for Software Architecture",
+    overview: (
+      <>
+        Built a specialised, autonomous AI agent dedicated entirely to software
+        architecture and design.
+      </>
+    ),
+    highlights: (
+      <>
+        Engineered the agent&apos;s core prompt logic and decision trees to strictly
+        focus on building and designing robust application structures rather than
+        generic system operations, enforcing YAGNI (You Aren&apos;t Gonna Need It)
+        principles for minimal, highly optimised codebases.
+      </>
+    ),
+    stack: ["Python", "LLM Orchestration", "Prompt Engineering", "YAGNI"],
+  },
+  {
+    name: "Language Detector",
+    status: "Shipped · iterating",
+    progress: 85,
+    tagline: "Real-Time Multilingual Text Analysis",
+    overview: (
+      <>
+        Engineered a highly responsive web application tailored for real-time
+        multilingual text analysis.
+      </>
+    ),
+    highlights: (
+      <>
+        Implemented intelligence classification models suitable for
+        industrial-scale text analysis, optimising the data flow for rapid
+        client-side feedback.
+      </>
+    ),
+    stack: ["Python", "Scikit-learn", "NLP", "Streaming"],
+  },
+  {
+    name: "AI-Enhanced Flappy Bird Engine",
+    codename: "Flappy Duck",
+    status: "Shipped",
+    progress: 100,
+    tagline: "Modular Game Engine with Self-Playing AI Agent",
+    overview: (
+      <>
+        Designed a modular, class-based game engine featuring a self-playing AI
+        agent.
+      </>
+    ),
+    highlights: (
+      <>
+        Integrated a PID-controlled autoplay module to maintain precise in-game
+        physics. Enhanced the visual architecture by designing custom procedural
+        particle effects.
+      </>
+    ),
+    stack: ["JavaScript (ES6)", "Canvas", "Game AI", "PID Control"],
+  },
+  {
+    name: "bangalore-toll-system",
+    status: "Shipped",
+    progress: 100,
+    tagline: "Local Infrastructure Management Application",
+    overview: (
+      <>
+        Created a local infrastructure management application focused on
+        structured data flow and optimised UI rendering.
+      </>
+    ),
+    highlights: (
+      <>
+        Designed the application configuration and component hierarchy using a
+        modern React and Vite stack, ensuring lightweight, rapid deployment
+        capabilities.
+      </>
+    ),
+    stack: ["React", "TypeScript", "Express", "MongoDB Atlas", "Vite"],
   },
 ];
 
@@ -77,7 +197,7 @@ const Chip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const Focus: React.FC = () => (
   <section
-    className="mx-auto max-w-5xl space-y-5 p-1 text-white sm:space-y-6 sm:p-2"
+    className="mx-auto max-w-5xl space-y-8 p-1 text-white sm:p-2"
     aria-label="Current focus"
   >
     <header className="flex items-center gap-3">
@@ -96,7 +216,7 @@ const Focus: React.FC = () => (
         key={item.name}
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: i * 0.12, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ delay: i * 0.1, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="overflow-hidden rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm transition-colors duration-200 hover:border-[rgba(var(--theme-accent-rgb),0.35)]"
       >
         {/* window chrome */}
@@ -115,7 +235,7 @@ const Focus: React.FC = () => (
           </span>
         </div>
 
-        <div className="space-y-3.5 p-4 sm:p-5">
+        <div className="space-y-4 p-4 sm:space-y-5 sm:p-5">
           <div>
             <h3 className="font-mono text-base font-semibold text-white sm:text-lg">
               {item.name}
@@ -142,29 +262,26 @@ const Focus: React.FC = () => (
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${item.progress}%` }}
-                transition={{ delay: 0.25 + i * 0.12, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: 0.25 + i * 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 className="h-full rounded-full bg-[var(--theme-accent)]"
               />
             </div>
           </div>
 
-          <p className="text-sm leading-relaxed text-gray-300">{item.summary}</p>
+          {/* Overview — zinc-200 prose */}
+          <div className="text-sm leading-relaxed text-zinc-200">
+            {item.overview}
+          </div>
 
-          {item.features && (
+          {/* Technical Highlights — emerald mono */}
+          {item.highlights && (
             <div>
-              <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-gray-400">
-                core features
+              <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-gray-400">
+                technical highlights
               </p>
-              <ul className="space-y-1.5">
-                {item.features.map((f) => (
-                  <li key={f} className="flex gap-2 text-sm leading-relaxed text-gray-300">
-                    <span className="mt-[3px] shrink-0 text-[var(--theme-accent)]" aria-hidden>
-                      ▹
-                    </span>
-                    <span className="min-w-0">{f}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="space-y-2.5 font-mono text-sm leading-relaxed text-emerald-400/90">
+                {item.highlights}
+              </div>
             </div>
           )}
 

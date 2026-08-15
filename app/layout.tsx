@@ -122,6 +122,9 @@ export const metadata: Metadata = {
   },
   referrer: "strict-origin-when-cross-origin",
   category: "technology",
+  other: {
+    "darkreader-lock": "true",
+  },
 };
 
 export default async function RootLayout({
@@ -150,6 +153,7 @@ export default async function RootLayout({
       }
     >
       <head>
+        <meta name="darkreader-lock" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
@@ -190,6 +194,7 @@ export default async function RootLayout({
       </head>
       <body
         className={`${jetbrainsMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <ThemeApplier />
         {children}

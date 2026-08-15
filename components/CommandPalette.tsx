@@ -55,7 +55,7 @@ const COMMANDS: Command[] = [
   { id: "education", label: "Education", hint: "education", group: "Navigate", keywords: "degree btech reva school study", icon: <GraduationCap {...IC} />, run: () => execInTerminal("education") },
   { id: "certificates", label: "Certificates", hint: "certificates", group: "Navigate", keywords: "certs credentials copado nptel udemy", icon: <Badge {...IC} />, run: () => execInTerminal("certificates") },
   { id: "achievements", label: "Achievements", hint: "achievements", group: "Navigate", keywords: "awards wins deep learning", icon: <Award {...IC} />, run: () => execInTerminal("achievements") },
-  { id: "focus", label: "Currently Building", hint: "focus", group: "Navigate", keywords: "now building aquasentinel status focus", icon: <Target {...IC} />, run: () => execInTerminal("focus") },
+  { id: "focus", label: "Currently Building", hint: "focus", group: "Navigate", keywords: "now building personal ai agent status focus", icon: <Target {...IC} />, run: () => execInTerminal("focus") },
   { id: "contact", label: "Contact", hint: "contact", group: "Navigate", keywords: "email github linkedin connect reach socials", icon: <Mail {...IC} />, run: () => execInTerminal("contact") },
 
   { id: "resume", label: "View Resume", hint: "PDF", group: "Documents", keywords: "cv pdf download hire", icon: <FileText {...IC} />, run: () => { const u = docUrl("resume"); if (u === PRIVATE_RESOURCE) { showToast("Authentication required. Resource is private."); return; } openDoc({ label: "Resume", url: u }); } },
