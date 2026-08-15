@@ -103,6 +103,19 @@ body:not(:has(.app-shell)) {
   outline: none;
 }
 
+/* Jerry AI chat: the textarea lives inside a focus-within wrapper that owns all
+   visual feedback. Kill the browser/global :focus-visible outline on the inner
+   element so it never produces a double-border. The global rule above has
+   element-level specificity, so this scoped rule needs the extra class to win. */
+[aria-label="Jerry AI chat interface"] textarea:focus,
+[aria-label="Jerry AI chat interface"] textarea:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+
 /* --- Prose: readable measure + line-height --- */
 .prose {
   max-width: 72ch;

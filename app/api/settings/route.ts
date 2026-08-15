@@ -51,9 +51,8 @@ export async function PUT(req: NextRequest) {
   try {
     const result = await updateSettings(patch);
     // Settings affect the theme accent, display name, and title across all pages.
-    revalidatePath("/");
-    revalidatePath("/projects");
-    revalidatePath("/about");
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
     return NextResponse.json({ settings: result });
   } catch (e) {
     console.error("settings PUT error:", e);

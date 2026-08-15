@@ -12,12 +12,14 @@ import { getSession } from "@/lib/auth";
 
 /** Purge stale SSR cache for every public-facing route after a CMS mutation. */
 function invalidatePublicPages(): void {
+  revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath("/skills");
   revalidatePath("/experience");
   revalidatePath("/about");
   revalidatePath("/contact");
+  revalidatePath("/admin");
 }
 
 // Admin CMS edits (resume link, projects, …) must be fresh on next load.
