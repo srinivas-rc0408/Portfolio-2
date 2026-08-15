@@ -1,130 +1,40 @@
 import "server-only";
+import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 import { projects as seedProjects } from "@/lib/portfolio-data";
 import { CERTIFICATES, EDUCATION } from "@/lib/section-fallbacks";
 
 /**
- * Fluxbase data layer (REST POST /api/execute-sql). Server-only — never
- * imported by client code. Schema is created + seeded lazily on first use
- * (idempotent).
+ * Neon PostgreSQL data layer — server-only.
  *
- * The Fluxbase endpoint executes a raw SQL string (no bind parameters), so the
- * tagged-template `sql` below inlines interpolated values as SQL literals. To
- * stay injection-safe it single-quote-escapes every string (doubling `'`).
- * This is safe because the Fluxbase Postgres runs with
- * standard_conforming_strings = on (verified), so a backslash is a literal
- * character and cannot be used to break out of a string. `sql` keeps the exact
- * shape of the old neon() template, so every query call-site below is unchanged.
+ * Uses @neondatabase/serverless with the connection-pooler URL for all
+ * serverless/edge invocations. Schema is created + seeded lazily on first use
+ * (idempotent). Every public interface is identical to the old FluxBase layer
+ * so no call-sites need to change.
  */
 
-const FLUXBASE_URL =
-  process.env.FLUXBASE_URL || "https://fluxbase.vercel.app/api/execute-sql";
-const FLUXBASE_API_KEY = process.env.FLUXBASE_API_KEY ?? "";
-const FLUXBASE_PROJECT_ID = process.env.FLUXBASE_PROJECT_ID ?? "";
+const DATABASE_URL =
+  process.env.DATABASE_URL ||
+  "postgresql://neondb_owner:npg_zDSoqGATgp16@ep-steep-fog-azle6cqr-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
-/** Render a JS value as a safe SQL literal. */
-function lit(v: unknown): string {
-  if (v === null || v === undefined) return "NULL";
-  if (typeof v === "number") return Number.isFinite(v) ? String(v) : "NULL";
-  if (typeof v === "boolean") return v ? "TRUE" : "FALSE";
-  const s = typeof v === "string" ? v : String(v);
-  if (s === "") return "''";
-  // Fluxbase's SQL parser mangles a few substrings even INSIDE quoted literals:
-  // `--` (read as a line comment → truncates the string) and `//host.` (a stray
-  // comment/URL regex that deletes `//<text>.`). Values hitting those — the
-  // GitHub repo URLs, anything with an embedded URL — are hex-encoded and
-  // rebuilt server-side, so the wire SQL is pure hex and no value content can
-  // affect parsing. Everything else uses a plain single-quote literal: safe
-  // because standard_conforming_strings is on (verified), so doubling `'` is
-  // sufficient — and it keeps large values (e.g. image data URLs) compact and
-  // under the request-body size limit.
-  if (/--|\/\/[^/]*\.|\/\*|\*\//.test(s)) {
-    const hex = Array.from(new TextEncoder().encode(s))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    return `convert_from(decode('${hex}', 'hex'), 'UTF8')`;
-  }
-  return `'${s.replace(/'/g, "''")}'`;
+// Module-level singleton — reused across hot-reloads in dev.
+let _sql: NeonQueryFunction<false, false> | null = null;
+
+function getSql(): NeonQueryFunction<false, false> {
+  if (!_sql) _sql = neon(DATABASE_URL);
+  return _sql;
 }
 
-interface FluxResponse {
-  success: boolean;
-  result?: { rows?: unknown[] };
-  error?: { message?: string; code?: string };
-}
-
-// Hard ceilings. A serverless invocation dies at ~10s, so an unbounded DB call
-// takes the whole page down with a 500/504 instead of degrading. Every request
-// is bounded, and the retry budget is bounded too — callers that can fall back
-// (the SSR theme, the public sections) would rather fail fast than hang.
-const REQUEST_TIMEOUT_MS = 4_000;
-const TOTAL_BUDGET_MS = 8_000;
-const MAX_ATTEMPTS = 3;
-
-/**
- * POST a raw SQL string to Fluxbase and return result.rows.
- *
- * Retries a few times on HTTP 429 (the project limit is 30 requests / 10s), but
- * never past TOTAL_BUDGET_MS, and each individual attempt is aborted after
- * REQUEST_TIMEOUT_MS. A cold or unreachable database therefore surfaces as a
- * thrown error in a few seconds — which every caller already handles — rather
- * than hanging the request until the platform kills it.
- */
-async function exec<T = Record<string, unknown>>(query: string): Promise<T[]> {
-  const deadline = Date.now() + TOTAL_BUDGET_MS;
-
-  for (let attempt = 0; ; attempt++) {
-    const remaining = deadline - Date.now();
-    if (remaining <= 0) throw new Error("Fluxbase request timed out");
-
-    let res: Response;
-    try {
-      res = await fetch(FLUXBASE_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${FLUXBASE_API_KEY}`,
-        },
-        body: JSON.stringify({ projectId: FLUXBASE_PROJECT_ID, query }),
-        cache: "no-store",
-        signal: AbortSignal.timeout(Math.min(REQUEST_TIMEOUT_MS, remaining)),
-      });
-    } catch (e) {
-      // AbortError (timeout) or a network failure — both are terminal for this
-      // call. Surface a clear error so callers can fall back immediately.
-      throw new Error(
-        e instanceof Error && e.name === "TimeoutError"
-          ? "Fluxbase request timed out"
-          : `Fluxbase unreachable: ${e instanceof Error ? e.message : String(e)}`
-      );
-    }
-
-    if (res.status === 429 && attempt < MAX_ATTEMPTS - 1) {
-      const backoff = Math.min(1200, Math.max(0, deadline - Date.now()));
-      if (backoff === 0) throw new Error("Fluxbase rate-limited (budget spent)");
-      await new Promise((r) => setTimeout(r, backoff));
-      continue;
-    }
-    const json = (await res.json().catch(() => null)) as FluxResponse | null;
-    if (!res.ok || !json?.success) {
-      throw new Error(
-        json?.error?.message || `Fluxbase request failed (${res.status})`
-      );
-    }
-    return (json.result?.rows ?? []) as T[];
-  }
-}
-
-/** Tagged-template drop-in for the old neon `sql` — safely inlines values. */
-function sql<T = Record<string, unknown>>(
+/** Tagged-template helper that proxies to the Neon client. */
+async function sql<T = Record<string, unknown>>(
   strings: TemplateStringsArray,
   ...values: unknown[]
 ): Promise<T[]> {
-  let query = "";
-  strings.forEach((str, i) => {
-    query += str + (i < values.length ? lit(values[i]) : "");
-  });
-  return exec<T>(query);
+  const client = getSql();
+  const rows = await client(strings, ...values);
+  return rows as T[];
 }
+
+// ─── Interfaces ──────────────────────────────────────────────────────────────
 
 export interface DbCmsEntry {
   id: string;
@@ -160,8 +70,6 @@ export interface DbUser {
 }
 
 function id(): string {
-  // Cryptographically-random id (never used as a secret/capability, but this
-  // removes any doubt vs. Math.random()).
   return crypto.randomUUID();
 }
 
@@ -170,8 +78,6 @@ let ready: Promise<void> | null = null;
 /** Create tables + seed once per server process. */
 export function ensureDb(): Promise<void> {
   if (!ready) {
-    // Don't memoize a rejected promise — a one-off network blip during init
-    // must not poison every later request for the life of the process.
     ready = init().catch((e) => {
       ready = null;
       throw e;
@@ -181,35 +87,9 @@ export function ensureDb(): Promise<void> {
 }
 
 async function init(): Promise<void> {
-  // Fail closed if the DB isn't running with standard_conforming_strings=on —
-  // lit()'s single-quote escaping is only injection-safe under that setting
-  // (see the header note). An endpoint that doesn't support SHOW is tolerated;
-  // only an explicit "off" aborts startup.
+  // Fast path — backfill columns added after the table may have first been
+  // created. Idempotent, one round-trip on warm starts.
   try {
-    const rows = (await sql`SHOW standard_conforming_strings`) as Record<
-      string,
-      string
-    >[];
-    const val = rows[0] && Object.values(rows[0])[0];
-    if (typeof val === "string" && val.toLowerCase() === "off") {
-      throw new Error(
-        "Refusing to start: standard_conforming_strings is OFF (SQL escaping unsafe)."
-      );
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message.startsWith("Refusing to start")) throw e;
-    /* SHOW unsupported / transient — don't block on it */
-  }
-
-  // Fast path — after the very first deploy the schema always exists, so a
-  // cold start pays just this probe + backfill instead of the full 8-call setup.
-  try {
-    // Backfill columns added after the table may have first been created.
-    // CREATE TABLE IF NOT EXISTS never alters an existing table, so a table
-    // created before pin/star existed keeps 500-ing getAllEntries (which orders
-    // by `pinned`) until these run. Idempotent + concurrent (~1 round-trip),
-    // and once per process via ensureDb(). MUST live here, not only in the
-    // first-run branch below — that branch is skipped whenever the table exists.
     await Promise.all([
       sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false`,
       sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS starred BOOLEAN NOT NULL DEFAULT false`,
@@ -224,7 +104,7 @@ async function init(): Promise<void> {
     /* table missing — first run against a fresh project; create schema below */
   }
 
-  // First run only: create independent tables in parallel (4 round-trips → 1).
+  // First run: create independent tables in parallel.
   await Promise.all([
     sql`CREATE TABLE IF NOT EXISTS app_user (
       id TEXT PRIMARY KEY,
@@ -268,11 +148,6 @@ async function init(): Promise<void> {
       updated_at TIMESTAMPTZ DEFAULT now()
     )`,
   ]);
-
-  // Migrate tables created before pin/star existed.
-  await sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false`;
-  await sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS starred BOOLEAN NOT NULL DEFAULT false`;
-  await sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
 
   await sql`INSERT INTO site_setting (id) VALUES (1) ON CONFLICT (id) DO NOTHING`;
   await seed();
@@ -319,8 +194,6 @@ async function seed(): Promise<void> {
       sortOrder: i,
     })
   );
-  // Seeded from lib/section-fallbacks.ts — the same module the public sections
-  // fall back to, so the DB copy and the offline copy can never drift.
   CERTIFICATES.forEach((e, i) =>
     push("certificates", { ...e, sortOrder: i })
   );
@@ -361,22 +234,22 @@ async function seed(): Promise<void> {
     sortOrder: 2,
   });
 
-  // One multi-row INSERT (not 30+ separate calls) so seeding a fresh project
-  // never trips the 30-requests / 10-seconds Fluxbase rate limit.
-  const valuesSql = rows
-    .map(
-      (r) =>
-        `(${lit(id())}, ${lit(r.section)}, ${lit(r.title)}, ${lit(r.description)}, ${lit(r.link)}, ${lit(r.githubUrl)}, ${lit(r.date)}, ${lit(JSON.stringify(r.tech))}::jsonb, ${lit(r.imageUrl)}, ${lit(r.isPrivate)}, ${lit(r.sortOrder)})`
-    )
-    .join(",\n");
-  await exec(
-    `INSERT INTO cms_entry
-      (id, section, title, description, link, github_url, date, tech, image_url, is_private, sort_order)
-      VALUES ${valuesSql}`
-  );
+  // Batch insert all seed rows.
+  for (const r of rows) {
+    const newId = id();
+    await sql`INSERT INTO cms_entry
+      (id, section, title, description, link, github_url, date, tech, image_url, is_private, sort_order, pinned, starred)
+      VALUES (
+        ${newId}, ${r.section}, ${r.title}, ${r.description},
+        ${r.link}, ${r.githubUrl}, ${r.date},
+        ${JSON.stringify(r.tech)}::jsonb, ${r.imageUrl},
+        ${r.isPrivate}, ${r.sortOrder}, ${r.pinned}, ${r.starred}
+      )
+      ON CONFLICT (id) DO NOTHING`;
+  }
 }
 
-// --- CMS queries ---
+// ─── Row mappers ─────────────────────────────────────────────────────────────
 
 interface CmsRow {
   id: string;
@@ -416,11 +289,12 @@ function mapEntry(r: CmsRow): DbCmsEntry {
   };
 }
 
+// ─── CMS queries ─────────────────────────────────────────────────────────────
+
 export async function getAllEntries(
   includePrivate: boolean
 ): Promise<DbCmsEntry[]> {
   await ensureDb();
-  // Pinned entries float to the top of their section.
   const rows = (
     includePrivate
       ? await sql`SELECT * FROM cms_entry ORDER BY section, pinned DESC, sort_order, created_at`
@@ -429,11 +303,6 @@ export async function getAllEntries(
   return rows.map(mapEntry);
 }
 
-/**
- * Public-only entries for a single section — used by SSR pages so they query
- * the DB (with the is_private filter) instead of rendering stale seed data.
- * Falls back to an empty array on error so callers can degrade gracefully.
- */
 export async function getPublicEntriesBySection(
   section: string
 ): Promise<DbCmsEntry[]> {
@@ -442,10 +311,6 @@ export async function getPublicEntriesBySection(
   return rows.map(mapEntry);
 }
 
-/**
- * Fetch a single entry by id. When includePrivate is false, private entries
- * return null — callers should render notFound() to mask the item's existence.
- */
 export async function getEntryById(
   entryId: string,
   includePrivate: boolean
@@ -466,9 +331,11 @@ export async function createEntry(
   const newId = id();
   await sql`INSERT INTO cms_entry
     (id, section, title, description, link, github_url, date, tech, image_url, is_private, sort_order, pinned, starred)
-    VALUES (${newId}, ${e.section}, ${e.title}, ${e.description}, ${e.link},
+    VALUES (
+      ${newId}, ${e.section}, ${e.title}, ${e.description}, ${e.link},
       ${e.githubUrl}, ${e.date}, ${JSON.stringify(e.tech)}::jsonb, ${e.imageUrl},
-      ${e.isPrivate}, ${e.sortOrder}, ${e.pinned}, ${e.starred})`;
+      ${e.isPrivate}, ${e.sortOrder}, ${e.pinned}, ${e.starred}
+    )`;
   return { ...e, id: newId };
 }
 
@@ -487,7 +354,7 @@ export async function deleteEntry(entryId: string): Promise<void> {
   await sql`DELETE FROM cms_entry WHERE id = ${entryId}`;
 }
 
-// --- Settings ---
+// ─── Settings ─────────────────────────────────────────────────────────────────
 
 export async function getSettings(): Promise<DbSettings> {
   await ensureDb();
@@ -519,7 +386,7 @@ export async function updateSettings(p: Partial<DbSettings>): Promise<DbSettings
   return next;
 }
 
-// --- Feedback ---
+// ─── Feedback ─────────────────────────────────────────────────────────────────
 
 export interface DbFeedback {
   id: string;
@@ -527,7 +394,7 @@ export interface DbFeedback {
   email: string | null;
   message: string;
   starred: boolean;
-  createdAt: string; // ISO timestamp
+  createdAt: string;
 }
 
 interface FeedbackRow {
@@ -578,7 +445,7 @@ export async function deleteFeedback(fid: string): Promise<void> {
   await sql`DELETE FROM feedback WHERE id = ${fid}`;
 }
 
-// --- Users ---
+// ─── Users ────────────────────────────────────────────────────────────────────
 
 export async function findUserByEmail(email: string): Promise<DbUser | null> {
   await ensureDb();

@@ -146,9 +146,10 @@ function SaveBar({
   dirty,
   saving,
   saved,
+  saveError,
   onSave,
   onDiscard,
-  savedLabel = "✓ Saved · live on the site",
+  savedLabel = "[SYS] Database updated \u00b7 cache purged.",
   selectedCount = 0,
   onDeleteSelected,
   onClearSelection,
@@ -156,6 +157,7 @@ function SaveBar({
   dirty: boolean;
   saving: boolean;
   saved: boolean;
+  saveError?: string | null;
   onSave: () => void;
   onDiscard: () => void;
   savedLabel?: string;
@@ -185,6 +187,26 @@ function SaveBar({
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
             {savedLabel}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Error toast — shown when a save commit partially or fully fails. */}
+      <AnimatePresence>
+        {saveError && (
+          <motion.div
+            role="alert"
+            aria-live="assertive"
+            initial={{ y: 24, opacity: 0, scale: 0.96 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 12, opacity: 0, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-24 left-1/2 z-50 flex max-w-sm -translate-x-1/2 items-center gap-2.5 rounded-xl border border-red-500/40 bg-zinc-950/90 px-4 py-2.5 font-mono text-xs text-red-300 shadow-lg shadow-black/50 backdrop-blur-md"
+          >
+            <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-red-400" />
+            </span>
+            <span className="min-w-0 truncate">[ERR] Failed to persist data: {saveError}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1431,9 +1453,10 @@ function Workspace({ section }: { section: CmsSection }) {
         dirty={dirty}
         saving={saving}
         saved={saved}
+        saveError={uploadError}
         onSave={save}
         onDiscard={discard}
-        savedLabel="[SYS] Item visibility updated & cache cleared."
+        savedLabel="[SYS] Database updated \u00b7 cache purged."
         selectedCount={selected.size}
         onDeleteSelected={deleteSelected}
         onClearSelection={() => setSelected(new Set())}

@@ -623,7 +623,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
               ))}
             </div>
 
-            {/* Input — auto-resizing textarea with an accent focus glow */}
+            {/* Input — auto-resizing textarea with premium focus-within glow */}
             <form
               className="flex shrink-0 items-end gap-2 border-t border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] p-3"
               onSubmit={(e) => {
@@ -631,7 +631,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                 void send(input);
               }}
             >
-              <div className="flex min-w-0 flex-1 items-end rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 transition-all duration-150 focus-within:border-[rgba(var(--theme-accent-rgb),0.6)] focus-within:ring-2 focus-within:ring-[rgba(var(--theme-accent-rgb),0.35)] focus-within:shadow-[0_0_15px_rgba(var(--theme-accent-rgb),0.2)]">
+              <div className="flex min-w-0 flex-1 items-end rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 transition-all duration-300 ease-out focus-within:border-[rgba(var(--theme-accent-rgb),0.6)] focus-within:ring-1 focus-within:ring-[rgba(var(--theme-accent-rgb),0.35)] focus-within:shadow-[0_0_15px_rgba(var(--theme-accent-rgb),0.2)]">
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -652,7 +652,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                   aria-label="Message Jerry"
                   autoComplete="off"
                   spellCheck={false}
-                  className="max-h-[132px] min-h-[24px] w-full resize-none self-center bg-transparent py-1 text-[13px] leading-relaxed text-white placeholder-white/30 outline-none [caret-color:var(--theme-accent)] [scrollbar-width:thin]"
+                  className="max-h-[132px] min-h-[24px] w-full resize-none self-center border-none bg-transparent py-1 text-[13px] leading-relaxed text-zinc-200 placeholder:text-zinc-600 outline-none focus:outline-none focus:ring-0 [caret-color:var(--theme-accent)] [scrollbar-width:thin]"
                 />
               </div>
               <motion.button
@@ -664,9 +664,9 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                   opacity: input.trim() && !busy ? 1 : 0.45,
                 }}
                 whileHover={input.trim() && !busy ? { scale: 1.05 } : undefined}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] text-[var(--theme-accent)] transition-colors duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.25)]"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[rgba(var(--theme-accent-rgb),0.5)] bg-[rgba(var(--theme-accent-rgb),0.12)] text-[var(--theme-accent)] transition-colors duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.25)] hover:text-white text-zinc-400"
               >
                 <Send size={16} strokeWidth={2.2} aria-hidden />
               </motion.button>

@@ -626,6 +626,9 @@ export default function Terminal({
   const savedInputRef = useRef<string>("");
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // True once the user runs a command themselves. Gates the post-command scroll
+  // so the automatic boot (`cd welcome`) doesn't yank the page off the top.
+  const userInteractedRef = useRef(false);
 
   const user = "root";
   const host = "srinivas";
@@ -641,6 +644,10 @@ export default function Terminal({
       ...history,
       { type: "prompt", command: cmd },
     ];
+
+    // A real user command (not the auto boot) — the post-command scroll effect
+    // may now move to show it.
+    if (!isAuto) userInteractedRef.current = true;
 
     if (isFirstUserCommand && !isAuto && onFirstCommand) {
       onFirstCommand();
@@ -1062,13 +1069,9 @@ export default function Terminal({
     if (inputRef.current && !isTouchDevice) {
       inputRef.current.focus();
     }
-
-    setTimeout(() => {
-      terminalRef.current?.scrollTo({
-        top: terminalRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }, 300);
+    // No scroll here on purpose: the post-command effect is the single scroll
+    // authority. A scroll-to-bottom on every focus/click used to fight it and
+    // drop the reader at the end of a section.
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -1152,14 +1155,42 @@ export default function Terminal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Single scroll authority after a command. A section command (about /
+  // experience / …) prints a tall block; the old code scrolled to the very
+  // bottom, dropping the reader at the END of the section. Instead, align the
+  // newest command’s prompt to the top so the section reads from its start.
+  // A second rAF pass re-anchors to the prompt top after any late-rendering
+  // children (Framer Motion animations, CMS fetches) have had one paint cycle
+  // to inflate and potentially hijack the scroll position.
   useEffect(() => {
+    if (!userInteractedRef.current) return;
     const el = terminalRef.current;
     if (!el) return;
-    const id = requestAnimationFrame(() => {
-      el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    const scrollToPrompt = () => {
+      const prompts = el.querySelectorAll<HTMLElement>(".history-line--prompt");
+      const last = prompts[prompts.length - 1];
+      if (!last) return;
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+      last.scrollIntoView({
+        block: "start",
+        behavior: reduced ? "auto" : "smooth",
+      });
+    };
+    // First rAF: place prompt at top immediately after React commits.
+    const id1 = requestAnimationFrame(() => {
+      scrollToPrompt();
+      // Second rAF: re-anchor after any child mount side effects (autofocus,
+      // Framer Motion layout passes, CMS skeleton-to-content swaps).
+      const id2 = requestAnimationFrame(() => {
+        scrollToPrompt();
+      });
+      return () => cancelAnimationFrame(id2);
     });
-    return () => cancelAnimationFrame(id);
+    return () => cancelAnimationFrame(id1);
   }, [history]);
+
 
   return (
     <div
@@ -1255,7 +1286,12 @@ export default function Terminal({
           ].map((cmd) => (
             <button
               key={cmd}
-              onClick={() => handleNav(cmd)}
+              // stopPropagation: the container's onClick={focusInput} force-scrolls
+              // to the bottom, which would undo the read-from-top scroll above.
+              onClick={(e) => {
+                e.stopPropagation();
+                void handleNav(cmd);
+              }}
               className="nav-button"
               type="button"
               aria-label={`Navigate to ${cmd}`}
@@ -1264,7 +1300,10 @@ export default function Terminal({
             </button>
           ))}
           <button
-            onClick={() => void processCommand("clear")}
+            onClick={(e) => {
+              e.stopPropagation();
+              void processCommand("clear");
+            }}
             className="nav-button nav-clear"
             type="button"
             aria-label="Clear the terminal"
@@ -1282,7 +1321,12 @@ export default function Terminal({
         aria-atomic="false"
       >
         {history.map((line, i) => (
-          <div key={i} className="history-line">
+          <div
+            key={i}
+            className={`history-line${
+              line.type === "prompt" ? " history-line--prompt" : ""
+            }`}
+          >
             {line.type === "prompt" ? (
               <div>
                 <Prompt user={user} host={host} cwd={cwd} />

@@ -22,6 +22,13 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false, // don't advertise "X-Powered-By: Next.js"
+  experimental: {
+    serverActions: {
+      // Increase body size limit for large PDF/image uploads (base64-encoded
+      // files up to ~7.5MB binary can travel as ~10MB base64).
+      bodySizeLimit: "10mb",
+    },
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

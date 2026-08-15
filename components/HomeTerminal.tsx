@@ -15,24 +15,17 @@ function HomeTerminalInner() {
   const section = searchParams.get("section");
   const cmd = searchParams.get("cmd");
 
-  // On mobile the profile pane sits above the terminal. Running a command
-  // scrolls the terminal into view instead of hiding the pane — so the profile
-  // is always one scroll (or one tap) away, never lost.
-  const revealTerminal = (): void => {
-    const pane = document.querySelector(".terminal-pane");
-    if (!pane) return;
-    requestAnimationFrame(() =>
-      scrollTo(window.scrollY + pane.getBoundingClientRect().top)
-    );
-  };
-
+  // Going back to the profile scrolls to the very top. Revealing the terminal on
+  // the first command is handled inside TerminalComp now (it scrolls the new
+  // command's prompt into view), so there is no separate onFirstCommand scroll
+  // here — two scroll authorities fought and dropped the reader at a section's
+  // end.
   const revealProfile = (): void => {
     requestAnimationFrame(() => scrollTo(0));
   };
 
   return (
     <TerminalComp
-      onFirstCommand={revealTerminal}
       onClear={revealProfile}
       onShowIdentity={revealProfile}
       initialSection={section}

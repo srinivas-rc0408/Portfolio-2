@@ -42,8 +42,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  // Single source of truth — SITE_URL already resolves the stable prod domain.
-  metadataBase: new URL(SITE_URL),
+  metadataBase: new URL("https://srinivas-rc.is-a.dev"),
   // Crisp SVG favicon (a lightning-bolt monogram matching the ".RC" brand mark)
   // instead of the old JPG photo, which looked muddy in a browser tab. Apple
   // home-screen keeps the photo, which reads fine at that larger size.
@@ -53,11 +52,11 @@ export const metadata: Metadata = {
     apple: "/images/logo.jpg",
   },
   title: {
-    default: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    default: "Srinivas RC | AI & ML Engineer",
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Srinivas RC — AI / ML Engineer from Bengaluru, India. Builds and ships LLM-powered web applications and agentic systems (Google Gemini, prompt pipelines, React/Next.js), with a strong grounding in machine learning, MLOps, and Linux.",
+    "Interactive Terminal OS Portfolio & Autonomous AI Systems — Srinivas RC builds and ships LLM-powered web applications, agentic pipelines (Jerry AI, ArchAgent), and full-stack ML projects from Bengaluru, India.",
   keywords: [
     "AI Engineer",
     "AI / ML Engineer",
@@ -84,28 +83,27 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_IN",
-    url: SITE_URL,
-    siteName: SITE_NAME,
-    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    locale: "en_US",
+    url: "https://srinivas-rc.is-a.dev",
+    siteName: "Srinivas RC Portfolio",
+    title: "Srinivas RC | AI & ML Engineer",
     description:
-      "AI / ML Engineer building web applications powered by LLMs and agentic systems. Based in Bengaluru, Karnataka, India.",
+      "Interactive Terminal OS Portfolio featuring Jerry AI, ArchAgent, and Autonomous Systems.",
     images: [
       {
-        url: "/images/logo.jpg",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} - ${SITE_TAGLINE}`,
-        type: "image/jpeg",
+        alt: "Srinivas RC - Interactive OS Portfolio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    title: "Srinivas RC | AI & ML Engineer",
     description:
-      "AI / ML Engineer building web applications powered by LLMs and agentic systems.",
-    images: ["/images/logo.jpg"],
+      "Interactive Terminal OS Portfolio & Autonomous AI Systems.",
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,
