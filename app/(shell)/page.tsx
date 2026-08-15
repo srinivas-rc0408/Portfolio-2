@@ -16,7 +16,7 @@ export default function Home() {
     jobTitle: "AI / ML Engineer",
     description:
       "AI / ML Engineer building web applications powered by Large Language Models and agentic systems",
-    image: `${SITE_URL}/images/logo.jpg`,
+    image: `${SITE_URL}/opengraph-image`,
     email: CONTACT_EMAIL,
     address: {
       "@type": "PostalAddress",

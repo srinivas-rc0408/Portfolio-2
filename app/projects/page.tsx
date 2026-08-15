@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/images/logo.jpg`,
+        url: `${SITE_URL}/opengraph-image`,
         width: 1200,
         height: 630,
         alt: "Srinivas RC — AI / ML Engineer Projects",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
         title: "Projects | AI / ML Engineer Portfolio",
     description:
       "Agentic AI systems and machine learning web applications by an AI / ML Engineer.",
-    images: [`${SITE_URL}/images/logo.jpg`],
+    images: [`${SITE_URL}/opengraph-image`],
   },
   robots: {
     index: true,
