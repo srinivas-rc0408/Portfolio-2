@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "AI / ML Engineer building web applications powered by LLMs and srinivas-rc.is-a.dev",
+    "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev",
   keywords: [
     "AI Engineer",
     "AI / ML Engineer",
@@ -88,7 +88,7 @@ export const metadata: Metadata = {
     siteName: "Srinivas RC Portfolio",
     title: "Srinivas RC | AI / ML Engineer",
     description:
-      "AI / ML Engineer building web applications powered by LLMs and srinivas-rc.is-a.dev",
+      "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev",
     images: [
       {
         url: "/opengraph-image",
@@ -102,7 +102,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Srinivas RC | AI / ML Engineer",
     description:
-      "AI / ML Engineer building web applications powered by LLMs and srinivas-rc.is-a.dev",
+      "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev",
     images: ["/opengraph-image"],
   },
   robots: {
