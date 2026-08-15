@@ -36,17 +36,73 @@ const C: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const FOCUS: FocusItem[] = [
+  /* ────────────────────────── 1. AquaSentinel AI ────────────────────────── */
   {
-    name: "Project Hornet & comb-llm",
+    name: "AquaSentinel AI",
+    codename: "Project Aqua",
+    status: "In development",
+    progress: 35,
+    tagline: "Autonomous underwater inspection, driven by computer vision.",
+    overview: (
+      <>
+        A software platform for an autonomous underwater inspection robot. It
+        follows a planned path across a water body, streams live sensor data
+        (pH, temperature, turbidity, depth), and runs every camera frame through
+        a YOLOv8 vision model to spot pollutants like plastic bottles — all
+        controlled and reviewed from a web dashboard.
+      </>
+    ),
+    highlights: (
+      <>
+        <p>
+          <strong className="text-zinc-200">Mission Planning:</strong> Define an
+          area; the backend generates a lawnmower coverage path. Live dashboard
+          with 5s polling drives the grid map, telemetry cards, depth chart,
+          gallery and alerts.
+        </p>
+        <p>
+          <strong className="text-zinc-200">AI Inspection:</strong> Every frame
+          runs through YOLOv8; detections stored with bounding boxes. Burst
+          Alert Mode — a pollutant at ≥85% confidence pauses the robot and
+          triggers rapid evidence capture.
+        </p>
+        <p>
+          <strong className="text-zinc-200">Reporting:</strong> Mission history
+          &amp; replay with a time scrubber. One-click PDF reports — stats,
+          charts and detection evidence compiled into a document.
+        </p>
+      </>
+    ),
+    stack: [
+      "FastAPI",
+      "SQLAlchemy",
+      "SQLite",
+      "React",
+      "Vite",
+      "TanStack Query",
+      "Tailwind",
+      "YOLOv8n / Ultralytics",
+      "JWT (rotating refresh)",
+      "ReportLab",
+    ],
+    stage:
+      "Specification locked — 11 documents (PRD, architecture, API contract, DB schema, frontend, AI, security, tickets, tests, design, reconciliation). Build is structured as 4 phases and ~45 tickets.",
+  },
+
+  /* ──────────────────── 2. Personal AI Assistant ────────────────────────── */
+  {
+    name: "Personal AI Assistant",
     codename: "Hornet",
     status: "In development",
     progress: 42,
-    tagline: "Autonomous Terminal Orchestration Harness",
+    tagline: "Autonomous Terminal Orchestration Harness & Custom LLM",
     overview: (
       <>
         Designed and built an autonomous developer workspace and terminal
         automation harness to orchestrate complex software engineering workflows
-        natively within a Linux environment.
+        natively within a Linux environment. The core objective is a personal AI
+        agent that understands context, manages repos, and writes production code
+        end-to-end.
       </>
     ),
     highlights: (
@@ -62,9 +118,9 @@ const FOCUS: FocusItem[] = [
         </p>
         <p>
           <strong className="text-zinc-200">AI Integration:</strong> Fine-tuned
-          Microsoft&apos;s 3.8-billion parameter phi-4-mini model into a custom logic
-          coordinator (<C>comb-llm</C>) using Unsloth and QLoRA. Optimised the
-          model&apos;s vocabulary and tokenisation (specifically managing{" "}
+          Microsoft&apos;s 3.8-billion parameter phi-4-mini model into a custom
+          logic coordinator (<C>comb-llm</C>) using Unsloth and QLoRA. Optimised
+          the model&apos;s vocabulary and tokenisation (specifically managing{" "}
           <C>&lt;｜PAD▁TOKEN｜&gt;</C> integration) to ensure raw, perfectly
           structured JSON output for tool orchestration while enforcing strict
           confirmation gates for destructive terminal operations.
@@ -83,109 +139,34 @@ const FOCUS: FocusItem[] = [
     stage:
       "RSI loop functional; comb-llm fine-tune converging. Next: multi-repo orchestration stress test.",
   },
+
+  /* ─────────────────── 3. Building an AI Browser ───────────────────────── */
   {
-    name: "MiniTranslator",
-    status: "Active build",
-    progress: 55,
-    tagline: "Visual Layout Reconstruction Engine",
+    name: "AI Browser",
+    codename: "Project Glass",
+    status: "Early build",
+    progress: 10,
+    tagline: "Building a browser — with every exception feature I've wanted.",
     overview: (
       <>
-        Developed a client-side visual engine designed to perform seamless canvas
-        inpainting and precise typography matching on images.
+        A from-scratch browser project loaded with the features other browsers
+        leave out. Designed with native AI integration at the core — not bolted
+        on as an afterthought. The vision is a browsing environment that
+        understands context, automates repetitive workflows, and respects
+        privacy by default.
       </>
     ),
     highlights: (
       <>
-        Architected the engine to actively bypass generic OCR frameworks,
-        resolving traditional structural limitations in optical character
-        recognition by utilising advanced, custom layout reconstruction
-        algorithms.
+        <p>
+          <strong className="text-zinc-200">Design Philosophy:</strong> Every
+          decision starts from &ldquo;what would the ideal browser do?&rdquo;
+          rather than cloning existing implementations. Custom rendering
+          pipeline, native AI sidebar, and a keyboard-first UX for power users.
+        </p>
       </>
     ),
-    stack: ["TypeScript", "Canvas API", "NLP", "Custom OCR"],
-  },
-  {
-    name: "ArchAgent",
-    codename: "Arch",
-    status: "In development",
-    progress: 60,
-    tagline: "Autonomous AI Agent for Software Architecture",
-    overview: (
-      <>
-        Built a specialised, autonomous AI agent dedicated entirely to software
-        architecture and design.
-      </>
-    ),
-    highlights: (
-      <>
-        Engineered the agent&apos;s core prompt logic and decision trees to strictly
-        focus on building and designing robust application structures rather than
-        generic system operations, enforcing YAGNI (You Aren&apos;t Gonna Need It)
-        principles for minimal, highly optimised codebases.
-      </>
-    ),
-    stack: ["Python", "LLM Orchestration", "Prompt Engineering", "YAGNI"],
-  },
-  {
-    name: "Language Detector",
-    status: "Shipped · iterating",
-    progress: 85,
-    tagline: "Real-Time Multilingual Text Analysis",
-    overview: (
-      <>
-        Engineered a highly responsive web application tailored for real-time
-        multilingual text analysis.
-      </>
-    ),
-    highlights: (
-      <>
-        Implemented intelligence classification models suitable for
-        industrial-scale text analysis, optimising the data flow for rapid
-        client-side feedback.
-      </>
-    ),
-    stack: ["Python", "Scikit-learn", "NLP", "Streaming"],
-  },
-  {
-    name: "AI-Enhanced Flappy Bird Engine",
-    codename: "Flappy Duck",
-    status: "Shipped",
-    progress: 100,
-    tagline: "Modular Game Engine with Self-Playing AI Agent",
-    overview: (
-      <>
-        Designed a modular, class-based game engine featuring a self-playing AI
-        agent.
-      </>
-    ),
-    highlights: (
-      <>
-        Integrated a PID-controlled autoplay module to maintain precise in-game
-        physics. Enhanced the visual architecture by designing custom procedural
-        particle effects.
-      </>
-    ),
-    stack: ["JavaScript (ES6)", "Canvas", "Game AI", "PID Control"],
-  },
-  {
-    name: "bangalore-toll-system",
-    status: "Shipped",
-    progress: 100,
-    tagline: "Local Infrastructure Management Application",
-    overview: (
-      <>
-        Created a local infrastructure management application focused on
-        structured data flow and optimised UI rendering.
-      </>
-    ),
-    highlights: (
-      <>
-        Designed the application configuration and component hierarchy using a
-        modern React and Vite stack, ensuring lightweight, rapid deployment
-        capabilities.
-      </>
-    ),
-    stack: ["React", "TypeScript", "Express", "MongoDB Atlas", "Vite"],
+    stage: "Architecture phase. Deliberately quiet for now — stay tuned.",
   },
 ];
 
