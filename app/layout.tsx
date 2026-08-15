@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Interactive Terminal OS Portfolio & Autonomous AI Systems — Srinivas RC builds and ships LLM-powered web applications, agentic pipelines (Jerry AI, ArchAgent), and full-stack ML projects from Bengaluru, India.",
+    "AI / ML Engineer building web applications powered by LLMs and srinivas-rc.is-a.dev",
   keywords: [
     "AI Engineer",
     "AI / ML Engineer",
@@ -86,23 +86,23 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://srinivas-rc.is-a.dev",
     siteName: "Srinivas RC Portfolio",
-    title: "Srinivas RC | AI & ML Engineer",
+    title: "Srinivas RC | AI / ML Engineer",
     description:
-      "Interactive Terminal OS Portfolio featuring Jerry AI, ArchAgent, and Autonomous Systems.",
+      "AI / ML Engineer building web applications powered by LLMs and srinivas-rc.is-a.dev",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
-        height: 630,
-        alt: "Srinivas RC - Interactive OS Portfolio",
+        height: 1200,
+        alt: "Srinivas RC — AI / ML Engineer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Srinivas RC | AI & ML Engineer",
+    title: "Srinivas RC | AI / ML Engineer",
     description:
-      "Interactive Terminal OS Portfolio & Autonomous AI Systems.",
+      "AI / ML Engineer building web applications powered by LLMs and srinivas-rc.is-a.dev",
     images: ["/opengraph-image"],
   },
   robots: {
