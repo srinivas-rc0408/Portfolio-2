@@ -82,28 +82,28 @@ export const metadata: Metadata = {
     telephone: true,
   },
   openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://srinivas-rc.is-a.dev",
-    siteName: "Srinivas RC Portfolio",
     title: "Srinivas RC | AI / ML Engineer",
     description:
-      "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev",
+      "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev.",
+    url: "https://srinivas-rc.is-a.dev",
+    siteName: "Srinivas RC Portfolio",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/opengraph-image.png", // Explicit static path
         width: 1200,
-        height: 1200,
-        alt: "Srinivas RC — AI / ML Engineer",
+        height: 630,
+        alt: "Srinivas RC - Interactive OS Portfolio",
       },
     ],
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Srinivas RC | AI / ML Engineer",
     description:
-      "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev",
-    images: ["/opengraph-image"],
+      "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev.",
+    images: ["/opengraph-image.png"], // Explicit static path
   },
   robots: {
     index: true,
