@@ -3,7 +3,7 @@ import { jsonLd } from "@/lib/jsonld";
 import { cache } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { SITE_URL, SITE_NAME, SITE_TAGLINE } from "@/lib/seo-config";
+import { SITE_URL, SITE_NAME } from "@/lib/seo-config";
 import ThemeApplier from "@/components/ThemeApplier";
 import { getSettings } from "@/lib/db";
 import "./globals.css";
