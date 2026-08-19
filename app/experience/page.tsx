@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import BackToHome from "@/components/BackToHome";
 import { jsonLd } from "@/lib/jsonld";
-import { SITE_URL, SITE_NAME } from "@/lib/seo-config";
+import { SITE_URL, SITE_NAME, OG_IMAGE_URL } from "@/lib/seo-config";
 
 // Static page — re-render daily so content stays fresh between deploys.
 export const revalidate = 86400;
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/opengraph-image.jpg`,
+        url: OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} — AI / ML Engineer experience`,
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: "Experience | Independent AI Project Work · Open to Placements",
     description:
       "Independent project work building agentic AI systems and ML web apps. Open to internships and university placements.",
-    images: [`${SITE_URL}/opengraph-image.jpg`],
+    images: [OG_IMAGE_URL],
   },
   robots: {
     index: true,
@@ -84,7 +84,7 @@ function buildStructuredData() {
     name: SITE_NAME,
     url: SITE_URL,
     mainEntityOfPage: `${SITE_URL}/experience`,
-    image: `${SITE_URL}/opengraph-image.jpg`,
+    image: OG_IMAGE_URL,
     jobTitle: "AI / ML Engineer",
     seeks: {
       "@type": "Demand",

@@ -1,4 +1,4 @@
-import { SITE_URL } from "@/lib/seo-config";
+import { SITE_URL, OG_IMAGE_URL } from "@/lib/seo-config";
 import BackToHome from "@/components/BackToHome";
 import { jsonLd } from "@/lib/jsonld";
 import { Metadata } from "next";
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/opengraph-image.jpg`,
+        url: OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: "Srinivas RC — AI / ML Engineer Projects",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
         title: "Projects | AI / ML Engineer Portfolio",
     description:
       "Agentic AI systems and machine learning web applications by an AI / ML Engineer.",
-    images: [`${SITE_URL}/opengraph-image.jpg`],
+    images: [OG_IMAGE_URL],
   },
   robots: {
     index: true,

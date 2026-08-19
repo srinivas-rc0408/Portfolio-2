@@ -1,4 +1,4 @@
-import { SITE_URL } from "@/lib/seo-config";
+import { SITE_URL, OG_IMAGE_URL } from "@/lib/seo-config";
 import { jsonLd } from "@/lib/jsonld";
 import { CONTACT_EMAIL } from "@/lib/portfolio-data";
 import HomeTerminal from "@/components/HomeTerminal";
@@ -16,7 +16,7 @@ export default function Home() {
     jobTitle: "AI / ML Engineer",
     description:
       "AI / ML Engineer building web applications powered by Large Language Models and agentic systems",
-    image: `${SITE_URL}/opengraph-image.jpg`,
+    image: OG_IMAGE_URL,
     email: CONTACT_EMAIL,
     address: {
       "@type": "PostalAddress",

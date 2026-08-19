@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import BackToHome from "@/components/BackToHome";
 import { jsonLd } from "@/lib/jsonld";
-import { SITE_URL, SITE_NAME, SITE_TAGLINE } from "@/lib/seo-config";
+import { SITE_URL, SITE_NAME, SITE_TAGLINE, OG_IMAGE_URL } from "@/lib/seo-config";
 import { CONTACT_EMAIL } from "@/lib/portfolio-data";
 
 // Enhanced SEO Metadata
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/opengraph-image.jpg`,
+        url: OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} - ${SITE_TAGLINE}`,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     title: `About Me | ${SITE_TAGLINE}`,
     description:
       "AI / ML Engineer building LLM-powered web applications and agentic systems. Pursuing B.Tech in AI & ML at REVA University.",
-    images: [`${SITE_URL}/opengraph-image.jpg`],
+    images: [OG_IMAGE_URL],
   },
   robots: {
     index: true,
@@ -125,7 +125,7 @@ const structuredData = {
   familyName: "RC",
   url: SITE_URL,
   mainEntityOfPage: `${SITE_URL}/about`,
-  image: `${SITE_URL}/opengraph-image.jpg`,
+  image: OG_IMAGE_URL,
   email: `mailto:${CONTACT_EMAIL}`,
   jobTitle: "AI / ML Engineer",
   description:
@@ -187,7 +187,7 @@ const aboutPageStructuredData = {
   mainEntity: { "@id": `${SITE_URL}/#person` },
   author: { "@id": `${SITE_URL}/#person` },
   about: { "@id": `${SITE_URL}/#person` },
-  primaryImageOfPage: `${SITE_URL}/opengraph-image.jpg`,
+  primaryImageOfPage: OG_IMAGE_URL,
   isPartOf: { "@id": `${SITE_URL}/#website` },
   breadcrumb: {
     "@id": `${SITE_URL}/about#breadcrumb`,

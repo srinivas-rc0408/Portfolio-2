@@ -3,7 +3,7 @@ import { jsonLd } from "@/lib/jsonld";
 import { cache } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { SITE_URL, SITE_NAME } from "@/lib/seo-config";
+import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from "@/lib/seo-config";
 import ThemeApplier from "@/components/ThemeApplier";
 import { getSettings } from "@/lib/db";
 import "./globals.css";
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     siteName: "Srinivas RC Portfolio",
     images: [
       {
-        url: "/opengraph-image.jpg", // Static asset in /public (fast, CDN-cached)
+        url: DEFAULT_OG_IMAGE, // static /public asset, immutable-cached
         width: 1200,
         height: 630,
         alt: "Srinivas RC — AI / ML Engineer",
@@ -103,7 +103,7 @@ export const metadata: Metadata = {
     title: "Srinivas RC | AI / ML Engineer",
     description:
       "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev.",
-    images: ["/opengraph-image.jpg"], // Static asset in /public (fast, CDN-cached)
+    images: [DEFAULT_OG_IMAGE], // static /public asset, immutable-cached
   },
   robots: {
     index: true,

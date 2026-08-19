@@ -24,8 +24,19 @@ export const SITE_NAME = "Srinivas RC";
 export const SITE_TAGLINE = "AI / ML Engineer";
 export const AUTHOR_URL = SITE_URL;
 export const TWITTER_HANDLE = "";
-export const DEFAULT_OG_IMAGE = "/opengraph-image.jpg";
-export const LOGO_URL = `${SITE_URL}/opengraph-image.jpg`;
+/**
+ * The share card. Declared ONCE and imported everywhere — this path used to be
+ * hand-written in eight files, which is how it silently drifted to an
+ * extension-less URL that 404'd on every subpage.
+ *
+ * The `?v=` is a cache buster: the asset is served `immutable` for a year, so
+ * without it a redesigned card would stay stuck in CDN and social caches.
+ * BUMP IT whenever design/opengraph-card.svg is re-rendered.
+ */
+export const DEFAULT_OG_IMAGE = "/opengraph-image.jpg?v=2";
+export const OG_IMAGE_URL = `${SITE_URL}${DEFAULT_OG_IMAGE}`;
+/** Structured-data logo (schema.org) — same artwork. */
+export const LOGO_URL = OG_IMAGE_URL;
 
 export function toIsoDateTime(dateStr?: string): string | undefined {
   if (!dateStr) return undefined;

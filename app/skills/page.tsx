@@ -1,4 +1,4 @@
-import { SITE_URL } from "@/lib/seo-config";
+import { SITE_URL, OG_IMAGE_URL } from "@/lib/seo-config";
 import BackToHome from "@/components/BackToHome";
 import { jsonLd } from "@/lib/jsonld";
 import { Metadata } from "next";
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/opengraph-image.jpg`,
+        url: OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: "Srinivas RC - Skills & Tech Stack",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
         title: "Skills & Tech Stack | AI / ML Engineer",
     description:
       "Python, machine learning, LLMs, agentic systems, and Linux. Comprehensive technical skills portfolio.",
-    images: [`${SITE_URL}/opengraph-image.jpg`],
+    images: [OG_IMAGE_URL],
   },
   robots: {
     index: true,
@@ -145,7 +145,7 @@ const structuredData = {
   "@type": "Person",
   name: "Srinivas RC",
   url: SITE_URL,
-  image: `${SITE_URL}/opengraph-image.jpg`,
+  image: OG_IMAGE_URL,
   knowsAbout: [
     ...skillsData.languages,
     ...skillsData.ai_ml,
