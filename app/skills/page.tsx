@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/opengraph-image`,
+        url: `${SITE_URL}/opengraph-image.jpg`,
         width: 1200,
         height: 630,
         alt: "Srinivas RC - Skills & Tech Stack",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
         title: "Skills & Tech Stack | AI / ML Engineer",
     description:
       "Python, machine learning, LLMs, agentic systems, and Linux. Comprehensive technical skills portfolio.",
-    images: [`${SITE_URL}/opengraph-image`],
+    images: [`${SITE_URL}/opengraph-image.jpg`],
   },
   robots: {
     index: true,
@@ -145,7 +145,7 @@ const structuredData = {
   "@type": "Person",
   name: "Srinivas RC",
   url: SITE_URL,
-  image: `${SITE_URL}/opengraph-image`,
+  image: `${SITE_URL}/opengraph-image.jpg`,
   knowsAbout: [
     ...skillsData.languages,
     ...skillsData.ai_ml,

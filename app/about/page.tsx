@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/opengraph-image`,
+        url: `${SITE_URL}/opengraph-image.jpg`,
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} - ${SITE_TAGLINE}`,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     title: `About Me | ${SITE_TAGLINE}`,
     description:
       "AI / ML Engineer building LLM-powered web applications and agentic systems. Pursuing B.Tech in AI & ML at REVA University.",
-    images: [`${SITE_URL}/opengraph-image`],
+    images: [`${SITE_URL}/opengraph-image.jpg`],
   },
   robots: {
     index: true,
@@ -125,7 +125,7 @@ const structuredData = {
   familyName: "RC",
   url: SITE_URL,
   mainEntityOfPage: `${SITE_URL}/about`,
-  image: `${SITE_URL}/opengraph-image`,
+  image: `${SITE_URL}/opengraph-image.jpg`,
   email: `mailto:${CONTACT_EMAIL}`,
   jobTitle: "AI / ML Engineer",
   description:
@@ -187,7 +187,7 @@ const aboutPageStructuredData = {
   mainEntity: { "@id": `${SITE_URL}/#person` },
   author: { "@id": `${SITE_URL}/#person` },
   about: { "@id": `${SITE_URL}/#person` },
-  primaryImageOfPage: `${SITE_URL}/opengraph-image`,
+  primaryImageOfPage: `${SITE_URL}/opengraph-image.jpg`,
   isPartOf: { "@id": `${SITE_URL}/#website` },
   breadcrumb: {
     "@id": `${SITE_URL}/about#breadcrumb`,

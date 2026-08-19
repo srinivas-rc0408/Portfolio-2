@@ -89,10 +89,10 @@ export const metadata: Metadata = {
     siteName: "Srinivas RC Portfolio",
     images: [
       {
-        url: "/opengraph-image.png", // Explicit static path
+        url: "/opengraph-image.jpg", // Static asset in /public (fast, CDN-cached)
         width: 1200,
         height: 630,
-        alt: "Srinivas RC - Interactive OS Portfolio",
+        alt: "Srinivas RC — AI / ML Engineer",
       },
     ],
     locale: "en_US",
@@ -103,7 +103,7 @@ export const metadata: Metadata = {
     title: "Srinivas RC | AI / ML Engineer",
     description:
       "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev.",
-    images: ["/opengraph-image.png"], // Explicit static path
+    images: ["/opengraph-image.jpg"], // Static asset in /public (fast, CDN-cached)
   },
   robots: {
     index: true,

@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/opengraph-image`,
+        url: `${SITE_URL}/opengraph-image.jpg`,
         width: 1200,
         height: 630,
         alt: "Srinivas RC — Contact",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
         title: "Contact | Get in Touch with an AI / ML Engineer",
     description:
       "Connect with Srinivas RC for project collaborations and development opportunities. Available for hire.",
-    images: [`${SITE_URL}/opengraph-image`],
+    images: [`${SITE_URL}/opengraph-image.jpg`],
   },
   robots: {
     index: true,
@@ -281,7 +281,7 @@ const structuredData = {
   "@type": "Person",
   name: "Srinivas RC",
   url: SITE_URL,
-  image: `${SITE_URL}/opengraph-image`,
+  image: `${SITE_URL}/opengraph-image.jpg`,
   email: CONTACT_EMAIL,
   address: {
     "@type": "PostalAddress",

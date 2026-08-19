@@ -24,8 +24,8 @@ export const SITE_NAME = "Srinivas RC";
 export const SITE_TAGLINE = "AI / ML Engineer";
 export const AUTHOR_URL = SITE_URL;
 export const TWITTER_HANDLE = "";
-export const DEFAULT_OG_IMAGE = "/opengraph-image";
-export const LOGO_URL = `${SITE_URL}/opengraph-image`;
+export const DEFAULT_OG_IMAGE = "/opengraph-image.jpg";
+export const LOGO_URL = `${SITE_URL}/opengraph-image.jpg`;
 
 export function toIsoDateTime(dateStr?: string): string | undefined {
   if (!dateStr) return undefined;

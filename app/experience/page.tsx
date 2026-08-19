@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: `${SITE_URL}/opengraph-image`,
+        url: `${SITE_URL}/opengraph-image.jpg`,
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} — AI / ML Engineer experience`,
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: "Experience | Independent AI Project Work · Open to Placements",
     description:
       "Independent project work building agentic AI systems and ML web apps. Open to internships and university placements.",
-    images: [`${SITE_URL}/opengraph-image`],
+    images: [`${SITE_URL}/opengraph-image.jpg`],
   },
   robots: {
     index: true,
@@ -84,7 +84,7 @@ function buildStructuredData() {
     name: SITE_NAME,
     url: SITE_URL,
     mainEntityOfPage: `${SITE_URL}/experience`,
-    image: `${SITE_URL}/opengraph-image`,
+    image: `${SITE_URL}/opengraph-image.jpg`,
     jobTitle: "AI / ML Engineer",
     seeks: {
       "@type": "Demand",

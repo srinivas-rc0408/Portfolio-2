@@ -30,7 +30,20 @@ const nextConfig: NextConfig = {
     },
   },
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      {
+        // The OG card is a static /public asset. Without this it was served
+        // `no-cache, must-revalidate`, forcing every crawler + CDN to re-fetch
+        // it on each share — the "slow preview" symptom. Cache it hard so it is
+        // served instantly from the edge. Bust with /opengraph-image.jpg?v=2 if
+        // the card is ever redesigned.
+        source: "/opengraph-image.jpg",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+    ];
   },
 };
 
