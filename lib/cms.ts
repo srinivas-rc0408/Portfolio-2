@@ -153,6 +153,36 @@ function fire(evt: string): void {
   if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(evt));
 }
 
+// --- Instant cross-tab propagation ---
+// An admin save reaches every OTHER open tab immediately (not on the ~30s poll)
+// via BroadcastChannel: the mutating tab posts, the rest re-hydrate. Only the
+// mutation helpers post — the listener just hydrates, so there is no echo loop
+// (BroadcastChannel never delivers a message back to its own sender).
+let cmsChannel: BroadcastChannel | null = null;
+if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+  try {
+    cmsChannel = new BroadcastChannel("portfolio:cms");
+    let coalesce: number | undefined;
+    cmsChannel.onmessage = () => {
+      // A SaveBar commit fires several mutations in a row; collapse the burst
+      // of broadcasts into a single refresh.
+      window.clearTimeout(coalesce);
+      coalesce = window.setTimeout(() => void hydrate(), 250);
+    };
+  } catch {
+    cmsChannel = null;
+  }
+}
+
+/** Notify every other open tab that CMS/settings data changed. */
+function broadcastChange(): void {
+  try {
+    cmsChannel?.postMessage(Date.now());
+  } catch {
+    /* channel closed during teardown — safe to ignore */
+  }
+}
+
 /** Hydrate the public cache + session from the server. Call once on mount. */
 export async function hydrate(): Promise<void> {
   try {
@@ -276,6 +306,7 @@ export async function saveSettings(patch: Partial<SiteSettings>): Promise<void> 
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(patch),
   }).catch(() => {});
+  broadcastChange(); // push to any other open tab immediately
 }
 
 // --- CMS entries (admin writes) ---
@@ -316,6 +347,7 @@ export async function addItem(
   });
   await ensureOk(res);
   await hydrate();
+  broadcastChange(); // push to any other open tab immediately
 }
 
 export async function updateItem(
@@ -331,6 +363,7 @@ export async function updateItem(
   });
   await ensureOk(res);
   await hydrate();
+  broadcastChange(); // push to any other open tab immediately
 }
 
 export async function deleteItem(
@@ -344,4 +377,5 @@ export async function deleteItem(
   });
   await ensureOk(res);
   await hydrate();
+  broadcastChange(); // push to any other open tab immediately
 }

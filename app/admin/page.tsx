@@ -5,7 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
-import { Eye, EyeOff, Globe, Lock, Pin, Star, X } from "lucide-react";
+import {
+  Eye, EyeOff, Globe, Lock, Pin, Star, X,
+  Settings, MessageSquare, PanelLeftClose, PanelLeftOpen, LogOut, ExternalLink,
+  FileText, ScrollText, FolderGit2, Award, GraduationCap, Briefcase, Trophy,
+  AtSign, Quote, type LucideIcon,
+} from "lucide-react";
 import AdminUpload, { type UploadResult } from "@/components/admin/AdminUpload";
 import AdminLoginReveal from "@/components/AdminLoginReveal";
 import { CardSkeletonList, RowSkeletonList } from "@/components/ui/Skeleton";
@@ -40,6 +45,20 @@ const SECTION_LABELS: Record<CmsSection, string> = {
   achievements: "Achievements",
   connect: "Connect",
   quotes: "Quotes",
+};
+
+// A distinct icon per section — clean lucide glyphs instead of emojis / bare
+// first-letters, so the collapsed rail still reads at a glance.
+const SECTION_ICONS: Record<CmsSection, LucideIcon> = {
+  resume: FileText,
+  cv: ScrollText,
+  projects: FolderGit2,
+  certificates: Award,
+  education: GraduationCap,
+  experience: Briefcase,
+  achievements: Trophy,
+  connect: AtSign,
+  quotes: Quote,
 };
 
 /** "Uploaded on 28 Jul 2026" — recorded when a file is staged. */
@@ -1934,81 +1953,110 @@ export default function AdminPage() {
 
   const title = tab === "settings" ? "global-settings" : tab;
 
+  // One consistent nav row — icon + label (or centred icon when collapsed).
+  const navItem = (key: Tab, label: string, Icon: LucideIcon) => {
+    const active = tab === key;
+    return (
+      <button
+        key={key}
+        type="button"
+        onClick={() => setTab(key)}
+        title={label}
+        aria-current={active ? "page" : undefined}
+        className={`relative flex items-center gap-3 py-2 text-sm transition-colors ${
+          sidebarOpen ? "px-3.5" : "justify-center px-0"
+        } ${
+          active
+            ? "border-l-2 border-[var(--theme-accent)] bg-[rgba(var(--theme-accent-rgb),0.14)] text-white"
+            : "border-l-2 border-transparent text-gray-400 hover:bg-white/[0.04] hover:text-white"
+        }`}
+      >
+        <Icon
+          size={16}
+          strokeWidth={2}
+          aria-hidden
+          className={`shrink-0 transition-colors ${active ? "text-[var(--theme-accent)]" : ""}`}
+        />
+        {sidebarOpen && <span className="truncate">{label}</span>}
+      </button>
+    );
+  };
+
   return (
     <div className="flex min-h-screen bg-[radial-gradient(ellipse_at_top_left,rgba(var(--theme-accent-rgb),0.06),transparent_55%)] bg-black font-mono text-white">
       {/* Collapsible sidebar */}
       <aside
-        className={`shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md transition-all duration-150 ${
-          sidebarOpen ? "w-52" : "w-14"
+        className={`shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md transition-[width] duration-200 ease-out ${
+          sidebarOpen ? "w-56" : "w-16"
         }`}
       >
-        <div className="flex items-center gap-2 p-3">
+        {/* Brand + collapse toggle */}
+        <div className="flex items-center gap-2 border-b border-white/5 px-3 py-3">
+          {sidebarOpen && (
+            <span className="flex min-w-0 items-center gap-2">
+              <span
+                className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.12)] text-[var(--theme-accent)]"
+                aria-hidden
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+                </svg>
+              </span>
+              <span className="truncate text-sm font-bold tracking-tight text-white">
+                admin<span className="text-[var(--theme-accent)]">@</span>panel
+              </span>
+            </span>
+          )}
           <button
             type="button"
             onClick={() => setSidebarOpen((o) => !o)}
-            aria-label="Toggle sidebar"
+            aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
             aria-expanded={sidebarOpen}
-            className="rounded border border-white/15 px-2 py-1 text-lg leading-none text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)]"
+            className={`grid h-8 w-8 place-items-center rounded-md border border-white/10 text-gray-300 transition-colors hover:border-white/25 hover:bg-[rgba(var(--theme-accent-rgb),0.14)] hover:text-white ${
+              sidebarOpen ? "ml-auto" : "mx-auto"
+            }`}
           >
-            ≡
+            {sidebarOpen ? (
+              <PanelLeftClose size={16} strokeWidth={2} aria-hidden />
+            ) : (
+              <PanelLeftOpen size={16} strokeWidth={2} aria-hidden />
+            )}
           </button>
-          {sidebarOpen && (
-            <span className="text-sm font-bold text-white">admin@panel</span>
-          )}
         </div>
-        <nav aria-label="Admin sections" className="mt-2 flex flex-col">
-          {/* Global Settings first */}
-          <button
-            type="button"
-            onClick={() => setTab("settings")}
-            className={`px-4 py-2 text-left text-sm transition-colors ${
-              tab === "settings"
-                ? "border-l-2 border-[var(--theme-accent)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-white"
-                : "text-gray-400 hover:bg-[rgba(var(--theme-accent-rgb),0.08)] hover:text-white"
-            }`}
-            title="Global Settings"
-          >
-            {sidebarOpen ? "⚙ Global Settings" : "⚙"}
-          </button>
-          <div className="my-1 border-t border-white/5" />
-          {CMS_SECTIONS.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setTab(s)}
-              className={`px-4 py-2 text-left text-sm transition-colors ${
-                tab === s
-                  ? "border-l-2 border-[var(--theme-accent)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-white"
-                  : "text-gray-400 hover:bg-[rgba(var(--theme-accent-rgb),0.08)] hover:text-white"
-              }`}
-              title={SECTION_LABELS[s]}
-            >
-              {sidebarOpen ? SECTION_LABELS[s] : SECTION_LABELS[s][0]}
-            </button>
-          ))}
-          <div className="my-1 border-t border-white/5" />
-          <button
-            type="button"
-            onClick={() => setTab("feedback")}
-            className={`px-4 py-2 text-left text-sm transition-colors ${
-              tab === "feedback"
-                ? "border-l-2 border-[var(--theme-accent)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-white"
-                : "text-gray-400 hover:bg-[rgba(var(--theme-accent-rgb),0.08)] hover:text-white"
-            }`}
-            title="Feedback"
-          >
-            {sidebarOpen ? "💬 Feedback" : "💬"}
-          </button>
+        <nav aria-label="Admin sections" className="mt-2 flex flex-col gap-0.5">
+          {navItem("settings", "Global Settings", Settings)}
+          <div className="mx-3 my-1.5 border-t border-white/[0.07]" />
+          {CMS_SECTIONS.map((s) => navItem(s, SECTION_LABELS[s], SECTION_ICONS[s]))}
+          <div className="mx-3 my-1.5 border-t border-white/[0.07]" />
+          {navItem("feedback", "Feedback", MessageSquare)}
         </nav>
       </aside>
 
       {/* Workspace */}
       <main className="min-w-0 flex-1 p-4 sm:p-6">
-        <header className="mb-6 flex items-center justify-between">
-          <h1 className="text-lg font-bold text-white">$ manage --{title}</h1>
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-xs text-gray-400 hover:text-white">
-              view site
+        <header className="mb-6 flex items-center justify-between gap-3">
+          <h1 className="min-w-0 truncate text-base font-bold text-white sm:text-lg">
+            <span className="text-[var(--theme-accent)]">$</span> manage{" "}
+            <span className="text-gray-600">--</span>
+            {title}
+          </h1>
+          <div className="flex shrink-0 items-center gap-2">
+            <span
+              className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] uppercase tracking-wider text-gray-400 sm:flex"
+              title="Changes publish to the live site instantly"
+            >
+              <span className="relative flex h-1.5 w-1.5" aria-hidden>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              </span>
+              live
+            </span>
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 rounded-md border border-white/10 px-2.5 py-1.5 text-xs text-gray-300 transition-colors hover:border-white/25 hover:bg-white/[0.04] hover:text-white"
+            >
+              <ExternalLink size={13} strokeWidth={2} aria-hidden />
+              <span className="hidden sm:inline">view site</span>
             </Link>
             <button
               type="button"
@@ -2016,9 +2064,10 @@ export default function AdminPage() {
                 logout();
                 setUser(null);
               }}
-              className="rounded border border-red-900/60 px-3 py-1 text-xs text-red-400 hover:bg-red-900/20"
+              className="flex items-center gap-1.5 rounded-md border border-red-900/60 px-2.5 py-1.5 text-xs text-red-400 transition-colors hover:border-red-700/80 hover:bg-red-900/25 hover:text-red-300"
             >
-              logout
+              <LogOut size={13} strokeWidth={2} aria-hidden />
+              <span className="hidden sm:inline">logout</span>
             </button>
           </div>
         </header>
