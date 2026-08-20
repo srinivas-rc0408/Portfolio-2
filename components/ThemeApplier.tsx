@@ -36,9 +36,11 @@ export default function ThemeApplier() {
     window.addEventListener(SETTINGS_UPDATED_EVENT, apply);
     // Load live settings + content from the server, then apply.
     void hydrate();
-    // Keep open sessions fresh: admin edits reach every visitor within ~10s
-    // (poll only while the tab is visible; also refresh on focus).
-    const POLL_MS = 10_000;
+    // Keep open sessions fresh: admin edits reach an already-open visitor within
+    // ~30s (poll only while the tab is visible; a tab regaining focus refreshes
+    // immediately). 30s over 10s cuts idle background fetches + re-renders by 3x
+    // for smoother long sessions, with no meaningful staleness for a portfolio.
+    const POLL_MS = 30_000;
     const tick = () => {
       if (document.visibilityState === "visible") void hydrate();
     };

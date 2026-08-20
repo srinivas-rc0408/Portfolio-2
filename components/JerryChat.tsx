@@ -124,8 +124,8 @@ function JerryMarkdown({ text }: { text: string }) {
  *   · Opened by the `jerry` terminal command (or legacy `ai …`).
  *   · Glassmorphism panel, framer-motion fade/scale, accent-themed.
  *   · Chats persist across open/close (module cache) until cleared.
- *   · Quick-action chips: mandatory "Why choose Srinivas R C?" first,
- *     plus a random sample of common questions on every open.
+ *   · Quick-action chips: a pinned opener, the flagship "Why choose Srinivas
+ *     R C?" second, plus a fresh sample of pro questions on every open.
  *   · Typing `exit` (or pressing Esc / ✕) closes the panel.
  */
 
@@ -144,22 +144,25 @@ interface JerryChatProps {
 const INTRO =
   "Hi! I am Jerry, Srinivas RC's personal AI assistant. How can I help you explore his portfolio today?";
 
-const MANDATORY_CHIP = "Why choose Srinivas R C?";
-// Professional, recruiter-oriented prompts — each maps to Jerry's knowledge
-// base so answers stay accurate. A fresh sample of 3 shows on every open.
+// A strong opener is pinned first, and the flagship "Why choose…" sits second
+// (as the standout recruiter question) — both always shown. The rest are a
+// fresh sample from a pro, recruiter-oriented pool, each mapped to Jerry's
+// knowledge base so answers stay accurate.
+const LEAD_CHIP = "What makes him stand out?";
+const WHY_CHIP = "Why choose Srinivas R C?";
 const CHIP_POOL = [
-  "What is his tech stack?",
-  "Show me his best projects",
-  "Tell me about ArchAgent",
-  "What's his experience with LLMs & agentic AI?",
-  "Is he open to internships?",
-  "Summarize his experience",
-  "What are his strongest skills?",
-  "What certifications does he have?",
-  "Does he have MLOps experience?",
-  "What's his education background?",
-  "How can I contact him?",
-  "Tell me a fun fact",
+  "Walk me through ArchAgent",
+  "What's he building right now?",
+  "How deep is his LLM & agentic AI work?",
+  "Show me his production-ready projects",
+  "What's his strongest engineering skill?",
+  "Is he ready for an AI/ML role?",
+  "What's his MLOps & deployment experience?",
+  "How does he use AI in his workflow?",
+  "What's his tech stack?",
+  "What certifications back his skills?",
+  "How can I get in touch with him?",
+  "Tell me something fun about him",
 ];
 
 const OFFLINE_MSG =
@@ -203,7 +206,8 @@ let chatCache: Msg[] = [];
 
 function sampleChips(): string[] {
   const shuffled = [...CHIP_POOL].sort(() => Math.random() - 0.5);
-  return [MANDATORY_CHIP, ...shuffled.slice(0, 3)];
+  // 6 chips: pinned opener, the flagship "Why choose…" second, then 4 fresh.
+  return [LEAD_CHIP, WHY_CHIP, ...shuffled.slice(0, 4)];
 }
 
 export default function JerryChat({ open, onClose, initialQuestion }: JerryChatProps) {
@@ -608,19 +612,37 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
               )}
             </div>
 
-            {/* Quick-action chips */}
-            <div className="flex shrink-0 gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none]">
-              {chips.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void send(c)}
-                  className="shrink-0 rounded-full border border-[rgba(var(--theme-accent-rgb),0.4)] bg-[rgba(var(--theme-accent-rgb),0.06)] px-3 py-1.5 text-[11px] text-white/90 transition-all duration-150 hover:bg-[rgba(var(--theme-accent-rgb),0.16)] active:scale-95 disabled:opacity-40"
-                >
-                  {c}
-                </button>
-              ))}
+            {/* Quick-action chips — labeled + edge-faded horizontal rail */}
+            <div className="shrink-0 px-4 pb-2">
+              <div className="mb-1.5 flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/35">
+                <Zap size={9} strokeWidth={2.5} aria-hidden className="text-[var(--theme-accent)]" />
+                suggested
+              </div>
+              <div className="relative">
+                <div className="flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                  {chips.map((c, i) => (
+                    <button
+                      key={c}
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void send(c)}
+                      className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] transition-all duration-150 active:scale-95 disabled:opacity-40 ${
+                        i === 1
+                          ? // the flagship "Why choose…" — subtly emphasised
+                            "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.14)] font-medium text-white hover:bg-[rgba(var(--theme-accent-rgb),0.22)]"
+                          : "border-[rgba(var(--theme-accent-rgb),0.35)] bg-[rgba(var(--theme-accent-rgb),0.06)] text-white/85 hover:border-[rgba(var(--theme-accent-rgb),0.55)] hover:bg-[rgba(var(--theme-accent-rgb),0.14)] hover:text-white"
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+                {/* fade the right edge so the overflow reads as "scroll for more" */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/80 to-transparent"
+                />
+              </div>
             </div>
 
             {/* Input — auto-resizing textarea with premium focus-within glow */}

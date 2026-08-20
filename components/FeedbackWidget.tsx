@@ -41,21 +41,38 @@ export default function FeedbackWidget() {
   // Idle hide + proximity reveal.
   useEffect(() => {
     armIdleTimer();
+    // The button lives at a fixed bottom corner, so its centre only moves when
+    // the viewport resizes — cache it and refresh on resize instead of calling
+    // getBoundingClientRect() on every pointermove (a forced layout read that
+    // was thrashing the whole page as the mouse moved). Also throttle to ~10/s;
+    // a proximity reveal needs nowhere near per-frame precision.
+    let cx = 0;
+    let cy = window.innerHeight - 40;
+    const measure = () => {
+      const rect = btnRef.current?.getBoundingClientRect();
+      if (rect && rect.width) {
+        cx = rect.left + rect.width / 2;
+        cy = rect.top + rect.height / 2;
+      } else {
+        cy = window.innerHeight - 40;
+      }
+    };
+    measure();
+    let last = 0;
     const onMove = (e: PointerEvent) => {
-      const el = btnRef.current;
-      // When hidden, measure against the button's home corner instead.
-      const rect = el?.getBoundingClientRect();
-      const x = rect ? rect.left + rect.width / 2 : 0;
-      const y = rect ? rect.top + rect.height / 2 : window.innerHeight - 40;
-      const dist = Math.hypot(e.clientX - x, e.clientY - y);
-      if (dist < NEAR_PX) {
+      const now = e.timeStamp;
+      if (now - last < 100) return; // throttle: at most ~10 checks/second
+      last = now;
+      if (Math.hypot(e.clientX - cx, e.clientY - cy) < NEAR_PX) {
         setVisible(true);
         armIdleTimer();
       }
     };
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("resize", measure, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("resize", measure);
       window.clearTimeout(idleTimer.current);
     };
   }, [armIdleTimer]);
