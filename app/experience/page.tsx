@@ -150,6 +150,41 @@ export default function Experience() {
           </header>
 
           <div>
+            {/* AI Developer Intern — Vicharanashala, IIT Ropar (current role) */}
+            <article aria-labelledby="iit-ropar-heading">
+              <header>
+                <h2 id="iit-ropar-heading">
+                  Artificial Intelligence Developer Intern
+                </h2>
+                <p>
+                  <strong>Vicharanashala, IIT Ropar · Aug 2026 – Present</strong>{" "}
+                  · Remote · 3-month track
+                </p>
+              </header>
+              <ul itemProp="description">
+                <li>
+                  <strong>Building &amp; designing AI solutions</strong> —
+                  architecting intelligent AI applications with a focus on system
+                  design and scalable software architecture.
+                </li>
+                <li>
+                  <strong>Full-stack &amp; AI engineering</strong> — an intensive
+                  track integrating foundational AI methodologies with the MERN
+                  (MongoDB, Express, React, Node.js) stack via the ViBe platform.
+                </li>
+                <li>
+                  <strong>Mathematical foundations &amp; mentoring</strong> —
+                  peer-to-peer technical validation sessions (Matrix Mystics)
+                  solving and endorsing the Linear Algebra behind ML models.
+                </li>
+                <li>
+                  <strong>Agile collaboration</strong> — daily agile standups and
+                  cross-functional breakout rooms, with asynchronous technical
+                  documentation on Discourse.
+                </li>
+              </ul>
+            </article>
+
             {/* Independent project work */}
             <article aria-labelledby="independent-heading">
               <header>

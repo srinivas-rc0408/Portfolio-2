@@ -1067,11 +1067,10 @@ export default function Terminal({
       "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
     if (inputRef.current && !isTouchDevice) {
-      inputRef.current.focus();
+      // preventScroll so focusing never yanks the viewport to the input — the
+      // post-command effect is the single scroll authority.
+      inputRef.current.focus({ preventScroll: true });
     }
-    // No scroll here on purpose: the post-command effect is the single scroll
-    // authority. A scroll-to-bottom on every focus/click used to fight it and
-    // drop the reader at the end of a section.
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -1136,7 +1135,10 @@ export default function Terminal({
     const isTouchDevice =
       "ontouchstart" in window || navigator.maxTouchPoints > 0;
     if (!isTouchDevice) {
-      inputRef.current?.focus();
+      // preventScroll: the input sits below the profile pane, so a plain focus()
+      // makes the browser scroll it into view — that was the page auto-scrolling
+      // down to the terminal on first load. Focus without moving the viewport.
+      inputRef.current?.focus({ preventScroll: true });
     }
     setTimeout(() => {
       const boot = async () => {

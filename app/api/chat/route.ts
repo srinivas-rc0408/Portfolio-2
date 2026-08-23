@@ -117,8 +117,9 @@ SKILLS:
 WORKFLOW: His core workflow heavily involves AI prompt engineering and prompt coding to rapidly architect and ship production-ready full-stack web applications. He develops on Linux (CachyOS and Pop!_OS) using Visual Studio Code and GitHub Copilot.
 
 EXPERIENCE:
+- Artificial Intelligence Developer Intern — Vicharanashala, IIT Ropar (remote, Aug 2026 – present; a 3-month track). Builds and architects AI applications with a focus on intelligent system design and scalable software architecture; works through an intensive track integrating foundational AI methodologies with the MERN stack via the ViBe platform; sharpens the Linear Algebra behind ML models in peer-to-peer validation sessions ("Matrix Mystics"); and collaborates in daily agile standups and cross-functional breakout rooms. This is his current role — his first formal AI internship. Tech: Artificial Intelligence, MERN stack, Linear Algebra, system architecture.
 - Core Member & Head of Media, Yantra IoT Club (REVA University), 2025 — led media and outreach; ran promotional campaigns for 2 robotics events (ROBONEMESIS microcontroller training and a Follow Bot Competition) that drew 17K+ combined views; coordinated technical workshops and career panels with professionals from Amazon and Google, reaching 100+ students.
-- Independent AI/ML engineering (self-directed, 2025 – present) — ships full-stack AI products end to end (12 projects). This is personal/open-source work, NOT paid employment; never describe it as a job or internship he has held. He is currently seeking his first AI/ML internship.
+- Independent AI/ML engineering (self-directed, 2025 – present) — ships full-stack AI products end to end (12 projects). This is personal/open-source work, NOT paid employment; never describe it as a job or internship he has held. Alongside his IIT Ropar internship he remains open to further AI/ML internships and university placements.
 
 EDUCATION:
 - B.Tech, Artificial Intelligence & Machine Learning — REVA University, Bengaluru. Expected 2027.

@@ -1916,7 +1916,12 @@ type Tab = CmsSection | "settings" | "feedback";
 export default function AdminPage() {
   const [user, setUser] = useState<SessionUser | null | undefined>(undefined);
   const [tab, setTab] = useState<Tab>("settings");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Start expanded on desktop, collapsed to an icon rail on phones so the
+  // workspace isn't squished. (Safe as a lazy initializer: the dashboard only
+  // renders client-side, after the session probe, so there's no SSR mismatch.)
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => typeof window === "undefined" || window.innerWidth >= 768
+  );
 
   // Gate on a lightweight session probe (JWT verify only) so the login form —
   // and, after sign-in, the dashboard — appear instantly. The heavy CMS
@@ -1960,7 +1965,14 @@ export default function AdminPage() {
       <button
         key={key}
         type="button"
-        onClick={() => setTab(key)}
+        onClick={() => {
+          setTab(key);
+          // On phones the sidebar is an overlay drawer — close it after picking
+          // a section so the workspace is immediately visible.
+          if (typeof window !== "undefined" && window.innerWidth < 768) {
+            setSidebarOpen(false);
+          }
+        }}
         title={label}
         aria-current={active ? "page" : undefined}
         className={`relative flex items-center gap-3 py-2 text-sm transition-colors ${
@@ -1984,10 +1996,22 @@ export default function AdminPage() {
 
   return (
     <div className="flex min-h-screen bg-[radial-gradient(ellipse_at_top_left,rgba(var(--theme-accent-rgb),0.06),transparent_55%)] bg-black font-mono text-white">
-      {/* Collapsible sidebar */}
+      {/* Mobile scrim — tap to close the expanded drawer */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden
+        />
+      )}
+
+      {/* Sidebar — an in-flow icon rail / panel on desktop; an overlay drawer on
+          phones when expanded (so it never squeezes the workspace). */}
       <aside
-        className={`shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md transition-[width] duration-200 ease-out ${
-          sidebarOpen ? "w-56" : "w-16"
+        className={`shrink-0 border-r border-white/10 bg-black/60 backdrop-blur-md transition-[width] duration-200 ease-out md:bg-black/40 ${
+          sidebarOpen
+            ? "w-56 max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-40 max-md:shadow-2xl max-md:shadow-black/60"
+            : "w-16"
         }`}
       >
         {/* Brand + collapse toggle */}
