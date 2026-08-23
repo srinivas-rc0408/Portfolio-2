@@ -35,6 +35,9 @@ export default function SmartImage({
         {...props}
         src={src}
         alt={alt}
+        // Crisper by default (next/image defaults to 75). Ignored for
+        // unoptimized data-URL uploads, which already serve at full quality.
+        quality={props.quality ?? 90}
         unoptimized={props.unoptimized ?? isDataUrl}
         onLoad={(e) => {
           setLoaded(true);

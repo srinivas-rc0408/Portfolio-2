@@ -71,6 +71,11 @@ html {
   font-family: var(--font-jetbrains-mono), ui-monospace, "JetBrains Mono",
     "Menlo", monospace;
   overflow: hidden;
+  /* Crisp, premium text on every display (was only inside a high-DPI query):
+     grayscale AA on macOS + optimized legibility everywhere. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Only the terminal home locks to a fixed 100vh viewport (it scrolls

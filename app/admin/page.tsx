@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
 import {
-  Eye, EyeOff, Globe, Lock, Pin, Star, X,
+  Eye, EyeOff, Globe, Lock, Pin, Star, X, Check, Trash2, Upload,
+  AlertTriangle, Pencil, ArrowDown, ArrowUp,
   Settings, MessageSquare, PanelLeftClose, PanelLeftOpen, LogOut, ExternalLink,
   FileText, ScrollText, FolderGit2, Award, GraduationCap, Briefcase, Trophy,
   AtSign, Quote, type LucideIcon,
@@ -151,7 +152,9 @@ function CheckBox({
           : "border-white/25 text-transparent hover:border-white/50"
       }`}
     >
-      ✓
+      {/* Icon inherits currentColor, so text-transparent hides it when off with
+          no layout shift; accent-colored when checked. */}
+      <Check size={13} strokeWidth={3} aria-hidden />
     </button>
   );
 }
@@ -262,9 +265,10 @@ function SaveBar({
                     <button
                       type="button"
                       onClick={onDeleteSelected}
-                      className="rounded-lg border border-red-900/60 bg-red-900/10 px-3 py-2 font-mono text-xs text-red-300 transition-colors duration-150 hover:bg-red-900/25 active:scale-95"
+                      className="flex items-center gap-1.5 rounded-lg border border-red-900/60 bg-red-900/10 px-3 py-2 font-mono text-xs text-red-300 transition-colors duration-150 hover:bg-red-900/25 active:scale-95"
                     >
-                      🗑 Delete {selectedCount}
+                      <Trash2 size={13} strokeWidth={2} aria-hidden />
+                      Delete {selectedCount}
                     </button>
                     <button
                       type="button"
@@ -701,7 +705,7 @@ function GlobalSettingsPanel() {
                 : "border-white/15 text-gray-400 hover:border-[rgba(var(--theme-accent-rgb),0.5)] hover:text-white"
             }`}
           >
-            <span className="mb-1 text-lg">⬆</span>
+            <Upload size={20} strokeWidth={1.75} aria-hidden className="mb-1.5" />
             Drop an image here or click to upload
             <span className="mt-1 text-[10px] text-gray-400">
               auto-resized · applied when you Save
@@ -1175,7 +1179,7 @@ function Workspace({ section }: { section: CmsSection }) {
                 role="alert"
                 className="mt-3 flex items-start gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300"
               >
-                <span aria-hidden>⚠</span>
+                <AlertTriangle size={13} strokeWidth={2} aria-hidden className="mt-0.5 shrink-0" />
                 <span>{uploadError}</span>
               </p>
             )}
@@ -1183,8 +1187,9 @@ function Workspace({ section }: { section: CmsSection }) {
             {/* Text-file editor (opens when a .txt/.md is dropped) */}
             {textDraft && (
               <div className="mt-4 rounded-xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/50 p-3">
-                <p className="mb-2 text-xs font-bold text-[var(--theme-accent)]">
-                  ✎ Editing text file — review, then save as an entry
+                <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-[var(--theme-accent)]">
+                  <Pencil size={12} strokeWidth={2} aria-hidden />
+                  Editing text file — review, then save as an entry
                 </p>
                 <input
                   value={textDraft.title}
@@ -1278,10 +1283,10 @@ function Workspace({ section }: { section: CmsSection }) {
                         <div className="pt-0.5">
                           {deleted ? (
                             <span
-                              className="grid h-5 w-5 place-items-center text-xs text-red-500/70"
+                              className="grid h-5 w-5 place-items-center text-red-500/70"
                               aria-hidden
                             >
-                              ✕
+                              <X size={13} strokeWidth={2.5} />
                             </span>
                           ) : (
                             <CheckBox
@@ -1734,15 +1739,21 @@ function FeedbackPanel() {
             type="button"
             onClick={() => setNewestFirst((v) => !v)}
             aria-label={`Sorted ${newestFirst ? "newest" : "oldest"} first — click to flip`}
-            className="shrink-0 rounded-lg border border-white/15 px-4 py-2 text-xs text-gray-300 transition-colors hover:bg-[rgba(var(--theme-accent-rgb),0.12)] hover:text-white"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg border border-white/15 px-4 py-2 text-xs text-gray-300 transition-colors hover:bg-[rgba(var(--theme-accent-rgb),0.12)] hover:text-white"
           >
-            {newestFirst ? "↓ newest first" : "↑ oldest first"}
+            {newestFirst ? (
+              <ArrowDown size={13} strokeWidth={2} aria-hidden />
+            ) : (
+              <ArrowUp size={13} strokeWidth={2} aria-hidden />
+            )}
+            {newestFirst ? "newest first" : "oldest first"}
           </button>
         </div>
 
         {error && (
-          <p role="alert" className="mb-3 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
-            ⚠ {error}
+          <p role="alert" className="mb-3 flex items-center gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
+            <AlertTriangle size={13} strokeWidth={2} aria-hidden className="shrink-0" />
+            {error}
           </p>
         )}
 
@@ -1786,10 +1797,10 @@ function FeedbackPanel() {
                       <div className="pt-3.5">
                         {isStaged ? (
                           <span
-                            className="grid h-5 w-5 place-items-center text-xs text-red-500/70"
+                            className="grid h-5 w-5 place-items-center text-red-500/70"
                             aria-hidden
                           >
-                            ✕
+                            <X size={13} strokeWidth={2.5} />
                           </span>
                         ) : (
                           <CheckBox

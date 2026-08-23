@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Check, File as FileIcon, Loader2, Upload } from "lucide-react";
+import { AlertTriangle, Check, File as FileIcon, Loader2, Upload } from "lucide-react";
 
 /**
  * Themed drag-and-drop upload zone for the admin panel. Native DnD (no extra
@@ -183,7 +183,7 @@ export default function AdminUpload({
           role="alert"
           className="mt-2 flex items-start gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300"
         >
-          <span aria-hidden>⚠</span>
+          <AlertTriangle size={13} strokeWidth={2} aria-hidden className="mt-0.5 shrink-0" />
           <span>{error}</span>
         </p>
       )}
