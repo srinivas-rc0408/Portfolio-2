@@ -144,23 +144,26 @@ interface JerryChatProps {
 const INTRO =
   "Hi! I am Jerry, Srinivas RC's personal AI assistant. How can I help you explore his portfolio today?";
 
-// A strong opener is pinned first, and the flagship "Why choose…" sits second
-// (as the standout recruiter question) — both always shown. The rest are a
-// fresh sample from a pro, recruiter-oriented pool, each mapped to Jerry's
-// knowledge base so answers stay accurate.
+// Three standout questions are always shown — a strong opener, the flagship
+// "Why choose…", and his current IIT Ropar internship (a prestige signal) — then
+// a fresh sample from a pro, recruiter-oriented pool. Every prompt maps to
+// Jerry's knowledge base so answers stay accurate.
 const LEAD_CHIP = "What makes him stand out?";
 const WHY_CHIP = "Why choose Srinivas R C?";
+const INTERN_CHIP = "Tell me about his IIT Ropar internship";
 const CHIP_POOL = [
   "Walk me through ArchAgent",
   "What's he building right now?",
   "How deep is his LLM & agentic AI work?",
   "Show me his production-ready projects",
   "What's his strongest engineering skill?",
-  "Is he ready for an AI/ML role?",
+  "Is he ready for a full-time AI/ML role?",
   "What's his MLOps & deployment experience?",
   "How does he use AI in his workflow?",
   "What's his tech stack?",
   "What certifications back his skills?",
+  "What is he studying, and where?",
+  "What are his standout achievements?",
   "How can I get in touch with him?",
   "Tell me something fun about him",
 ];
@@ -206,8 +209,8 @@ let chatCache: Msg[] = [];
 
 function sampleChips(): string[] {
   const shuffled = [...CHIP_POOL].sort(() => Math.random() - 0.5);
-  // 6 chips: pinned opener, the flagship "Why choose…" second, then 4 fresh.
-  return [LEAD_CHIP, WHY_CHIP, ...shuffled.slice(0, 4)];
+  // 6 chips: pinned opener, flagship "Why choose…", the internship, then 3 fresh.
+  return [LEAD_CHIP, WHY_CHIP, INTERN_CHIP, ...shuffled.slice(0, 3)];
 }
 
 export default function JerryChat({ open, onClose, initialQuestion }: JerryChatProps) {

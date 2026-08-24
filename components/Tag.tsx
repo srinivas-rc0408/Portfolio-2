@@ -12,7 +12,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { track } from "@vercel/analytics";
-import { ChevronUp, Download, Gamepad2, LogIn, Sparkles } from "lucide-react";
+import { Briefcase, ChevronUp, Download, Gamepad2, LogIn, Sparkles } from "lucide-react";
 import ProfileLightbox from "@/components/ProfileLightbox";
 import { footerLinks } from "@/lib/portfolio-data";
 import {
@@ -459,6 +459,33 @@ export default function Tag() {
           <span className="type-line delay">{settings.title}</span>
           <span className="block-cursor" aria-hidden="true" />
         </p>
+      </div>
+
+      {/* Current role — the IIT Ropar internship, highlighted. A prestige
+          signal right under the name; opens the full experience board. */}
+      <div className="mt-3 flex justify-center">
+        <motion.button
+          type="button"
+          onClick={() => execInTerminal("experience")}
+          whileTap={{ scale: 0.97 }}
+          aria-label="Current role: Artificial Intelligence Developer Intern at Vicharanashala, IIT Ropar — open experience"
+          title="Current role — open experience"
+          className="group/role inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[rgba(var(--accent-rgb),0.45)] bg-[rgba(var(--accent-rgb),0.1)] px-3 py-1.5 font-mono text-[11px] text-[var(--text)] shadow-[0_0_18px_-7px_rgba(var(--accent-rgb),0.7)] transition-all duration-200 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.16)] active:scale-[0.97]"
+        >
+          <Briefcase
+            size={12}
+            strokeWidth={2.2}
+            aria-hidden
+            className="shrink-0 text-[var(--accent)]"
+          />
+          <span className="font-semibold">AI Developer Intern</span>
+          <span className="text-[var(--text-secondary)]">·</span>
+          <span>IIT Ropar</span>
+          <span className="relative ml-0.5 flex h-1.5 w-1.5 shrink-0" aria-hidden>
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          </span>
+        </motion.button>
       </div>
 
       {/* Current focus — the live “what I'm building now” signal. Opens the
