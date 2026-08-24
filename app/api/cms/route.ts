@@ -117,6 +117,15 @@ async function requireAdmin() {
   return session?.role === "admin";
 }
 
+/** Postgres unique_violation (23505) — a duplicate (section, title). */
+function isDuplicateTitle(e: unknown): boolean {
+  return (
+    !!e && typeof e === "object" && (e as { code?: string }).code === "23505"
+  );
+}
+const DUP_TITLE_MSG =
+  "An entry with that title already exists in this section — use a different title.";
+
 export async function POST(req: NextRequest) {
   if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json().catch(() => ({}));
@@ -134,6 +143,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ entry });
   } catch (e) {
     console.error("cms POST error:", e);
+    if (isDuplicateTitle(e)) {
+      return NextResponse.json({ error: DUP_TITLE_MSG }, { status: 409 });
+    }
     return NextResponse.json({ error: "Could not save the entry. Please try again." }, { status: 500 });
   }
 }
@@ -157,6 +169,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("cms PUT error:", e);
+    if (isDuplicateTitle(e)) {
+      return NextResponse.json({ error: DUP_TITLE_MSG }, { status: 409 });
+    }
     return NextResponse.json({ error: "Could not save the entry. Please try again." }, { status: 500 });
   }
 }

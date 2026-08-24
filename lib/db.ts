@@ -94,6 +94,10 @@ async function init(): Promise<void> {
       sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false`,
       sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS starred BOOLEAN NOT NULL DEFAULT false`,
       sql`ALTER TABLE cms_entry ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`,
+      // Idempotency guard: (section, title) is unique, so seed()'s ON CONFLICT
+      // makes re-seeding a no-op. Without it a cold-start race double-seeded the
+      // whole CMS. Safe here (existing rows are already de-duplicated).
+      sql`CREATE UNIQUE INDEX IF NOT EXISTS cms_entry_section_title_uq ON cms_entry (section, title)`,
     ]);
     const [{ count }] = (await sql`SELECT COUNT(*)::int AS count FROM cms_entry`) as {
       count: number;
@@ -150,6 +154,8 @@ async function init(): Promise<void> {
   ]);
 
   await sql`INSERT INTO site_setting (id) VALUES (1) ON CONFLICT (id) DO NOTHING`;
+  // Unique (section, title) so a concurrent/re-run seed can't duplicate rows.
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS cms_entry_section_title_uq ON cms_entry (section, title)`;
   await seed();
 }
 
@@ -245,7 +251,7 @@ async function seed(): Promise<void> {
         ${JSON.stringify(r.tech)}::jsonb, ${r.imageUrl},
         ${r.isPrivate}, ${r.sortOrder}, ${r.pinned}, ${r.starred}
       )
-      ON CONFLICT (id) DO NOTHING`;
+      ON CONFLICT (section, title) DO NOTHING`;
   }
 }
 
