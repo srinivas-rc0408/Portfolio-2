@@ -173,16 +173,23 @@ export default function Tag() {
   // the transforms for users who ask for less motion.
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
-  const spring = { stiffness: 220, damping: 18, mass: 0.6 };
-  const rotateY = useSpring(useTransform(px, [0, 1], [-9, 9]), spring);
-  const rotateX = useSpring(useTransform(py, [0, 1], [9, -9]), spring);
+  // Well-damped so the tilt tracks the cursor cleanly and settles without
+  // wobble — a controlled, premium follow rather than a springy one.
+  const spring = { stiffness: 250, damping: 22, mass: 0.5 };
+  const rotateY = useSpring(useTransform(px, [0, 1], [-8, 8]), spring);
+  const rotateX = useSpring(useTransform(py, [0, 1], [8, -8]), spring);
   // Separate source value so onMouseLeave can spring the glow back to 0 — a
   // spring must be driven through its source, not by setting its output.
   const glowRaw = useMotionValue(0);
   const glowOpacity = useSpring(glowRaw, { stiffness: 200, damping: 26 });
   const glowX = useTransform(px, (v) => `${v * 100}%`);
   const glowY = useTransform(py, (v) => `${v * 100}%`);
-  const glowBg = useMotionTemplate`radial-gradient(circle at ${glowX} ${glowY}, rgba(var(--theme-accent-rgb),0.4), transparent 62%)`;
+  // Soft accent aura BEHIND the card — restrained so it frames the photo
+  // instead of fogging it (0.4 white was washing the image out).
+  const glowBg = useMotionTemplate`radial-gradient(circle at ${glowX} ${glowY}, rgba(var(--theme-accent-rgb),0.22), transparent 55%)`;
+  // Crisp specular highlight that rides ON the photo (mix-blend-overlay), so the
+  // surface catches light where the cursor is — glossy and sharp, never hazy.
+  const sheenBg = useMotionTemplate`radial-gradient(240px circle at ${glowX} ${glowY}, rgba(255,255,255,0.16), transparent 60%)`;
 
   const onCardMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -332,7 +339,17 @@ export default function Tag() {
             priority
             unoptimized
             draggable={false}
-            className="object-cover transition-transform duration-500 ease-out [@media(hover:hover)]:group-hover:scale-[1.05]"
+            className="object-cover transition-[transform,filter] duration-500 ease-out [@media(hover:hover)]:group-hover:scale-[1.06] [@media(hover:hover)]:group-hover:brightness-[1.06] [@media(hover:hover)]:group-hover:contrast-[1.07] [@media(hover:hover)]:group-hover:saturate-[1.12]"
+          />
+
+          {/* Glossy specular sheen — a crisp highlight that follows the cursor
+              over the photo (mix-blend-overlay), so the surface catches light
+              rather than getting washed out. Sits above the image, below the
+              HUD/greeting so text stays readable. */}
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 mix-blend-overlay"
+            style={{ background: sheenBg, opacity: glowOpacity }}
           />
 
           {/* HUD corner brackets — "lock on" from slightly inset to the corners
