@@ -187,9 +187,10 @@ export default function Tag() {
   // Soft accent aura BEHIND the card — restrained so it frames the photo
   // instead of fogging it (0.4 white was washing the image out).
   const glowBg = useMotionTemplate`radial-gradient(circle at ${glowX} ${glowY}, rgba(var(--theme-accent-rgb),0.22), transparent 55%)`;
-  // Crisp specular highlight that rides ON the photo (mix-blend-overlay), so the
-  // surface catches light where the cursor is — glossy and sharp, never hazy.
-  const sheenBg = useMotionTemplate`radial-gradient(240px circle at ${glowX} ${glowY}, rgba(255,255,255,0.16), transparent 60%)`;
+  // Reactive glint that rides ON the photo — soft-light + accent-tinted so it
+  // lifts the surface under the cursor WITHOUT blowing out light regions the way
+  // overlay-white did (it screened the photo's light top to near-white on hover).
+  const sheenBg = useMotionTemplate`radial-gradient(170px circle at ${glowX} ${glowY}, rgba(var(--theme-accent-rgb),0.30), transparent 62%)`;
 
   const onCardMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -348,7 +349,7 @@ export default function Tag() {
               HUD/greeting so text stays readable. */}
           <motion.div
             aria-hidden
-            className="pointer-events-none absolute inset-0 mix-blend-overlay"
+            className="pointer-events-none absolute inset-0 mix-blend-soft-light"
             style={{ background: sheenBg, opacity: glowOpacity }}
           />
 
