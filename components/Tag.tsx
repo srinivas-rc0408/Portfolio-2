@@ -340,7 +340,7 @@ export default function Tag() {
             priority
             unoptimized
             draggable={false}
-            className="object-cover transition-[transform,filter] duration-500 ease-out [@media(hover:hover)]:group-hover:scale-[1.06] [@media(hover:hover)]:group-hover:brightness-[1.06] [@media(hover:hover)]:group-hover:contrast-[1.07] [@media(hover:hover)]:group-hover:saturate-[1.12]"
+            className="object-cover transition-[transform,filter] duration-[450ms] ease-out [@media(hover:hover)]:group-hover:scale-[1.07] [@media(hover:hover)]:group-hover:brightness-[1.08] [@media(hover:hover)]:group-hover:contrast-[1.13] [@media(hover:hover)]:group-hover:saturate-[1.15]"
           />
 
           {/* Glossy specular sheen — a crisp highlight that follows the cursor
@@ -391,21 +391,13 @@ export default function Tag() {
               with a blinking caret, over a bottom-up gradient so the face still
               reads through. */}
           <div
-            className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-end overflow-hidden bg-gradient-to-t from-black/92 via-black/55 to-transparent pb-5 transition-opacity duration-300 ease-out ${
+            className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-end overflow-hidden bg-gradient-to-t from-black via-black/70 via-40% to-transparent pb-5 transition-opacity duration-300 ease-out ${
               greet ? "opacity-100" : "opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
             }`}
           >
-            {/* Accent hairline that draws outward as the answer lands. */}
-            <span
-              aria-hidden
-              className={`absolute inset-x-7 bottom-[4.6rem] h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)] to-transparent transition-transform duration-500 ease-out ${
-                greet ? "scale-x-100" : "scale-x-0 [@media(hover:hover)]:group-hover:scale-x-100"
-              }`}
-            />
-
             {/* The shell prompt asking the question. */}
             <span
-              className={`font-mono text-[10px] uppercase tracking-[0.32em] text-white/45 transition-all duration-300 ease-out ${
+              className={`font-mono text-[10px] uppercase tracking-[0.34em] text-white/50 transition-all duration-300 ease-out ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
@@ -418,7 +410,7 @@ export default function Tag() {
                 flex row — `.block-cursor` relies on vertical-align to sit on
                 the text baseline, same caret as the hero tagline. */}
             <span
-              className={`mt-1.5 whitespace-nowrap font-mono text-lg font-bold tracking-tight text-white transition-all delay-75 duration-300 ease-out sm:text-xl ${
+              className={`mt-2 whitespace-nowrap font-mono text-lg font-bold tracking-tight text-white transition-all delay-75 duration-300 ease-out sm:text-xl ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
@@ -442,7 +434,7 @@ export default function Tag() {
                 tap physics), so its responsive states ride the card's
                 group-hover rather than its own pointer events. */}
             <span
-              className={`mt-2.5 inline-flex w-auto max-w-full items-center gap-1.5 whitespace-nowrap rounded-full border border-white/25 bg-transparent px-3.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-white/85 backdrop-blur-md transition-all delay-150 duration-300 ease-out [@media(hover:hover)]:group-hover:border-white/50 [@media(hover:hover)]:group-hover:bg-white/5 [@media(hover:hover)]:group-hover:text-white ${
+              className={`mt-3 inline-flex w-auto max-w-full items-center gap-1.5 whitespace-nowrap rounded-full border border-white/25 bg-white/[0.03] px-3.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-white/85 backdrop-blur-md transition-all delay-150 duration-300 ease-out [@media(hover:hover)]:group-hover:border-[rgba(var(--theme-accent-rgb),0.65)] [@media(hover:hover)]:group-hover:bg-[rgba(var(--theme-accent-rgb),0.1)] [@media(hover:hover)]:group-hover:text-white [@media(hover:hover)]:group-hover:shadow-[0_0_20px_-6px_rgba(var(--theme-accent-rgb),0.75)] ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
@@ -457,7 +449,7 @@ export default function Tag() {
               </span>
               <span
                 aria-hidden
-                className="text-white/70 transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:translate-x-0.5 [@media(hover:hover)]:group-hover:-translate-y-0.5"
+                className="text-white/70 transition-[transform,color] duration-300 ease-out [@media(hover:hover)]:group-hover:translate-x-0.5 [@media(hover:hover)]:group-hover:-translate-y-0.5 [@media(hover:hover)]:group-hover:text-[var(--theme-accent)]"
               >
                 &#8599;
               </span>
