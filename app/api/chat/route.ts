@@ -11,6 +11,9 @@ export const dynamic = "force-dynamic";
 const NVIDIA_API_KEY_1 = process.env.NVIDIA_API_KEY_1;
 const NVIDIA_API_KEY_2 = process.env.NVIDIA_API_KEY_2;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Optional second Gemini key — a backup tier so a single key hitting its quota
+// never takes Jerry down. Leave unset if you only have one.
+const GEMINI_API_KEY_2 = process.env.GEMINI_API_KEY_2;
 // Fast model tiers for low latency. Hardcoded (NOT env-overridable) on purpose:
 // NVIDIA's llama-3.x line was retired (410 Gone) and a stale NVIDIA_MODEL /
 // GEMINI_MODEL in .env silently 404'd Jerry into the fallback. nemotron-3-nano is
@@ -276,9 +279,8 @@ async function callNvidia(key: string, user: string): Promise<string> {
 }
 
 /** Google Gemini call. Returns the full text; throws if empty (→ next tier). */
-async function callGemini(user: string): Promise<string> {
-  if (!GEMINI_API_KEY) throw new Error("Gemini key not configured");
-  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+async function callGemini(key: string, user: string): Promise<string> {
+  const genAI = new GoogleGenerativeAI(key);
   const model = genAI.getGenerativeModel({
     model: GEMINI_MODEL,
     generationConfig: { maxOutputTokens: MAX_TOKENS, temperature: 0.4 },
@@ -341,12 +343,20 @@ export async function POST(req: NextRequest) {
       // the `highlightBackend` sentinel so the client can override the UI.
       const useToolCall = BACKEND_TRIGGER.test(question);
 
-      // Gemini flash-lite is the primary tier: it's the most capable model here,
-      // so it answers casual/EQ questions warmly and follows the persona rules
-      // without over-refusing (nemotron, a small reasoning model, cold-refuses
-      // greetings). The two NVIDIA nemotron keys are fast backups for resilience.
+      // Gemini flash-lite leads: it's the most capable model here, so it answers
+      // casual/EQ questions warmly and follows the persona rules without over-
+      // refusing (nemotron, a small reasoning model, cold-refuses greetings). A
+      // second Gemini key (if set) is the next tier so one key's quota can't take
+      // Jerry down, then the two NVIDIA nemotron keys as fast final backups.
       const tiers: (() => Promise<string>)[] = [];
-      if (GEMINI_API_KEY) tiers.push(() => callGemini(question));
+      if (GEMINI_API_KEY) {
+        const k = GEMINI_API_KEY;
+        tiers.push(() => callGemini(k, question));
+      }
+      if (GEMINI_API_KEY_2) {
+        const k = GEMINI_API_KEY_2;
+        tiers.push(() => callGemini(k, question));
+      }
       if (NVIDIA_API_KEY_1) {
         const k = NVIDIA_API_KEY_1;
         tiers.push(() => callNvidia(k, question));
