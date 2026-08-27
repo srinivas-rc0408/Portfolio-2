@@ -12,7 +12,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { track } from "@vercel/analytics";
-import { Briefcase, ChevronUp, Download, Gamepad2, LogIn, Sparkles } from "lucide-react";
+import { Briefcase, ChevronUp, Download, Gamepad2, LogIn, Maximize2, Sparkles } from "lucide-react";
 import ProfileLightbox from "@/components/ProfileLightbox";
 import { footerLinks } from "@/lib/portfolio-data";
 import {
@@ -429,30 +429,36 @@ export default function Tag() {
               <span className="block-cursor" aria-hidden />
             </span>
 
-            {/* Ghost-glass "tap to view" chip. It's a label inside the card
-                button (the whole card is the tap target and carries the tilt/
-                tap physics), so its responsive states ride the card's
-                group-hover rather than its own pointer events. */}
+            {/* "Click to view" — a tactile terminal-glass button. The whole card
+                is the tap target, so this rides the card's group-hover. On hover
+                an accent fill sweeps in from the left, the pill lifts with an
+                accent glow, and the expand icon pops. */}
             <span
-              className={`mt-3 inline-flex w-auto max-w-full items-center gap-1.5 whitespace-nowrap rounded-full border border-white/25 bg-white/[0.03] px-3.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-white/85 backdrop-blur-md transition-all delay-150 duration-300 ease-out [@media(hover:hover)]:group-hover:border-[rgba(var(--theme-accent-rgb),0.65)] [@media(hover:hover)]:group-hover:bg-[rgba(var(--theme-accent-rgb),0.1)] [@media(hover:hover)]:group-hover:text-white [@media(hover:hover)]:group-hover:shadow-[0_0_20px_-6px_rgba(var(--theme-accent-rgb),0.75)] ${
+              className={`relative mt-3 inline-flex w-auto max-w-full items-center gap-2 overflow-hidden whitespace-nowrap rounded-full border border-white/20 bg-white/[0.04] px-4 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-white/80 backdrop-blur-md transition-all delay-150 duration-300 ease-out [@media(hover:hover)]:group-hover:-translate-y-px [@media(hover:hover)]:group-hover:border-[rgba(var(--theme-accent-rgb),0.7)] [@media(hover:hover)]:group-hover:text-white [@media(hover:hover)]:group-hover:shadow-[0_8px_26px_-10px_rgba(var(--theme-accent-rgb),0.9)] ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
               }`}
             >
-              {/* One flex item, so the row's gap-1.5 sits between the label and
-                  the arrow rather than between the words. */}
-              <span>
+              {/* Accent fill that sweeps in from the left on hover — the
+                  satisfying part. Clipped to the pill by overflow-hidden. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-[rgba(var(--theme-accent-rgb),0.3)] via-[rgba(var(--theme-accent-rgb),0.12)] to-transparent transition-transform duration-500 ease-out [@media(hover:hover)]:group-hover:translate-x-0"
+              />
+              {/* One flex item, so the row's gap sits between the label and the
+                  icon rather than between the words. `relative` lifts it above
+                  the sweep. */}
+              <span className="relative">
                 <span className="[@media(hover:hover)]:hidden">tap</span>
                 <span className="hidden [@media(hover:hover)]:inline">click</span>{" "}
                 to view
               </span>
-              <span
+              <Maximize2
                 aria-hidden
-                className="text-white/70 transition-[transform,color] duration-300 ease-out [@media(hover:hover)]:group-hover:translate-x-0.5 [@media(hover:hover)]:group-hover:-translate-y-0.5 [@media(hover:hover)]:group-hover:text-[var(--theme-accent)]"
-              >
-                &#8599;
-              </span>
+                strokeWidth={2.5}
+                className="relative h-3 w-3 text-white/55 transition-[transform,color] duration-300 ease-out [@media(hover:hover)]:group-hover:scale-110 [@media(hover:hover)]:group-hover:text-[var(--theme-accent)]"
+              />
             </span>
           </div>
         </button>
