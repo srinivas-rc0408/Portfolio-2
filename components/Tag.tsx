@@ -429,12 +429,14 @@ export default function Tag() {
               <span className="block-cursor" aria-hidden />
             </span>
 
-            {/* "Click to view" — a tactile terminal-glass button. The whole card
-                is the tap target, so this rides the card's group-hover. On hover
-                an accent fill sweeps in from the left, the pill lifts with an
-                accent glow, and the expand icon pops. */}
+            {/* "Click to view" — a transparent ghost button: no fill, just a
+                clean hairline border over the photo. The whole card is the tap
+                target, so this rides the card's group-hover. On hover a
+                translucent accent sweeps in from the left (keeping the see-
+                through feel), the pill lifts with an accent glow, and the expand
+                icon pops. */}
             <span
-              className={`relative mt-3 inline-flex w-auto max-w-full items-center gap-2 overflow-hidden whitespace-nowrap rounded-full border border-white/20 bg-white/[0.04] px-4 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-white/80 backdrop-blur-md transition-all delay-150 duration-300 ease-out [@media(hover:hover)]:group-hover:-translate-y-px [@media(hover:hover)]:group-hover:border-[rgba(var(--theme-accent-rgb),0.7)] [@media(hover:hover)]:group-hover:text-white [@media(hover:hover)]:group-hover:shadow-[0_8px_26px_-10px_rgba(var(--theme-accent-rgb),0.9)] ${
+              className={`relative mt-3 inline-flex w-auto max-w-full items-center gap-2 overflow-hidden whitespace-nowrap rounded-full border border-white/30 bg-transparent px-4 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-white/90 [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] transition-all delay-150 duration-300 ease-out [@media(hover:hover)]:group-hover:-translate-y-px [@media(hover:hover)]:group-hover:border-[rgba(var(--theme-accent-rgb),0.75)] [@media(hover:hover)]:group-hover:text-white [@media(hover:hover)]:group-hover:shadow-[0_8px_26px_-10px_rgba(var(--theme-accent-rgb),0.9)] ${
                 greet
                   ? "translate-y-0 opacity-100"
                   : "translate-y-2 opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
@@ -457,7 +459,7 @@ export default function Tag() {
               <Maximize2
                 aria-hidden
                 strokeWidth={2.5}
-                className="relative h-3 w-3 text-white/55 transition-[transform,color] duration-300 ease-out [@media(hover:hover)]:group-hover:scale-110 [@media(hover:hover)]:group-hover:text-[var(--theme-accent)]"
+                className="relative h-3 w-3 text-white/75 [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))] transition-[transform,color] duration-300 ease-out [@media(hover:hover)]:group-hover:scale-110 [@media(hover:hover)]:group-hover:text-[var(--theme-accent)]"
               />
             </span>
           </div>
