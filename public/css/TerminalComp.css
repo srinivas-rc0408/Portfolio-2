@@ -573,7 +573,11 @@
   outline: none;
   font: inherit;
   font-family: inherit;
-  font-size: inherit;
+  /* Force >=16px so iOS Safari never auto-zooms the page on focus. The input's
+     own glyphs are transparent (a mirror span renders the visible line), so this
+     has zero visual effect — it only kills the zoom on the terminal's primary
+     interaction. */
+  font-size: 16px;
 }
 
 /* Traffic-light dots grouped in a row so the mobile layout can stack the

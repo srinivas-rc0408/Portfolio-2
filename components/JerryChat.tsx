@@ -223,6 +223,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
   const [domOverride, setDomOverride] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   // Auto-grow the textarea to fit its content, capped so it scrolls past ~5 rows.
   const autosize = useCallback(() => {
@@ -441,16 +442,41 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
     if (!input) autosize();
   }, [input, autosize]);
 
+  // Keyboard-safe sizing on mobile. The on-screen keyboard does NOT shrink the
+  // layout viewport (so 100vh/100dvh would leave the input hidden behind it) —
+  // but it DOES shrink window.visualViewport. Mirror the visual viewport's
+  // height and top offset onto the overlay so the panel (and its bottom-pinned
+  // input) always reflow to sit right above the keyboard. No-op where the API
+  // is missing; the CSS 100dvh fallback covers those.
+  useEffect(() => {
+    if (!open) return;
+    const vv = window.visualViewport;
+    const el = overlayRef.current;
+    if (!vv || !el) return;
+    const sync = () => {
+      el.style.height = `${vv.height}px`;
+      el.style.top = `${vv.offsetTop}px`;
+    };
+    sync();
+    vv.addEventListener("resize", sync);
+    vv.addEventListener("scroll", sync);
+    return () => {
+      vv.removeEventListener("resize", sync);
+      vv.removeEventListener("scroll", sync);
+    };
+  }, [open]);
+
   return (
     <AnimatePresence>
       {open && (
         <motion.div
+          ref={overlayRef}
           key="jerry-backdrop"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center sm:p-6"
+          className="fixed left-0 right-0 top-0 z-[100] flex h-[100dvh] items-end justify-center bg-black/60 pt-[max(env(safe-area-inset-top),0.5rem)] backdrop-blur-sm sm:items-center sm:p-6 sm:pt-6"
           onClick={onClose}
           role="dialog"
           aria-modal="true"
@@ -463,7 +489,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             style={{ willChange: "transform, opacity" }}
-            className="flex h-[78vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-md sm:h-[600px] sm:max-h-[85vh]"
+            className="flex h-full w-full flex-col overflow-hidden rounded-t-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-md sm:h-[600px] sm:max-h-[85vh] sm:max-w-lg sm:rounded-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -565,7 +591,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                     transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                     className="flex justify-end"
                   >
-                    <div className="max-w-[88%] rounded-xl rounded-tr-sm bg-white/[0.08] px-3.5 py-2.5 text-[13px] leading-relaxed text-white">
+                    <div className="max-w-[88%] break-words rounded-xl rounded-tr-sm bg-white/[0.08] px-3.5 py-2.5 text-[13px] leading-relaxed text-white">
                       {m.text}
                     </div>
                   </motion.div>
@@ -629,7 +655,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                       type="button"
                       disabled={busy}
                       onClick={() => void send(c)}
-                      className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] transition-all duration-150 active:scale-95 disabled:opacity-40 ${
+                      className={`inline-flex min-h-[40px] shrink-0 items-center whitespace-nowrap rounded-full border px-3.5 py-2 text-[11px] transition-all duration-150 active:scale-95 disabled:opacity-40 ${
                         i === 1
                           ? // the flagship "Why choose…" — subtly emphasised
                             "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.14)] font-medium text-white hover:bg-[rgba(var(--theme-accent-rgb),0.22)]"
@@ -650,7 +676,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
 
             {/* Input — auto-resizing textarea with premium focus-within glow */}
             <form
-              className="flex shrink-0 items-end gap-2 border-t border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] p-3"
+              className="flex shrink-0 items-end gap-2 border-t border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] p-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] sm:pb-3"
               onSubmit={(e) => {
                 e.preventDefault();
                 void send(input);
@@ -673,11 +699,11 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                       void send(input);
                     }
                   }}
-                  placeholder="Ask Jerry anything… (Shift+Enter for a new line)"
+                  placeholder="Ask Jerry anything…"
                   aria-label="Message Jerry"
                   autoComplete="off"
                   spellCheck={false}
-                  className="max-h-[132px] min-h-[24px] w-full resize-none self-center border-none bg-transparent py-1 text-[13px] leading-relaxed text-zinc-200 placeholder:text-zinc-600 outline-none focus:outline-none focus:ring-0 [caret-color:var(--theme-accent)] [scrollbar-width:thin]"
+                  className="max-h-[132px] min-h-[24px] w-full resize-none self-center border-none bg-transparent py-1 text-[16px] leading-relaxed text-zinc-200 placeholder:text-zinc-600 outline-none focus:outline-none focus:ring-0 [caret-color:var(--theme-accent)] [scrollbar-width:thin] sm:text-[13px]"
                 />
               </div>
               <motion.button

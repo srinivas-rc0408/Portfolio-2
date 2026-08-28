@@ -203,7 +203,7 @@ const Focus: React.FC = () => (
         {/* window chrome */}
         <div className="flex items-center gap-3 border-b border-white/10 bg-white/[0.02] px-3 py-2">
           <WindowDots />
-          <span className="truncate font-mono text-[11px] text-gray-400">
+          <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-gray-400">
             {item.codename ? `${item.codename} — ` : ""}
             {item.name}
           </span>

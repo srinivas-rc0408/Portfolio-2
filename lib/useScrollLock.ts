@@ -35,6 +35,9 @@ function lock(): void {
     body.style.paddingRight = `${current + gap}px`;
   }
   body.style.overflow = "hidden";
+  // Signal that a modal owns the screen — lets always-on floating chrome
+  // (e.g. the feedback FAB) hide itself via CSS so it never overlaps a modal.
+  document.documentElement.setAttribute("data-modal-open", "");
 }
 
 function unlock(): void {
@@ -45,6 +48,7 @@ function unlock(): void {
   document.body.style.overflow = restore.overflow;
   document.body.style.paddingRight = restore.paddingRight;
   restore = null;
+  document.documentElement.removeAttribute("data-modal-open");
 }
 
 export function useScrollLock(active: boolean): void {

@@ -150,10 +150,10 @@ body:not(:has(.app-shell)) {
 /* Profile "lock-on" scanline: a bright accent line that sweeps down the frame
    while it's focused (paired with the HUD corner brackets in Tag.tsx). */
 @keyframes profileScan {
-  0% { top: 0%; opacity: 0; }
+  0% { transform: translateY(0); opacity: 0; }
   12% { opacity: 0.85; }
   88% { opacity: 0.85; }
-  100% { top: 100%; opacity: 0; }
+  100% { transform: translateY(var(--scan-h, 144px)); opacity: 0; }
 }
 .type-line {
   display: inline-block;
@@ -492,14 +492,14 @@ html.scrolling * {
 
   .app-shell {
     height: auto;
-    min-height: 100vh;
+    min-height: 100dvh;
     overflow: visible;
   }
 
   .main-content-area {
     flex-direction: column;
     height: auto;
-    min-height: 100vh;
+    min-height: 100dvh;
     overflow: visible;
   }
 
@@ -521,7 +521,7 @@ html.scrolling * {
   .terminal-pane {
     width: 100%;
     height: auto;
-    min-height: 78vh;
+    min-height: 78dvh;
     max-height: none;
     flex: 1 1 auto;
     overflow: hidden;
@@ -529,7 +529,7 @@ html.scrolling * {
 
   /* Terminal keeps its own internal scroll; page scrolls around it */
   .terminal-container {
-    height: 78vh;
+    height: 78dvh;
   }
 }
 
@@ -546,8 +546,8 @@ html.scrolling * {
 
   .terminal-pane,
   .terminal-container {
-    min-height: 74vh;
-    height: 74vh;
+    min-height: 74dvh;
+    height: 74dvh;
   }
 }
 

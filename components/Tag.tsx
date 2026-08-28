@@ -380,7 +380,7 @@ export default function Tag() {
           <span
             aria-hidden
             style={{ boxShadow: "0 0 12px 1px rgba(var(--theme-accent-rgb),0.7)" }}
-            className={`pointer-events-none absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--theme-accent)] to-transparent opacity-0 motion-reduce:hidden ${
+            className={`pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--theme-accent)] to-transparent opacity-0 [will-change:transform] [--scan-h:144px] motion-reduce:hidden sm:[--scan-h:290px] ${
               greet
                 ? "[animation:profileScan_2s_linear_infinite]"
                 : "[@media(hover:hover)]:group-hover:[animation:profileScan_2s_linear_infinite]"
@@ -488,7 +488,7 @@ export default function Tag() {
           whileTap={{ scale: 0.97 }}
           aria-label="Current role: Artificial Intelligence Developer Intern at Vicharanashala, IIT Ropar — open experience"
           title="Current role — open experience"
-          className="group/role inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[rgba(var(--accent-rgb),0.45)] bg-[rgba(var(--accent-rgb),0.1)] px-3 py-1.5 font-mono text-[11px] text-[var(--text)] shadow-[0_0_18px_-7px_rgba(var(--accent-rgb),0.7)] transition-all duration-200 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.16)] active:scale-[0.97]"
+          className="group/role inline-flex min-h-[44px] items-center gap-2 whitespace-nowrap rounded-full border border-[rgba(var(--accent-rgb),0.45)] bg-[rgba(var(--accent-rgb),0.1)] px-3 py-1.5 font-mono text-[11px] text-[var(--text)] shadow-[0_0_18px_-7px_rgba(var(--accent-rgb),0.7)] transition-all duration-200 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.16)] active:scale-[0.97]"
         >
           <Briefcase
             size={12}

@@ -199,7 +199,7 @@ export default function DocViewer() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className={`flex h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border font-mono backdrop-blur-xl ${
+            className={`flex h-[88dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border font-mono backdrop-blur-xl ${
               isLocked
                 ? "border-amber-500/25 bg-black/80"
                 : "border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/60"

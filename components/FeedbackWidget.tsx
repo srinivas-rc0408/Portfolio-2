@@ -146,7 +146,7 @@ export default function FeedbackWidget() {
               armIdleTimer();
             }}
             aria-label="Send feedback"
-            className="group fixed bottom-5 left-4 z-40 flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--border)] bg-black/80 px-4 py-2.5 font-mono text-xs font-medium text-[var(--text-secondary)] shadow-lg shadow-black/40 backdrop-blur-xl transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)] active:scale-95 min-[1025px]:left-[calc(30%+1rem)] landscape:max-[1024px]:left-[calc(34%+1rem)]"
+            className="group fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-4 z-40 flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--border)] bg-black/80 px-4 py-2.5 font-mono text-xs font-medium text-[var(--text-secondary)] shadow-lg shadow-black/40 backdrop-blur-xl transition-colors duration-150 ease-out hover:border-[var(--accent)] hover:text-[var(--accent)] active:scale-95 [[data-modal-open]_&]:hidden min-[1025px]:left-[calc(30%+1rem)] landscape:max-[1024px]:left-[calc(34%+1rem)]"
           >
             <MessageSquare
               size={15}
@@ -168,7 +168,7 @@ export default function FeedbackWidget() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             role="dialog"
             aria-modal="true"
@@ -181,7 +181,7 @@ export default function FeedbackWidget() {
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
               onSubmit={submit}
-              className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/75 p-5 font-mono backdrop-blur-xl"
+              className="max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/75 p-5 font-mono backdrop-blur-xl"
             >
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-sm font-bold text-white">
@@ -227,7 +227,7 @@ export default function FeedbackWidget() {
                     maxLength={100}
                     placeholder="Your name"
                     aria-label="Your name (required)"
-                    className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
+                    className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-base text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)] sm:text-sm"
                   />
                   <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-400">
                     Email <span className="text-white/30">(optional)</span>
@@ -239,7 +239,7 @@ export default function FeedbackWidget() {
                     type="email"
                     placeholder="you@example.com"
                     aria-label="Your email (optional)"
-                    className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
+                    className="mb-3 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-base text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)] sm:text-sm"
                   />
                   <label className="mb-1 block text-[11px] uppercase tracking-wide text-gray-400">
                     Feedback <span className="text-[var(--theme-accent)]">*</span>
@@ -251,7 +251,7 @@ export default function FeedbackWidget() {
                     rows={4}
                     placeholder="What did you like? Any bugs or ideas?"
                     aria-label="Your feedback (required)"
-                    className="w-full resize-y rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)]"
+                    className="w-full resize-y rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-base text-white placeholder-white/30 outline-none transition-all [caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.6)] sm:text-sm"
                   />
 
                   {error && (

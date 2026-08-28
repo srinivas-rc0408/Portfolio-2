@@ -72,7 +72,7 @@ export default function WelcomePopup() {
               type="button"
               onClick={dismiss}
               aria-label="Dismiss welcome message"
-              className="absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-md text-zinc-400 transition-colors duration-150 hover:bg-white/10 hover:text-zinc-200"
+              className="absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-md text-zinc-400 transition-colors duration-150 hover:bg-white/10 hover:text-zinc-200"
             >
               <X size={15} strokeWidth={2.4} aria-hidden />
             </button>
@@ -102,14 +102,14 @@ export default function WelcomePopup() {
                   <button
                     type="button"
                     onClick={chatWithJerry}
-                    className="rounded-lg bg-[var(--theme-accent)] px-3 py-1.5 text-xs font-semibold text-black transition-transform duration-150 hover:scale-[1.03] active:scale-95"
+                    className="inline-flex min-h-[40px] items-center justify-center rounded-lg bg-[var(--theme-accent)] px-4 py-2 text-xs font-semibold text-black transition-transform duration-150 hover:scale-[1.03] active:scale-95"
                   >
                     Chat with Jerry
                   </button>
                   <button
                     type="button"
                     onClick={dismiss}
-                    className="rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-400 transition-colors duration-150 hover:text-zinc-200"
+                    className="inline-flex min-h-[40px] items-center justify-center rounded-lg px-4 py-2 text-xs font-medium text-zinc-400 transition-colors duration-150 hover:text-zinc-200"
                   >
                     Dismiss
                   </button>

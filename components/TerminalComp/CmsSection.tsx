@@ -106,7 +106,7 @@ function CertificateModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 font-mono shadow-2xl"
+            className="relative flex max-h-[88dvh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 font-mono shadow-2xl"
           >
             <header className="flex shrink-0 items-start gap-3 border-b border-zinc-800 bg-white/[0.02] p-4 pr-14">
               <span
@@ -133,7 +133,7 @@ function CertificateModal({
               </button>
             </header>
 
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
               {isImage(preview) ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

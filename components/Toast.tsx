@@ -57,7 +57,7 @@ export default function Toast() {
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           role="alert"
           aria-live="assertive"
-          className={`fixed bottom-6 right-6 z-[200] flex max-w-sm items-center gap-3 rounded-xl border px-4 py-3 font-mono text-sm backdrop-blur-xl ${
+          className={`fixed inset-x-4 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-[200] flex max-w-sm items-center gap-3 rounded-xl border px-4 py-3 font-mono text-sm backdrop-blur-xl sm:inset-x-auto sm:right-6 ${
             isError
               ? "border-amber-500/30 bg-black/85 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
               : "border-[rgba(var(--theme-accent-rgb),0.3)] bg-black/85 text-white/90 shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.1)]"
@@ -78,7 +78,7 @@ export default function Toast() {
             type="button"
             onClick={() => setToast(null)}
             aria-label="Dismiss"
-            className="shrink-0 rounded p-1 text-white/40 transition-colors hover:text-white"
+            className="shrink-0 rounded p-2 text-white/40 transition-colors hover:text-white"
           >
             <X size={14} strokeWidth={2.5} aria-hidden />
           </button>

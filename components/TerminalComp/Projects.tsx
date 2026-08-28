@@ -266,7 +266,7 @@ const Projects: React.FC = () => {
             onClick={prevPage}
             disabled={currentPage === 0}
             aria-label="Previous page"
-            className={`grid h-9 w-9 place-items-center rounded-md border transition-all duration-150 ${
+            className={`grid h-10 w-10 place-items-center rounded-md border transition-all duration-150 ${
               currentPage === 0
                 ? "cursor-not-allowed border-gray-700/50 text-gray-600"
                 : "border-[rgba(var(--theme-accent-rgb),0.4)] text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-90"
@@ -282,7 +282,7 @@ const Projects: React.FC = () => {
             onClick={nextPage}
             disabled={currentPage === totalPages - 1}
             aria-label="Next page"
-            className={`grid h-9 w-9 place-items-center rounded-md border transition-all duration-150 ${
+            className={`grid h-10 w-10 place-items-center rounded-md border transition-all duration-150 ${
               currentPage === totalPages - 1
                 ? "cursor-not-allowed border-gray-700/50 text-gray-600"
                 : "border-[rgba(var(--theme-accent-rgb),0.4)] text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)] active:scale-90"
@@ -593,7 +593,7 @@ const Projects: React.FC = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
+              className="flex max-h-[85dvh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative h-44 shrink-0 overflow-hidden">
@@ -615,7 +615,7 @@ const Projects: React.FC = () => {
                   type="button"
                   onClick={() => setDetailProject(null)}
                   aria-label="Close details"
-                  className="absolute right-3 top-3 rounded-md bg-black/50 p-1.5 text-white/80 backdrop-blur-md transition-colors hover:bg-black/70 hover:text-white"
+                  className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-md bg-black/50 text-white/80 backdrop-blur-md transition-colors hover:bg-black/70 hover:text-white"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
                     <path d="M18 6 6 18M6 6l12 12" />
@@ -631,7 +631,7 @@ const Projects: React.FC = () => {
                   </motion.span>
                 </h3>
               </div>
-              <div className="space-y-4 overflow-y-auto px-5 py-4">
+              <div className="space-y-4 overflow-y-auto overscroll-contain px-5 py-4">
                 <div className="flex flex-wrap gap-1.5" aria-label="Tech stack">
                   {detailProject.tech.map((t) => (
                     <span

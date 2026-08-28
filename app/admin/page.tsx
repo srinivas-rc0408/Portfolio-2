@@ -91,7 +91,7 @@ type FormState = typeof EMPTY_FORM;
 
 // Shared field styling: glassmorphism + theme-accent focus glow + accent caret.
 const FIELD =
-  "w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none transition-all duration-150 " +
+  "w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-base text-white outline-none transition-all duration-150 sm:text-sm " +
   "[caret-color:var(--theme-accent)] focus:border-[rgba(var(--theme-accent-rgb),0.7)] focus:bg-[rgba(var(--theme-accent-rgb),0.06)] " +
   "";
 
@@ -223,7 +223,7 @@ function SaveBar({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 12, opacity: 0, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed bottom-24 left-1/2 z-50 flex max-w-sm -translate-x-1/2 items-center gap-2.5 rounded-xl border border-red-500/40 bg-zinc-950/90 px-4 py-2.5 font-mono text-xs text-red-300 shadow-lg shadow-black/50 backdrop-blur-md"
+            className="fixed bottom-24 left-1/2 z-50 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center gap-2.5 rounded-xl border border-red-500/40 bg-zinc-950/90 px-4 py-2.5 font-mono text-xs text-red-300 shadow-lg shadow-black/50 backdrop-blur-md sm:max-w-sm"
           >
             <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
               <span className="relative inline-flex h-2 w-2 rounded-full bg-red-400" />
@@ -244,7 +244,7 @@ function SaveBar({
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
             className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-black/80 backdrop-blur-xl"
           >
-            <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+            <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-6">
               <span className="min-w-0 truncate font-mono text-xs text-gray-400">
                 {saving ? (
                   <span className="text-[var(--theme-accent)]">◇ Saving…</span>
@@ -1207,7 +1207,7 @@ function Workspace({ section }: { section: CmsSection }) {
                   }
                   rows={8}
                   aria-label="Text content"
-                  className={`resize-y font-mono text-xs ${FIELD}`}
+                  className={`resize-y font-mono ${FIELD}`}
                 />
                 <div className="mt-2 flex gap-2">
                   <button
@@ -1279,7 +1279,7 @@ function Workspace({ section }: { section: CmsSection }) {
                           : "border-white/10 bg-black/40 hover:border-[rgba(var(--theme-accent-rgb),0.3)]"
                       }`}
                     >
-                      <div className="flex items-start gap-3">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
                         <div className="pt-0.5">
                           {deleted ? (
                             <span
@@ -1341,7 +1341,7 @@ function Workspace({ section }: { section: CmsSection }) {
                           )}
                         </div>
 
-                        <div className="flex shrink-0 items-center gap-2">
+                        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 sm:justify-start">
                           {deleted ? (
                             <button
                               type="button"
@@ -1443,7 +1443,7 @@ function Workspace({ section }: { section: CmsSection }) {
                               <button
                                 type="button"
                                 onClick={() => startEdit(item)}
-                                className={`rounded border px-2 py-1 text-xs transition-colors ${
+                                className={`inline-flex min-h-[36px] items-center rounded border px-2.5 py-1.5 text-xs transition-colors ${
                                   editingKey === item._key
                                     ? "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.15)] text-[var(--theme-accent)]"
                                     : "border-white/15 text-white hover:bg-[rgba(var(--theme-accent-rgb),0.15)]"
@@ -1454,7 +1454,7 @@ function Workspace({ section }: { section: CmsSection }) {
                               <button
                                 type="button"
                                 onClick={() => removeDraft(item._key)}
-                                className="rounded border border-red-900/60 px-2 py-1 text-xs text-red-400 hover:bg-red-900/20"
+                                className="inline-flex min-h-[36px] items-center rounded border border-red-900/60 px-2.5 py-1.5 text-xs text-red-400 hover:bg-red-900/20"
                               >
                                 rm
                               </button>
