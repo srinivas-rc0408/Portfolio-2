@@ -655,7 +655,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                       type="button"
                       disabled={busy}
                       onClick={() => void send(c)}
-                      className={`inline-flex min-h-[40px] shrink-0 items-center whitespace-nowrap rounded-full border px-3.5 py-2 text-[11px] transition-all duration-150 active:scale-95 disabled:opacity-40 ${
+                      className={`inline-flex min-h-[40px] shrink-0 items-center whitespace-nowrap rounded-full border px-3.5 py-2 text-[11px] transition-all duration-150 active:scale-95 disabled:opacity-40 sm:min-h-0 sm:px-3 sm:py-1.5 ${
                         i === 1
                           ? // the flagship "Why choose…" — subtly emphasised
                             "border-[rgba(var(--theme-accent-rgb),0.6)] bg-[rgba(var(--theme-accent-rgb),0.14)] font-medium text-white hover:bg-[rgba(var(--theme-accent-rgb),0.22)]"
