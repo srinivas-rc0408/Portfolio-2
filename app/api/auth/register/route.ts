@@ -9,7 +9,7 @@ import { sendEmail, welcomeEmail } from "@/lib/email";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Public visitor registration → stored in Fluxbase (app_user), password hashed
+ * Public visitor registration → stored in Neon Postgres (app_user), password hashed
  * with bcrypt, session cookie set, and a best-effort welcome email sent via
  * Resend. The env-only admin credential can never be shadowed by a DB user.
  */

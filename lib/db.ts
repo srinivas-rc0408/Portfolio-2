@@ -8,8 +8,7 @@ import { CERTIFICATES, EDUCATION } from "@/lib/section-fallbacks";
  *
  * Uses @neondatabase/serverless with the connection-pooler URL for all
  * serverless/edge invocations. Schema is created + seeded lazily on first use
- * (idempotent). Every public interface is identical to the old FluxBase layer
- * so no call-sites need to change.
+ * (idempotent).
  */
 
 const DATABASE_URL =
