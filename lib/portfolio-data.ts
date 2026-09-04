@@ -30,6 +30,15 @@ export const projects: Project[] = [
     tech: ["React", "TypeScript", "Google Gemini", "Hugging Face FLUX", "Three.js", "Supabase", "jsPDF"],
   },
   {
+    name: "AquaSentinel — AI-Based Submersible Micro-Robot",
+    description:
+      "A full-stack mission-control platform for an autonomous underwater inspection robot. Operators plan a waypoint coverage route on an interactive map (with live distance and thruster-time estimates), watch real-time sensor telemetry (pH, temperature, turbidity, depth, battery) and the mission camera, and let an AI image-analysis pipeline flag structural defects — cracks, corrosion, algae, leakage — with confidence scores. Rounded out by a per-component robot-health monitor, auto/manual mission controls (start / pause / return-home / capture), a detection gallery with mission history, and a one-click PDF mission report — all in a dark, real-time command center. Telemetry is HTTP-polled; the React/TypeScript frontend and Node/Express backend deploy on Vercel + Render.",
+    imageUrl: "/images/projects/aquasentinel.jpg",
+    liveUrl: "https://aqua-wheat.vercel.app/home",
+    githubUrl: "https://github.com/srinivas-rc0408/Project-Aqua",
+    tech: ["React", "TypeScript", "Node.js", "Express", "Vite", "Tailwind CSS", "Leaflet", "Three.js", "AI Image Analysis", "JWT"],
+  },
+  {
     name: "Debug.ext — Autonomous AI Bug Triage",
     description:
       "A full-stack AI bug-triage ecosystem that bridges QA and engineering. A Manifest V3 Chrome extension intercepts runtime errors, console exceptions and network failures from the browser and streams them to a FastAPI gateway, which uses Anthropic Claude's Tool-Use (with Pydantic schemas) to deterministically classify each bug into 6 categories, assign a P0–P3 severity, identify the root cause, and write a verified code patch. Results render live in a dark-mode Streamlit dashboard with interactive Plotly telemetry, multi-format log ingestion (.csv/.json/.log/.txt), and 1-click PDF reports (fpdf2) — all containerized with Docker Compose.",

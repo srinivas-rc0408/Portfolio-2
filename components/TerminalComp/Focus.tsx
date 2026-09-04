@@ -36,60 +36,7 @@ const C: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const FOCUS: FocusItem[] = [
-  /* ────────────────────────── 1. AquaSentinel AI ────────────────────────── */
-  {
-    name: "AquaSentinel AI",
-    codename: "Project Aqua",
-    status: "In development",
-    progress: 35,
-    tagline: "Autonomous underwater inspection, driven by computer vision.",
-    overview: (
-      <>
-        A software platform for an autonomous underwater inspection robot. It
-        follows a planned path across a water body, streams live sensor data
-        (pH, temperature, turbidity, depth), and runs every camera frame through
-        a YOLOv8 vision model to spot pollutants like plastic bottles — all
-        controlled and reviewed from a web dashboard.
-      </>
-    ),
-    highlights: (
-      <>
-        <p>
-          <strong className="text-zinc-200">Mission Planning:</strong> Define an
-          area; the backend generates a lawnmower coverage path. Live dashboard
-          with 5s polling drives the grid map, telemetry cards, depth chart,
-          gallery and alerts.
-        </p>
-        <p>
-          <strong className="text-zinc-200">AI Inspection:</strong> Every frame
-          runs through YOLOv8; detections stored with bounding boxes. Burst
-          Alert Mode — a pollutant at ≥85% confidence pauses the robot and
-          triggers rapid evidence capture.
-        </p>
-        <p>
-          <strong className="text-zinc-200">Reporting:</strong> Mission history
-          &amp; replay with a time scrubber. One-click PDF reports — stats,
-          charts and detection evidence compiled into a document.
-        </p>
-      </>
-    ),
-    stack: [
-      "FastAPI",
-      "SQLAlchemy",
-      "SQLite",
-      "React",
-      "Vite",
-      "TanStack Query",
-      "Tailwind",
-      "YOLOv8n / Ultralytics",
-      "JWT (rotating refresh)",
-      "ReportLab",
-    ],
-    stage:
-      "Specification locked — 11 documents (PRD, architecture, API contract, DB schema, frontend, AI, security, tickets, tests, design, reconciliation). Build is structured as 4 phases and ~45 tickets.",
-  },
-
-  /* ──────────────────── 2. Personal AI Assistant ────────────────────────── */
+  /* ──────────────────── 1. Personal AI Assistant ────────────────────────── */
   {
     name: "Personal AI Assistant",
     codename: "Hornet",
