@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { BACKDROP } from "@/lib/motion";
 import { Gamepad2, Heart, Play, X, Bot } from "lucide-react";
 import { useScrollLock } from "@/lib/useScrollLock";
 import { useEventCallback } from "@/lib/useEventCallback";
@@ -255,6 +256,8 @@ const DIRS = [
 
 export default function GameModal() {
   const [open, setOpen] = useState(false);
+  // The power-on flashes the screen; reduce-motion users get a plain fade.
+  const reduced = useReducedMotion();
   const [game, setGame] = useState<"archman" | "flappy">("archman");
   // Lock background scrolling while this modal is open.
   useScrollLock(open);
@@ -458,10 +461,7 @@ export default function GameModal() {
     <AnimatePresence>
       {open && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          {...BACKDROP}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={close}
           role="dialog"
@@ -469,10 +469,42 @@ export default function GameModal() {
           aria-label="Arch-Man game"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 18 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            // The arcade's entrance: a CRT POWERING ON. A bright horizontal
+            // line snaps across, then the picture opens vertically out of it
+            // as the over-bright phosphor settles. On close it runs backwards:
+            // collapse to a line, then to a dot — the classic tube switch-off.
+            initial={
+              reduced
+                ? { opacity: 0 }
+                : { opacity: 0, scaleX: 0.08, scaleY: 0.006, filter: "brightness(4)" }
+            }
+            animate={
+              reduced
+                ? { opacity: 1 }
+                : {
+                    opacity: [0, 1, 1, 1],
+                    scaleX: [0.08, 1, 1, 1],
+                    scaleY: [0.006, 0.006, 1, 1],
+                    filter: ["brightness(4)", "brightness(3)", "brightness(1.4)", "brightness(1)"],
+                    transition: {
+                      duration: 0.62,
+                      times: [0, 0.3, 0.72, 1],
+                      ease: [0.22, 1, 0.36, 1],
+                    },
+                    transitionEnd: { filter: "none" },
+                  }
+            }
+            exit={
+              reduced
+                ? { opacity: 0 }
+                : {
+                    scaleY: [1, 0.006, 0.006],
+                    scaleX: [1, 1, 0],
+                    opacity: [1, 1, 0],
+                    filter: ["brightness(1)", "brightness(3)", "brightness(4)"],
+                    transition: { duration: 0.34, times: [0, 0.55, 1], ease: [0.4, 0, 1, 1] },
+                  }
+            }
             className="max-h-[92dvh] w-full max-w-xl overflow-y-auto overscroll-contain rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
             onClick={(e) => e.stopPropagation()}
           >

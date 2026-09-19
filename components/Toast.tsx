@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { EXIT } from "@/lib/motion";
 import { Lock, X } from "lucide-react";
 
 /**
@@ -51,10 +52,16 @@ export default function Toast() {
     <AnimatePresence>
       {toast && (
         <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95, x: 20 }}
-          animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
-          exit={{ opacity: 0, y: 10, scale: 0.95, x: 20 }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          // Slides in from the right edge it's pinned to, critically damped,
+          // and leaves back through that edge.
+          initial={{ opacity: 0, x: 32, scale: 0.97 }}
+          animate={{
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            transition: { type: "spring", stiffness: 380, damping: 36 },
+          }}
+          exit={{ opacity: 0, x: 24, transition: EXIT }}
           role="alert"
           aria-live="assertive"
           className={`fixed inset-x-4 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-[200] flex max-w-sm items-center gap-3 rounded-xl border px-4 py-3 font-mono text-sm backdrop-blur-xl sm:inset-x-auto sm:right-6 ${

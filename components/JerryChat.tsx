@@ -10,6 +10,7 @@ import { docUrl, PRIVATE_RESOURCE } from "@/lib/cms";
 import { useScrollLock } from "@/lib/useScrollLock";
 import { useEventCallback } from "@/lib/useEventCallback";
 import { SoundEngine } from "@/lib/sound";
+import { BACKDROP, EXIT } from "@/lib/motion";
 
 // Sentinel prepended by /api/chat when Jerry's highlightBackend tool fires.
 const TOOL_SENTINEL = "[TOOL:highlightBackend]";
@@ -479,10 +480,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
         <motion.div
           ref={overlayRef}
           key="jerry-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
+          {...BACKDROP}
           className="fixed left-0 right-0 top-0 z-[100] flex h-[100dvh] items-end justify-center bg-black/60 pt-[max(env(safe-area-inset-top),0.5rem)] backdrop-blur-sm sm:items-center sm:p-6 sm:pt-6"
           onClick={stableClose}
           role="dialog"
@@ -491,11 +489,18 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
         >
           <motion.div
             key="jerry-panel"
-            initial={{ opacity: 0, scale: 0.94, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            style={{ willChange: "transform, opacity" }}
+            // Jerry's entrance: the chat RISES into place, the way a
+            // messenger sheet does — on phones it literally is a bottom sheet.
+            // Critically damped (zeta ~0.95): it lands firmly, no wobble.
+            initial={{ opacity: 0, y: 56, scale: 0.97 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              transition: { type: "spring", stiffness: 340, damping: 35, mass: 1 },
+            }}
+            exit={{ opacity: 0, y: 28, scale: 0.98, transition: EXIT }}
+            style={{ willChange: "transform, opacity", transformOrigin: "50% 100%" }}
             className="flex h-full w-full flex-col overflow-hidden rounded-t-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-md sm:h-[600px] sm:max-h-[85vh] sm:max-w-lg sm:rounded-2xl"
             onClick={(e) => e.stopPropagation()}
           >

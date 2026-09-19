@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { BACKDROP, EASE_OUT, EXIT } from "@/lib/motion";
 import {
   BadgeCheck,
   Briefcase,
@@ -94,18 +95,37 @@ function CertificateModal({
           aria-modal="true"
           aria-label={`${entry.title} certificate`}
           onClick={onClose}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
+          {...BACKDROP}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm sm:p-6"
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            // The certificate's entrance: it is PRESENTED — tilts up off the
+            // table in perspective, hinged at its bottom edge, and settles
+            // face-on. transformPerspective keeps the 3D local to this card.
+            // Perspective is part of the animated values, not the static
+            // style, so it can be dropped once the card lands: left in place it
+            // kept a matrix3d on the card at rest, which pins it to a 3D layer
+            // and can soften its text on some GPUs. 0 = omitted from transform.
+            initial={{ opacity: 0, rotateX: 18, y: 36, scale: 0.96, transformPerspective: 1200 }}
+            animate={{
+              opacity: 1,
+              rotateX: 0,
+              y: 0,
+              scale: 1,
+              transformPerspective: 1200,
+              transition: { duration: 0.5, ease: EASE_OUT },
+              transitionEnd: { transformPerspective: 0 },
+            }}
+            exit={{
+              opacity: 0,
+              rotateX: 8,
+              y: 16,
+              scale: 0.98,
+              transformPerspective: 1200,
+              transition: EXIT,
+            }}
+            style={{ transformOrigin: "50% 100%" }}
             className="relative flex max-h-[88dvh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/95 font-mono shadow-2xl"
           >
             <header className="flex shrink-0 items-start gap-3 border-b border-zinc-800 bg-white/[0.02] p-4 pr-14">

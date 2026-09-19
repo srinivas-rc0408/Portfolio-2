@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import SmartImage from "@/components/ui/SmartImage";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { BACKDROP, EASE_OUT, EXIT } from "@/lib/motion";
 import { projects as staticProjects, type Project } from "@/lib/portfolio-data";
 import { CMS_UPDATED_EVENT, getItems } from "@/lib/cms";
 import WindowDots from "@/components/WindowDots";
@@ -578,10 +579,7 @@ const Projects: React.FC = () => {
       <AnimatePresence>
         {detailProject && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            {...BACKDROP}
             className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center sm:p-6"
             onClick={() => setDetailProject(null)}
             role="dialog"
@@ -589,10 +587,14 @@ const Projects: React.FC = () => {
             aria-label={`${detailProject.name} details`}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              // The project's entrance is the IMAGE: it morphs out of the card
+              // you clicked into this hero (shared layoutId below). The panel
+              // used to scale in underneath it at the same time — two motions
+              // fighting. Now the panel only fades up, so the eye follows the
+              // screenshot.
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0, transition: { duration: 0.32, ease: EASE_OUT } }}
+              exit={{ opacity: 0, y: 8, transition: EXIT }}
               className="flex max-h-[85dvh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/80 font-mono backdrop-blur-xl"
               onClick={(e) => e.stopPropagation()}
             >

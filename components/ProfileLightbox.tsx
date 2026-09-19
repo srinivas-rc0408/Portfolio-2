@@ -2,7 +2,8 @@
 
 import SmartImage from "@/components/ui/SmartImage";
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { BACKDROP, EXIT } from "@/lib/motion";
 import {
   SETTINGS_UPDATED_EVENT,
   type SiteSettings,
@@ -18,6 +19,9 @@ import { useScrollLock } from "@/lib/useScrollLock";
  */
 export default function ProfileLightbox() {
   const [open, setOpen] = useState(false);
+  // The flash is a brightness burst — precisely what "reduce motion" users opt
+  // out of. They get a plain fade instead (MotionConfig already drops scale).
+  const reduced = useReducedMotion();
   // Lock background scrolling while this modal is open.
   useScrollLock(open);
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
@@ -45,19 +49,32 @@ export default function ProfileLightbox() {
           aria-modal="true"
           aria-label="Profile picture"
           onClick={() => setOpen(false)}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
+          {...BACKDROP}
           className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm sm:p-6"
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
             className="relative"
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            // The photo's entrance: a camera FLASH. It lands over-exposed and
+            // soft, then the exposure settles and the lens pulls focus. Ends on
+            // filter:none so no compositing layer lingers on the image.
+            initial={
+              reduced
+                ? { opacity: 0 }
+                : { opacity: 0, scale: 0.9, filter: "brightness(2.2) blur(10px)" }
+            }
+            animate={{
+              opacity: 1,
+              scale: 1,
+              filter: reduced ? "none" : "brightness(1) blur(0px)",
+              transition: {
+                opacity: { duration: 0.18 },
+                scale: { type: "spring", stiffness: 300, damping: 30 },
+                filter: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+              },
+              transitionEnd: { filter: "none" },
+            }}
+            exit={{ opacity: 0, scale: 0.96, transition: EXIT }}
           >
         <SmartImage
           src={settings.profileImage ?? "/profile.jpg"}

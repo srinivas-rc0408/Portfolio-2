@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { BACKDROP, EASE_OUT, EXIT } from "@/lib/motion";
 import { track } from "@vercel/analytics";
 import { Download, ExternalLink, FileText, X } from "lucide-react";
 import { useScrollLock } from "@/lib/useScrollLock";
@@ -184,10 +185,7 @@ export default function DocViewer() {
     <AnimatePresence>
       {doc && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          {...BACKDROP}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm sm:p-8"
           onClick={() => setDoc(null)}
           role="dialog"
@@ -195,10 +193,18 @@ export default function DocViewer() {
           aria-label={isLocked ? `${doc.label} — Access Denied` : `${doc.label} viewer`}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 14 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            // The viewer's entrance: the page UNROLLS from the top edge down,
+            // like paper feeding out of a printer. clip-path carries the radius
+            // (`round 1rem` = rounded-2xl) so the corners stay curved the whole
+            // way instead of snapping square mid-reveal.
+            initial={{ opacity: 0.4, y: -10, clipPath: "inset(0% 0% 100% 0% round 1rem)" }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              clipPath: "inset(0% 0% 0% 0% round 1rem)",
+              transition: { duration: 0.55, ease: EASE_OUT },
+            }}
+            exit={{ opacity: 0, y: 8, scale: 0.985, transition: EXIT }}
             className={`flex h-[88dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border font-mono backdrop-blur-xl ${
               isLocked
                 ? "border-amber-500/25 bg-black/80"

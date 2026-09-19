@@ -1217,15 +1217,16 @@ export default function Terminal({
                 void processCommand("clear");
               }}
             />
-            {/* Green — view profile picture */}
+            {/* Green — open the command palette (same as Ctrl/Cmd K). The
+                profile picture is still one click away on the avatar itself. */}
             <button
               type="button"
               className="dot dot-2"
-              title="View profile picture"
-              aria-label="View profile picture"
+              title="Open command palette"
+              aria-label="Open command palette"
               onClick={(e) => {
                 e.stopPropagation();
-                window.dispatchEvent(new CustomEvent("profile:view"));
+                window.dispatchEvent(new CustomEvent("palette:open"));
               }}
             />
             {/* Blue — show help */}

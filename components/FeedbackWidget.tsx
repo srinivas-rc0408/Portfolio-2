@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { BACKDROP, EASE_OUT, EXIT } from "@/lib/motion";
 import { CheckCircle2, Loader2, MessageSquare, Send, X } from "lucide-react";
 import { useScrollLock } from "@/lib/useScrollLock";
 
@@ -164,10 +165,7 @@ export default function FeedbackWidget() {
         {open && (
           <motion.div
             key="fb-modal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            {...BACKDROP}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             role="dialog"
@@ -175,10 +173,19 @@ export default function FeedbackWidget() {
             aria-label="Send feedback"
           >
             <motion.form
-              initial={{ opacity: 0, scale: 0.94, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              // Feedback's entrance: the form flies OUT of the Feedback button,
+              // which lives bottom-left — so it travels up-and-right from that
+              // corner, and folds back toward it on close.
+              initial={{ opacity: 0, x: -48, y: 64, scale: 0.86 }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                y: 0,
+                scale: 1,
+                transition: { duration: 0.42, ease: EASE_OUT },
+              }}
+              exit={{ opacity: 0, x: -24, y: 32, scale: 0.94, transition: EXIT }}
+              style={{ transformOrigin: "0% 100%" }}
               onClick={(e) => e.stopPropagation()}
               onSubmit={submit}
               className="max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/75 p-5 font-mono backdrop-blur-xl"

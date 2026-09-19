@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { EXIT } from "@/lib/motion";
 import { Bot, X } from "lucide-react";
 
 /**
@@ -57,16 +58,22 @@ export default function WelcomePopup() {
           data-welcome-popup=""
           role="status"
           aria-live="polite"
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 50, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          // Rises into place, critically damped. Was stiffness 260 / damping 20
+          // (zeta ~0.62), which overshot ~8% and visibly bounced.
+          initial={{ y: 40, opacity: 0, scale: 0.97 }}
+          animate={{
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            transition: { type: "spring", stiffness: 300, damping: 32 },
+          }}
+          exit={{ y: 24, opacity: 0, transition: EXIT }}
           // z-50 = toast layer. Must stay BELOW the z-[100] modal layer: at
           // z-55 it punched through the backdrop of the very Jerry chat its
           // own button opens.
           className="fixed bottom-20 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2 sm:bottom-6 sm:left-auto sm:right-6 sm:translate-x-0"
         >
-          <div className="relative overflow-hidden rounded-2xl border border-zinc-800 border-l-4 border-l-[var(--theme-accent)] bg-zinc-950/80 p-4 shadow-[0_10px_45px_-8px_rgba(var(--theme-accent-rgb),0.25)] backdrop-blur-md">
+          <div className="relative overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.28)] bg-zinc-950/80 p-4 shadow-[0_10px_45px_-8px_rgba(var(--theme-accent-rgb),0.25)] backdrop-blur-md">
             {/* Close */}
             <button
               type="button"
