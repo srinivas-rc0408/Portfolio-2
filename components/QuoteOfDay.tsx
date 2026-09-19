@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { getItems } from "@/lib/cms";
 
 interface Quote {
@@ -288,7 +289,7 @@ export default function QuoteOfDay() {
             }}
             className="pointer-events-auto absolute right-1.5 top-1.5 z-10 flex h-11 w-11 items-center justify-center rounded-full text-white/50 transition-all hover:bg-white/10 hover:text-white active:scale-90"
           >
-            ✕
+            <X size={14} strokeWidth={2.5} aria-hidden />
           </button>
 
           <div className="mb-1.5 flex items-center gap-2 text-[10px] uppercase tracking-widest text-[var(--theme-accent)] opacity-80">
@@ -302,26 +303,42 @@ export default function QuoteOfDay() {
 
           {/* Author — revealed on hover (or while expanded) */}
           <div className={`qotd-author ${expanded ? "is-open" : ""}`}>
-            <p className="mt-1.5 font-mono text-xs text-white/80">
-              — {quote.author}
-            </p>
+            {/* The inner div is the clipper (see .qotd-author > * in
+                globals.css); the spacing has to sit INSIDE it. On the <p>
+                itself, neither a margin nor a padding is clipped by overflow,
+                and the collapsed track measured 6px instead of 0 — a permanent
+                sliver under the quote. Same two-element shape as the meaning
+                reveal below, so both disclosures collapse to exactly zero. */}
+            <div className="overflow-hidden">
+              <p className="mt-1.5 font-mono text-xs text-white/80">
+                — {quote.author}
+              </p>
+            </div>
           </div>
 
-          {/* Meaning — springs open on click */}
+          {/* Meaning — opens on click. Same grid-track reveal as .qotd-author
+              above, so both disclosures in this card move identically: the row
+              interpolates to the paragraph's real height, which drops the
+              maxHeight:200 guess that would have clipped a longer meaning, and
+              keeps the timing independent of how much text a quote carries.
+              Eased with the project's ease-out-quart — this was the one place
+              in the codebase still using a 1.56 overshoot, against nine uses of
+              the house curve elsewhere. */}
           <div
-            className="overflow-hidden"
+            className="grid"
             style={{
-              maxHeight: expanded ? 200 : 0,
+              gridTemplateRows: expanded ? "1fr" : "0fr",
               opacity: expanded ? 1 : 0,
               transform: expanded ? "translateY(0)" : "translateY(-4px)",
               transition:
-                "max-height 450ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 300ms ease, transform 300ms ease",
-              willChange: "max-height, opacity, transform",
+                "grid-template-rows 450ms cubic-bezier(0.22, 1, 0.36, 1), opacity 300ms ease, transform 300ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <p className="mt-2 border-t border-[rgba(var(--theme-accent-rgb),0.2)] pt-2 font-mono text-[11px] italic leading-relaxed text-white/60">
-              {quote.meaning}
-            </p>
+            <div className="overflow-hidden">
+              <p className="mt-2 border-t border-[rgba(var(--theme-accent-rgb),0.2)] pt-2 font-mono text-[11px] italic leading-relaxed text-white/60">
+                {quote.meaning}
+              </p>
+            </div>
           </div>
 
           <p className="mt-1.5 font-mono text-[10px] text-white/30 transition-colors group-hover:text-white/50">

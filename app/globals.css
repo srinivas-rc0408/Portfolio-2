@@ -188,18 +188,29 @@ body:not(:has(.app-shell)) {
   }
 }
 
-/* Quote-of-the-day author reveal: collapsed → open on card hover or when expanded.
-   Animates max-height/opacity only (GPU-cheap). */
+/* Quote-of-the-day author reveal: collapsed → open on card hover or when
+   expanded. Animates grid-template-rows (0fr→1fr) rather than max-height:
+   max-height has to be guessed high enough for the longest author name, which
+   makes the reveal speed depend on the content, and it drives a layout pass on
+   every frame. The grid track interpolates to the row's real height, so the
+   timing is constant and the name can wrap to any length. Eased with the
+   project's standard ease-out-quart so it matches the rest of the motion. */
 .qotd-author {
-  max-height: 0;
+  display: grid;
+  grid-template-rows: 0fr;
   opacity: 0;
+  transition: grid-template-rows 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 300ms ease;
+}
+
+/* The track collapses to zero height; the child is what must clip. */
+.qotd-author > * {
   overflow: hidden;
-  transition: max-height 300ms ease, opacity 300ms ease;
 }
 
 .qotd:hover .qotd-author,
 .qotd-author.is-open {
-  max-height: 2rem;
+  grid-template-rows: 1fr;
   opacity: 1;
 }
 

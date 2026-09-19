@@ -396,7 +396,7 @@ export default async function Projects() {
                       style={{
                         marginTop: "12px",
                         padding: "10px 12px",
-                        border: "1px solid rgba(34,211,238,0.25)",
+                        border: "1px solid rgba(var(--theme-accent-rgb), 0.25)",
                         borderRadius: "8px",
                         fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
                         cursor: "pointer",
