@@ -206,7 +206,7 @@ async function seed(): Promise<void> {
   push("experience", {
     title: "Independent AI/ML Engineering — Self-Directed Projects",
     description:
-      "Design, build, and ship full-stack AI products end to end — from a 4-stage Gemini prompt-chaining platform (ArchAgent) to MLOps pipelines and LLM-powered web apps (12 shipped). Integrate real production stacks (Google Gemini, Hugging Face, Firebase, Supabase, Three.js), and continuously explore the open-source ecosystem on GitHub — evaluating new frameworks, plugins, and tooling and turning them into production-grade builds. Open to AI/ML internships and placements.",
+      "Design, build, and ship full-stack AI products end to end — from a 4-stage Gemini prompt-chaining platform (ArchAgent) to MLOps pipelines and LLM-powered web apps (14 shipped solo, plus AEGIS built with Team Alpha for Smart India Hackathon 2026). Integrate real production stacks (Google Gemini, Hugging Face, Firebase, Supabase, Three.js), and continuously explore the open-source ecosystem on GitHub — evaluating new frameworks, plugins, and tooling and turning them into production-grade builds. Open to AI/ML internships and placements.",
     date: "Self-directed · 2025 – Present",
   });
   push("experience", {

@@ -29,6 +29,7 @@ export async function GET() {
     `Attribution: Please credit "${SITE_NAME}" with a link to ${SITE_URL} or https://github.com/srinivas-rc0408`,
     "",
     "# Project highlights",
+    "Project: AEGIS - Air-gapped, on-premise agentic AI workbench for high-security industry (Smart India Hackathon 2026, PS SIH26117). A LangGraph agent runs vision, hybrid FAISS+BM25 retrieval and sandboxed safety computation entirely offline on open-weight local models (Ollama: Qwen2.5, Qwen2.5-VL, nomic-embed-text), with a SHA-256 hash-chained audit trail and human sign-off.",
     "Project: ArchAgent - AI architectural design platform; text briefs to 3D renders, panoramic views and itemised cost estimates via a 4-stage Google Gemini prompt-chaining pipeline (Gemini + Hugging Face FLUX + Three.js + Supabase).",
     "Project: AI Travel Planner - Personalised day-by-day itineraries from destination/budget/preferences using structured Google Gemini JSON prompts, with Google OAuth, Places API, Firebase Firestore and React Leaflet maps.",
     "Project: AI Finance Assistant - Next.js personal-finance assistant with dashboard/portfolio/transactions modules, a Prisma relational database (5+ models) and Inngest serverless background jobs.",

@@ -21,6 +21,15 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    name: "AEGIS — Air-Gapped Engineering Intelligence System",
+    description:
+      "An offline, on-premise agentic AI workbench that lets high-security industries — oil refineries, defence, nuclear — run multimodal AI on confidential documents without a byte leaving the plant. A LangGraph state machine with a bounded retry loop plans the job, then runs it end to end locally: a vision model reads P&IDs, gauges and scans; hybrid FAISS + BM25 retrieval grounds every answer in the plant's own SOPs (dense search alone misses exact IDs like SOP-MNT-402 — BM25 catches them); safety arithmetic is evaluated in a network-disabled Docker sandbox so numbers are computed, never hallucinated; a deterministic rule engine — not the LLM — judges safety thresholds; and the agent self-critiques before answering. Every step is SHA-256 hash-chained into a tamper-evident audit log, and safety-critical findings are gated behind a named human sign-off. Open-weight models via Ollama (Qwen2.5 for reasoning, Qwen2.5-VL for vision, nomic-embed-text for retrieval) keep the whole stack on a single 4GB-VRAM laptop GPU. Telemetry is force-disabled at import, the UI binds to localhost only, and a live self-audit proves the sole network call ever made is to the local model server. Built for Smart India Hackathon 2026 (PS SIH26117, Mangalore Refinery & Petrochemicals Ltd).",
+    imageUrl: "/images/projects/aegis.png",
+    liveUrl: "#",
+    githubUrl: "https://github.com/srinivas-rc0408/Team-Alpha---Sovereign-On-Premise-Agentic-AI-Workbench",
+    tech: ["Python", "LangGraph", "LangChain", "Ollama", "Qwen2.5", "Qwen2.5-VL", "FAISS", "BM25", "Streamlit", "Docker", "SHA-256 Audit Chain"],
+  },
+  {
     name: "ArchAgent — AI Architectural Design Platform",
     description:
       "An AI platform that turns text design briefs into 3D renders, panoramic views, and itemised cost estimates through a 4-stage Google Gemini prompt-chaining pipeline. Combines two AI models — Gemini for design reasoning and Hugging Face FLUX for image generation — with an interactive Three.js 3D viewer, plus Supabase login and project storage. Fixed inaccurate cost estimates (LLM hallucinations) using few-shot prompting with real INR price examples, and added 1-click PDF report export with jsPDF.",

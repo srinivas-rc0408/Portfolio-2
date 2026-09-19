@@ -49,7 +49,7 @@ const IC = { size: 17, strokeWidth: 2 } as const;
 
 const COMMANDS: Command[] = [
   { id: "about", label: "About", hint: "cd about", group: "Navigate", keywords: "whoami bio intro who", icon: <User2 {...IC} />, run: () => execInTerminal("about") },
-  { id: "projects", label: "Projects", hint: "cd projects", group: "Navigate", keywords: "work repos archagent flappy duck build portfolio", icon: <SquareTerminal {...IC} />, run: () => execInTerminal("cd projects") },
+  { id: "projects", label: "Projects", hint: "cd projects", group: "Navigate", keywords: "work repos aegis air-gapped sih archagent flappy duck build portfolio", icon: <SquareTerminal {...IC} />, run: () => execInTerminal("cd projects") },
   { id: "skills", label: "Skills", hint: "cd skills", group: "Navigate", keywords: "stack tech python ml llm tools", icon: <Zap {...IC} />, run: () => execInTerminal("cd skills") },
   { id: "experience", label: "Experience", hint: "experience", group: "Navigate", keywords: "work history yantra roles", icon: <Briefcase {...IC} />, run: () => execInTerminal("experience") },
   { id: "education", label: "Education", hint: "education", group: "Navigate", keywords: "degree btech reva school study", icon: <GraduationCap {...IC} />, run: () => execInTerminal("education") },

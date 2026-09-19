@@ -21,7 +21,7 @@ export const FILE_CONTENTS: Record<string, string> = {
   about:
     "About Srinivas RC — AI / ML Engineer. B.Tech AI & ML undergraduate building web applications powered by LLMs and agentic systems. Passionate about Linux (CachyOS). Type 'cd about' to open the full section.",
   projects:
-    "Recent projects: ArchAgent (AI architectural design platform — Gemini prompt-chaining + FLUX + Three.js), AI Travel Planner (Gemini itineraries + Places API + Leaflet) and AI Finance Assistant (Next.js + Prisma + Inngest). Type 'cd projects' to browse with links and descriptions.",
+    "Recent projects: AEGIS (air-gapped on-premise agentic AI workbench — LangGraph + local Ollama models + FAISS/BM25, built for SIH 2026), ArchAgent (AI architectural design platform — Gemini prompt-chaining + FLUX + Three.js) and AquaSentinel (underwater inspection mission control — live demo). Type 'cd projects' to browse with links and descriptions.",
   skills:
     "Tech: Python, Machine Learning, Large Language Models (LLMs), Agentic Frameworks (CrewAI), Prompt Engineering, Linux Administration. Type 'cd skills' to see all.",
   experience:
