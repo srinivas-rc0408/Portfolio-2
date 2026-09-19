@@ -47,21 +47,22 @@ export default function GlobalError({
               background: "rgba(255,255,255,0.03)",
             }}
           >
-            {/* Same chip material as <WindowDots>, re-declared inline: this
-                boundary replaces the document, so no Tailwind class resolves. */}
-            {[0, 1, 2].map((i) => (
+            {/* <WindowDots> re-declared inline: this boundary replaces the
+                document, so no Tailwind class resolves here. Same three hues
+                and the same bead formula — keep in sync with that component. */}
+            {["229, 55, 46", "47, 200, 84", "59, 150, 255"].map((rgb) => (
               <span
-                key={i}
+                key={rgb}
                 style={{
                   height: 12,
                   width: 12,
                   borderRadius: 999,
                   display: "inline-block",
                   boxSizing: "border-box",
-                  background:
-                    "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.022))",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
+                  background: `radial-gradient(circle at 34% 26%, rgba(255,255,255,0.5), rgba(255,255,255,0) 48%), linear-gradient(180deg, rgba(${rgb},1), rgba(${rgb},0.62))`,
+                  border: `1px solid rgba(${rgb},0.85)`,
+                  boxShadow:
+                    "inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 4px -1px rgba(0,0,0,0.7)",
                 }}
               />
             ))}

@@ -1204,9 +1204,9 @@ export default function Terminal({
       <header className="terminal-header" data-xray="<TerminalHeader>">
         {/* Window title bar: traffic-light controls · host prompt · profile */}
         <div className="terminal-titlebar">
-          {/* Window controls — chip-styled beads, each with a function */}
+          {/* Window controls — chip-styled R·G·B beads, each with a function */}
           <div className="dots-row">
-            {/* 1 — clear the terminal */}
+            {/* Red — clear the terminal */}
             <button
               type="button"
               className="dot dot-1"
@@ -1217,7 +1217,7 @@ export default function Terminal({
                 void processCommand("clear");
               }}
             />
-            {/* 2 — view profile picture */}
+            {/* Green — view profile picture */}
             <button
               type="button"
               className="dot dot-2"
@@ -1228,7 +1228,7 @@ export default function Terminal({
                 window.dispatchEvent(new CustomEvent("profile:view"));
               }}
             />
-            {/* 3 — show help */}
+            {/* Blue — show help */}
             <button
               type="button"
               className="dot dot-3"
