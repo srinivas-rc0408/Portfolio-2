@@ -22,6 +22,12 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false, // don't advertise "X-Powered-By: Next.js"
+  images: {
+    // SmartImage requests quality 90. Next 16 only honours qualities listed
+    // here (default [75]) and silently downgrades anything else — so without
+    // this every project shot and screenshot was being served at 75.
+    qualities: [75, 90],
+  },
   experimental: {
     serverActions: {
       // Increase body size limit for large PDF/image uploads (base64-encoded

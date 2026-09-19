@@ -47,9 +47,24 @@ export default function GlobalError({
               background: "rgba(255,255,255,0.03)",
             }}
           >
-            <span style={{ height: 12, width: 12, borderRadius: 999, background: "#e5231a", display: "inline-block" }} />
-            <span style={{ height: 12, width: 12, borderRadius: 999, background: "#2fd84f", display: "inline-block" }} />
-            <span style={{ height: 12, width: 12, borderRadius: 999, background: "#3b9dff", display: "inline-block" }} />
+            {/* Same chip material as <WindowDots>, re-declared inline: this
+                boundary replaces the document, so no Tailwind class resolves. */}
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                style={{
+                  height: 12,
+                  width: 12,
+                  borderRadius: 999,
+                  display: "inline-block",
+                  boxSizing: "border-box",
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.022))",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
+                }}
+              />
+            ))}
             <span style={{ marginLeft: 8, fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
               root@srinivas: ~/fatal
             </span>

@@ -54,6 +54,11 @@ export const GradientTracing: React.FC<GradientTracingProps> = ({
         />
         <defs>
           <motion.linearGradient
+            /* Without an explicit `initial`, framer reads x1/x2 off an element
+               that has never had them, gets undefined, and writes the string
+               "undefined" into the attribute on the first frame — which the SVG
+               parser rejects ("Expected length"). Seed them instead. */
+            initial={{ x1: 0, x2: 0 }}
             animate={{ x1: [0, width * 2], x2: [0, width] }}
             transition={{
               duration: animationDuration,

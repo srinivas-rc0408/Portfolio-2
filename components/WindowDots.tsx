@@ -1,15 +1,18 @@
 import React from "react";
 
 /**
- * Glossy R·G·B window-control dots (red · green · blue), matching the main
- * terminal header. Single source of truth so every "traffic light" across the
- * portfolio stays identical. `size` is the diameter in Tailwind units (w-/h-).
+ * Window-control dots. Styled as miniature command chips so they read as the
+ * same material as the `.nav-button` keycaps in the terminal header — quiet
+ * white glass with a top light-catch, no macOS traffic-light colors.
+ * Single source of truth: every window header in the portfolio renders this.
+ * `size` is the diameter in Tailwind units (w-/h-).
  */
-const DOTS = [
-  "radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06)", // red
-  "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)", // green
-  "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)", // blue
-];
+export const DOT_STYLE: React.CSSProperties = {
+  background:
+    "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.022))",
+  border: "1px solid rgba(255,255,255,0.1)",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
+};
 
 export default function WindowDots({
   size = "h-3 w-3",
@@ -21,15 +24,12 @@ export default function WindowDots({
   className?: string;
 }) {
   return (
-    <div className={`flex ${gap} ${className}`} aria-hidden="true">
-      {DOTS.map((bg, i) => (
+    <div className={`flex items-center ${gap} ${className}`} aria-hidden="true">
+      {[0, 1, 2].map((i) => (
         <span
           key={i}
           className={`${size} shrink-0 rounded-full`}
-          style={{
-            background: bg,
-            boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)",
-          }}
+          style={DOT_STYLE}
         />
       ))}
     </div>

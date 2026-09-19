@@ -115,20 +115,27 @@
   margin-left: auto;
 }
 
-/* Interactive window dots — glossy RGB traffic lights, each with a function */
+/* Interactive window dots — same material as the .nav-button command chips:
+   quiet white glass with a top light-catch, lit by the accent on hover. Each
+   still carries a distinct function (see the title/aria-label on each button);
+   colour is no longer the affordance, the tooltip and hover state are. */
 .dot {
   position: relative;
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 9999px;
-  border: none;
   padding: 0;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 150ms ease;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.022)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: transform 0.15s ease, background 160ms ease,
+    border-color 160ms ease, box-shadow 200ms ease;
   will-change: transform;
-  /* glossy top highlight + crisp edge, so each dot reads as a raised bead */
-  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.45),
-    0 0 0 0.5px rgba(0, 0, 0, 0.4);
 }
 
 /* The bead is only ~14px, well under the 44px touch minimum. Expand the hit
@@ -139,42 +146,23 @@
   inset: -15px -8px;
 }
 
-.dot:hover {
+.dot:hover,
+.dot:focus-visible {
   transform: scale(1.2);
+  background: linear-gradient(
+    180deg,
+    rgba(var(--theme-accent-rgb), 0.17),
+    rgba(var(--theme-accent-rgb), 0.07)
+  );
+  border-color: rgba(var(--theme-accent-rgb), 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 12px -2px rgba(var(--theme-accent-rgb), 0.85);
 }
 
 .dot:active {
   transform: scale(0.9);
-}
-
-/* Red → view profile picture */
-.dot-red {
-  background: radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06);
-}
-
-.dot-red:hover {
-  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
-    0 0 12px rgba(229, 35, 26, 0.95);
-}
-
-/* Blue → clear terminal */
-.dot-blue {
-  background: radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6);
-}
-
-.dot-blue:hover {
-  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
-    0 0 12px rgba(59, 157, 255, 0.9);
-}
-
-/* Green → show help */
-.dot-green {
-  background: radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636);
-}
-
-.dot-green:hover {
-  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
-    0 0 12px rgba(47, 216, 79, 0.9);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  transition-duration: 90ms;
 }
 
 /* Row 2 — command bar: an even grid of runnable commands.
@@ -580,7 +568,7 @@
   font-size: 16px;
 }
 
-/* Traffic-light dots grouped in a row so the mobile layout can stack the
+/* Window dots grouped in a row so the mobile layout can stack the
    "back to profile" button neatly beneath them. */
 .dots-row {
   display: flex;
@@ -594,13 +582,13 @@
 .dot {
   animation: dot-pop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
-.dot-red {
+.dot-1 {
   animation-delay: 40ms;
 }
-.dot-green {
+.dot-2 {
   animation-delay: 110ms;
 }
-.dot-blue {
+.dot-3 {
   animation-delay: 180ms;
 }
 @keyframes dot-pop-in {

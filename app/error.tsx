@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import WindowDots from "@/components/WindowDots";
 
 /**
  * Route-level error boundary. Catches render/data errors (e.g. a DB cold-start
@@ -25,9 +26,7 @@ export default function Error({
       <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-[rgba(var(--theme-accent-rgb),0.35)] bg-black/70 backdrop-blur-xl">
         {/* window header */}
         <div className="flex items-center gap-2 border-b border-[rgba(var(--theme-accent-rgb),0.25)] bg-white/[0.03] px-4 py-2.5">
-          <span className="h-3 w-3 rounded-full" style={{ background: "radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06)" }} />
-          <span className="h-3 w-3 rounded-full" style={{ background: "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)" }} />
-          <span className="h-3 w-3 rounded-full" style={{ background: "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)" }} />
+          <WindowDots />
           <span className="ml-2 text-xs text-white/60">root@srinivas: ~/recover</span>
         </div>
 

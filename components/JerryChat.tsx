@@ -8,6 +8,7 @@ import { track } from "@vercel/analytics";
 import { Send, Trash2, X, Zap } from "lucide-react";
 import { docUrl, PRIVATE_RESOURCE } from "@/lib/cms";
 import { useScrollLock } from "@/lib/useScrollLock";
+import { useEventCallback } from "@/lib/useEventCallback";
 import { SoundEngine } from "@/lib/sound";
 
 // Sentinel prepended by /api/chat when Jerry's highlightBackend tool fires.
@@ -152,6 +153,7 @@ const LEAD_CHIP = "What makes him stand out?";
 const WHY_CHIP = "Why choose Srinivas R C?";
 const INTERN_CHIP = "Tell me about his IIT Ropar internship";
 const CHIP_POOL = [
+  "Walk me through AEGIS",
   "Walk me through ArchAgent",
   "What's he building right now?",
   "How deep is his LLM & agentic AI work?",
@@ -214,6 +216,11 @@ function sampleChips(): string[] {
 }
 
 export default function JerryChat({ open, onClose, initialQuestion }: JerryChatProps) {
+  // The parent passes a fresh inline arrow on every render. Left raw, it churns
+  // the identity of `send` and of the on-open effect below — which re-fired
+  // `jerry_opened`, re-sampled the suggestion chips and re-stole focus on every
+  // unrelated terminal re-render. Stable wrapper, latest callback.
+  const stableClose = useEventCallback(onClose);
   // Lock background scrolling while this modal is open.
   useScrollLock(open);
   const [messages, setMessages] = useState<Msg[]>(chatCache);
@@ -275,7 +282,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       if (!q || busy) return;
       setInput("");
       if (q.toLowerCase() === "exit") {
-        onClose();
+        stableClose();
         return;
       }
       // Resume/CV asks open the document viewer directly (instant, no API) —
@@ -395,7 +402,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
         setDomOverride(false);
       }
     },
-    [busy, onClose, setAndCache, revealText]
+    [busy, stableClose, setAndCache, revealText]
   );
 
   // On open: fresh chip sample, focus, sync from cache; Esc closes.
@@ -409,7 +416,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       autosize(); // settle the textarea to its true single-row height from the start
     }, 350);
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") stableClose();
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -417,7 +424,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
       window.removeEventListener("keydown", onKey);
       abortRef.current?.abort();
     };
-  }, [open, onClose, autosize]);
+  }, [open, stableClose, autosize]);
 
   // Legacy `ai <question>` → auto-send once per open.
   useEffect(() => {
@@ -477,7 +484,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="fixed left-0 right-0 top-0 z-[100] flex h-[100dvh] items-end justify-center bg-black/60 pt-[max(env(safe-area-inset-top),0.5rem)] backdrop-blur-sm sm:items-center sm:p-6 sm:pt-6"
-          onClick={onClose}
+          onClick={stableClose}
           role="dialog"
           aria-modal="true"
           aria-label="Jerry AI chat interface"
@@ -519,7 +526,7 @@ export default function JerryChat({ open, onClose, initialQuestion }: JerryChatP
                 </button>
                 <button
                   type="button"
-                  onClick={onClose}
+                  onClick={stableClose}
                   aria-label="Close chat"
                   title="Close (Esc)"
                   className="rounded-md p-2.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"

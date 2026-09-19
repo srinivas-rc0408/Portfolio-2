@@ -1204,12 +1204,12 @@ export default function Terminal({
       <header className="terminal-header" data-xray="<TerminalHeader>">
         {/* Window title bar: traffic-light controls · host prompt · profile */}
         <div className="terminal-titlebar">
-          {/* Traffic-light controls — glossy RGB beads, each with a function */}
+          {/* Window controls — chip-styled beads, each with a function */}
           <div className="dots-row">
-            {/* Red — clear the terminal (macOS-style: red closes/wipes) */}
+            {/* 1 — clear the terminal */}
             <button
               type="button"
-              className="dot dot-red"
+              className="dot dot-1"
               title="Clear terminal"
               aria-label="Clear terminal"
               onClick={(e) => {
@@ -1217,10 +1217,10 @@ export default function Terminal({
                 void processCommand("clear");
               }}
             />
-            {/* Green — view profile picture */}
+            {/* 2 — view profile picture */}
             <button
               type="button"
-              className="dot dot-green"
+              className="dot dot-2"
               title="View profile picture"
               aria-label="View profile picture"
               onClick={(e) => {
@@ -1228,10 +1228,10 @@ export default function Terminal({
                 window.dispatchEvent(new CustomEvent("profile:view"));
               }}
             />
-            {/* Blue — show help */}
+            {/* 3 — show help */}
             <button
               type="button"
-              className="dot dot-blue"
+              className="dot dot-3"
               title="Show help"
               aria-label="Show help"
               onClick={(e) => {

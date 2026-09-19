@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import SmartImage from "@/components/ui/SmartImage";
+import WindowDots from "@/components/WindowDots";
 import {
   Eye, EyeOff, Globe, Lock, Pin, Star, X, Check, Trash2, Upload,
   AlertTriangle, Pencil, ArrowDown, ArrowUp,
@@ -381,18 +382,8 @@ function AuthGate({ onSuccess }: { onSuccess: () => void }) {
         >
           <X size={16} strokeWidth={2.5} aria-hidden />
         </Link>
-        <div className="mb-4 flex items-center gap-2" aria-hidden="true">
-          {[
-            "radial-gradient(circle at 32% 28%, #ff6f61, #e5231a 52%, #9e0d06)",
-            "radial-gradient(circle at 32% 28%, #8ff0af, #2fd84f 55%, #15a636)",
-            "radial-gradient(circle at 32% 28%, #86bcff, #3b9dff 55%, #1667d6)",
-          ].map((bg) => (
-            <span
-              key={bg}
-              className="h-3 w-3 rounded-full"
-              style={{ background: bg, boxShadow: "inset 0 1px 1.5px rgba(255,255,255,0.45)" }}
-            />
-          ))}
+        <div className="mb-4 flex items-center gap-2">
+          <WindowDots gap="gap-2" />
           <span className="ml-2 text-sm text-white">auth@portfolio:~$</span>
         </div>
 

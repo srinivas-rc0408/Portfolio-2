@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
+import WindowDots from "@/components/WindowDots";
+
 /**
  * TechStack — an interactive, accordion-style "terminal cards" grid.
  * Click a card to expand it (one open at a time → zero layout jitter). Accents
@@ -105,17 +107,6 @@ const stackData: StackCategory[] = [
     ],
   },
 ];
-
-/** Classic macOS window controls (kept as their iconic colors). */
-function WindowDots() {
-  return (
-    <div className="flex items-center gap-1.5" aria-hidden="true">
-      <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-      <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-      <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-    </div>
-  );
-}
 
 function TerminalCard({
   data,
