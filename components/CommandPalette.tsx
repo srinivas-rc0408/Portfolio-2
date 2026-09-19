@@ -130,14 +130,25 @@ export default function CommandPalette() {
   const [session, setSession] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  // Whatever had focus before the palette opened — it gets focus back on close,
-  // so a keyboard user lands where they were instead of at the top of <body>.
+  // Where focus goes back to on close. Only recorded when the user reached the
+  // opener by KEYBOARD (it matched :focus-visible at open time): a keyboard
+  // user must land back where they were, not at the top of <body>.
+  //
+  // A mouse opener is deliberately NOT restored. Browsers show the focus ring
+  // on any element focused programmatically right after a key press — and the
+  // palette is usually closed with Esc — so handing focus back to a clicked
+  // window dot left it stuck showing a white ring and its enlarged hover
+  // state, with the pointer nowhere near it.
   const openerRef = useRef<HTMLElement | null>(null);
 
   useScrollLock(open);
 
   const show = useCallback(() => {
-    openerRef.current = document.activeElement as HTMLElement | null;
+    const el = document.activeElement;
+    openerRef.current =
+      el instanceof HTMLElement && el !== document.body && el.matches(":focus-visible")
+        ? el
+        : null;
     setSession((n) => n + 1);
     setOpen(true);
     SoundEngine.whoosh();

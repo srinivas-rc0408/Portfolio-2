@@ -1247,10 +1247,15 @@ export default function Terminal({
             <span className="tt-path">:~</span>
           </span>
           {/* Live Bengaluru clock — only below 1025px, where the desktop status
-              footer (which carries the full version) isn't rendered. */}
+              footer (which carries the full version) isn't rendered. Its ml-auto
+              is the ONLY auto margin in this bar: it pins the clock and the
+              profile button together at the right edge. Spacing between them
+              comes from the bar's own gap — no extra margin, or the pair
+              drifts apart and the clock stops short of the right edge in
+              landscape (where the profile button is hidden). */}
           <LiveStatus
             compact
-            className="ml-auto mr-2 shrink-0 min-[1025px]:hidden"
+            className="ml-auto shrink-0 min-[1025px]:hidden"
           />
           {/* Mobile-only: return to the profile pane without clearing history. */}
           {onShowIdentity && (
