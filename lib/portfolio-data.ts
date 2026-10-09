@@ -208,6 +208,7 @@ export const skills: SkillsCategory = {
     "Git / GitHub",
     "Firebase",
     "Supabase",
+    "Neon Postgres",
     "Prisma",
     "Inngest",
     "Google Places API",

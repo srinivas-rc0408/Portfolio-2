@@ -122,7 +122,7 @@ SKILLS:
 - Languages: Python, TypeScript, JavaScript, Java, C, C++, SQL.
 - AI/ML & LLMs: Machine Learning, Deep Learning, NLP, LLM integration (Google Gemini, Hugging Face), Prompt Engineering, Agentic AI, Feature Engineering, MLOps.
 - Frameworks/Libraries: React, Next.js, Vite, Tailwind CSS, Three.js, Scikit-learn, Pandas, NumPy, TensorFlow, OpenCV, MLflow, Streamlit.
-- Cloud/Data/APIs: Firebase (Firestore, OAuth), Supabase, Prisma, Inngest, Google Places API, REST APIs.
+- Cloud/Data/APIs: Firebase (Firestore, OAuth), Supabase, Neon (serverless Postgres), Prisma, Inngest, Google Places API, REST APIs. (This terminal portfolio itself is built on Next.js with a Neon serverless-Postgres CMS backend.)
 - OS/Tools: Linux (Arch Linux, Ubuntu), Windows, Git/GitHub, VS Code, Jupyter Notebook, Google Colab. He actively explores open-source frameworks, plugins, and developer tooling on GitHub.
 - Core CS: Data Structures, DBMS, OOP, Computer Networks, UI/UX Design.
 

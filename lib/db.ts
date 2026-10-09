@@ -11,14 +11,16 @@ import { CERTIFICATES, EDUCATION } from "@/lib/section-fallbacks";
  * (idempotent).
  */
 
-const DATABASE_URL =
-  process.env.DATABASE_URL ||
-  "postgresql://neondb_owner:npg_zDSoqGATgp16@ep-steep-fog-azle6cqr-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+// Read strictly from the environment — never hardcode a connection string
+// (it would commit a live credential to the repo). When unset, getSql() throws
+// and every caller's try/catch degrades gracefully to the static seed data.
+const DATABASE_URL = process.env.DATABASE_URL;
 
 // Module-level singleton — reused across hot-reloads in dev.
 let _sql: NeonQueryFunction<false, false> | null = null;
 
 function getSql(): NeonQueryFunction<false, false> {
+  if (!DATABASE_URL) throw new Error("DATABASE_URL is not configured");
   if (!_sql) _sql = neon(DATABASE_URL);
   return _sql;
 }
