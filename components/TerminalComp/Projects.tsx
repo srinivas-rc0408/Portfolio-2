@@ -186,6 +186,13 @@ const Projects: React.FC = () => {
 
   const totalPages = Math.ceil(projectsData.length / projectsPerPage);
 
+  // Clamp the page when the page count shrinks — e.g. resizing mobile -> desktop
+  // halves the page count (1-per-page -> 2-per-page), which would otherwise
+  // leave currentPage pointing past the end at a blank page.
+  useEffect(() => {
+    setCurrentPage((p) => Math.min(p, Math.max(0, totalPages - 1)));
+  }, [totalPages]);
+
   // Get current projects to display
   const startIndex = currentPage * projectsPerPage;
   const currentProjects = projectsData.slice(
@@ -317,7 +324,7 @@ const Projects: React.FC = () => {
       </div>
 
       {/* Grid container - Responsive: 1 column on mobile, 2 on desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 min-h-[400px] sm:min-h-[600px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 min-h-[400px] sm:min-h-[600px]">
         {currentProjects.map((project, index) => {
           const globalIndex = startIndex + index;
           return (
@@ -421,7 +428,7 @@ const Projects: React.FC = () => {
                   {/* Terminal-style command line - Mobile responsive */}
                   <div
                     className="bg-gray-800/50 rounded-md p-2 sm:p-4 font-mono text-xs sm:text-sm border border-gray-700/50 overflow-hidden cursor-pointer select-none hover:border-[var(--accent)] transition-colors"
-                    role="code"
+                    role="button"
                     tabIndex={0}
                     aria-label={`Copy git clone command for ${project.name}`}
                     onClick={() => copyCloneCommand(project, globalIndex)}
@@ -466,16 +473,18 @@ const Projects: React.FC = () => {
                       className="flex space-x-4 sm:space-x-6"
                       aria-label="Project links"
                     >
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center space-x-1 sm:space-x-2 text-gray-400 hover:text-white transition-all duration-150 hover:scale-105 font-mono text-sm sm:text-base"
-                        aria-label={`View ${project.name} live demo`}
-                      >
-                        <ExternalLinkIcon />
-                        <span>live</span>
-                      </a>
+                      {project.liveUrl && project.liveUrl !== "#" && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center space-x-1 sm:space-x-2 text-gray-400 hover:text-white transition-all duration-150 hover:scale-105 font-mono text-sm sm:text-base"
+                          aria-label={`View ${project.name} live demo`}
+                        >
+                          <ExternalLinkIcon />
+                          <span>live</span>
+                        </a>
+                      )}
                       <a
                         href={project.githubUrl}
                         target="_blank"

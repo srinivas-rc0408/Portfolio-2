@@ -426,16 +426,18 @@ export default async function Projects() {
                     {/* Links Section */}
                     <footer>
                       <nav aria-label="Project links">
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`View ${project.name} live demo`}
-                          itemProp="url"
-                        >
-                          <ExternalLinkIcon />
-                          <span>live</span>
-                        </a>
+                        {project.liveUrl && project.liveUrl !== "#" && (
+                          <a
+                            href={project.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`View ${project.name} live demo`}
+                            itemProp="url"
+                          >
+                            <ExternalLinkIcon />
+                            <span>live</span>
+                          </a>
+                        )}
                         <a
                           href={project.githubUrl}
                           target="_blank"
