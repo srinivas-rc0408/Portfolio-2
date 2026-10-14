@@ -264,7 +264,7 @@ export default function CommandPalette() {
           aria-label="Command palette"
           onClick={close}
           {...BACKDROP}
-          className="fixed inset-0 z-[100] flex items-start justify-center bg-black/60 px-4 pt-[14vh] backdrop-blur-sm sm:pt-[16vh]"
+          className="fixed inset-0 z-[100] flex items-start justify-center bg-black/60 px-4 pt-[14dvh] backdrop-blur-sm sm:pt-[16vh]"
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
@@ -273,7 +273,7 @@ export default function CommandPalette() {
             animate="show"
             exit="exit"
             style={{ transformOrigin: "50% 0%" }}
-            className="relative flex max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/70 font-mono shadow-[0_28px_80px_-24px_rgba(0,0,0,0.95),0_0_0_1px_rgba(var(--theme-accent-rgb),0.06)] backdrop-blur-2xl"
+            className="relative flex max-h-[70dvh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/70 font-mono shadow-[0_28px_80px_-24px_rgba(0,0,0,0.95),0_0_0_1px_rgba(var(--theme-accent-rgb),0.06)] backdrop-blur-2xl"
           >
             {/* Top light-catch — the same inset highlight the command chips
                 carry, so the palette reads as one material with the terminal. */}
@@ -298,7 +298,7 @@ export default function CommandPalette() {
                 aria-label="Search commands"
                 aria-controls="palette-results"
                 aria-activedescendant={results[active] ? `palette-opt-${results[active].id}` : undefined}
-                className="min-w-0 flex-1 bg-transparent py-4 text-[15px] text-zinc-100 placeholder:text-zinc-400/80 outline-none [caret-color:var(--theme-accent)]"
+                className="min-w-0 flex-1 bg-transparent py-4 text-[16px] text-zinc-100 placeholder:text-zinc-400/80 outline-none [caret-color:var(--theme-accent)] sm:text-[15px]"
                 autoComplete="off"
                 spellCheck={false}
               />
