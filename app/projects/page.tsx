@@ -297,6 +297,16 @@ export default async function Projects() {
       }
     } catch {}
   });
+
+  // Keyboard activation — the clone box is role="button" + focusable, so
+  // Enter/Space must copy too (not just mouse clicks).
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const el = e.target && e.target.closest ? e.target.closest('[data-clone-cmd]') : null;
+    if (!el) return;
+    e.preventDefault();
+    el.click();
+  });
 })();
           `.trim(),
         }}
@@ -358,8 +368,7 @@ export default async function Projects() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       style={{ objectFit: "cover" }}
-                      priority
-                      loading="eager"
+                      priority={index < 2}
                     />
                   </div>
 
@@ -438,16 +447,18 @@ export default async function Projects() {
                             <span>live</span>
                           </a>
                         )}
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`View ${project.name} source code on GitHub`}
-                          itemProp="codeRepository"
-                        >
-                          <GitHubIcon />
-                          <span>code</span>
-                        </a>
+                        {project.githubUrl && project.githubUrl !== "#" && (
+                          <a
+                            href={project.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`View ${project.name} source code on GitHub`}
+                            itemProp="codeRepository"
+                          >
+                            <GitHubIcon />
+                            <span>code</span>
+                          </a>
+                        )}
                       </nav>
 
                       {/* Status indicator */}
