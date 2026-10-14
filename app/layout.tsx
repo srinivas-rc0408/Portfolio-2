@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev",
+    "AI / ML Engineer & AI intern at IIT Ropar — builds agentic LLM systems and ships production-ready AI web apps end to end, from Gemini pipelines to offline on-prem agents.",
   keywords: [
     "AI Engineer",
     "AI / ML Engineer",
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Srinivas RC | AI / ML Engineer",
     description:
-      "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev.",
+      "AI / ML Engineer & AI intern at IIT Ropar — builds agentic LLM systems and ships production-ready AI web apps end to end, from Gemini pipelines to offline on-prem agents.",
     url: "https://srinivas-rc.is-a.dev",
     siteName: "Srinivas RC Portfolio",
     images: [
@@ -102,7 +102,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Srinivas RC | AI / ML Engineer",
     description:
-      "AI / ML Engineer building autonomous agent workflows and web applications. Live at srinivas-rc.is-a.dev.",
+      "AI / ML Engineer & AI intern at IIT Ropar — builds agentic LLM systems and ships production-ready AI web apps end to end, from Gemini pipelines to offline on-prem agents.",
     images: [DEFAULT_OG_IMAGE], // static /public asset, immutable-cached
   },
   robots: {
