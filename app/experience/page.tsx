@@ -10,14 +10,14 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Experience | Independent AI Project Work · Open to Placements",
-  description: `Experience of ${SITE_NAME}: Core Member & Head of Media at the Yantra IoT Club (REVA University), plus self-directed project work building LLM-powered and agentic AI systems (ArchAgent, AI Travel Planner, AI Finance Assistant). Open to internships and university placements in AI engineering.`,
+  description: `Experience of ${SITE_NAME}: AI Engineer Intern at IIT Ropar's VLED Lab (Ajrasakha), Core Member and Head of Media at the Yantra IoT Club (REVA University), plus self-directed work building offline-first LLM and agentic AI systems (AEGIS, ArchAgent, AquaSentinel). Open to AI/ML and SDE internships and 2027 roles.`,
   keywords: [
     `${SITE_NAME} Experience`,
     "AI / ML Engineer",
     "AI Engineer Bengaluru",
     "Agentic Systems",
     "Autonomous AI Agent",
-    "CrewAI",
+    "LangGraph",
     "Large Language Models",
     "Prompt Engineering",
     "Machine Learning Projects",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Experience | Independent AI Project Work · Open to Placements",
     description:
-      "Independent project work building agentic AI systems and ML web apps. Open to internships and university placements in AI engineering.",
+      "AI Engineer Intern at IIT Ropar's VLED Lab plus independent AI/ML project work. Open to AI/ML and SDE internships and 2027 roles.",
     type: "profile",
     url: `${SITE_URL}/experience`,
     siteName: `${SITE_NAME} - Developer Portfolio`,
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Experience | Independent AI Project Work · Open to Placements",
     description:
-      "Independent project work building agentic AI systems and ML web apps. Open to internships and university placements.",
+      "AI Engineer Intern at IIT Ropar's VLED Lab plus independent AI/ML project work. Open to AI/ML and SDE internships and 2027 roles.",
     images: [OG_IMAGE_URL],
   },
   robots: {
@@ -143,44 +143,42 @@ export default function Experience() {
               Experience
             </h1>
             <p>
-              Independent project work as a AI / ML Engineer — building
-              agentic AI systems and machine learning web applications. Open to
-              internships and university placements.
+              AI Engineer Intern at IIT Ropar&apos;s VLED Lab, plus independent
+              project work as an AI / ML Engineer — building agentic AI systems
+              and machine learning web applications. Open to AI/ML and SDE
+              internships and 2027 roles.
             </p>
           </header>
 
           <div>
-            {/* AI Developer Intern — Vicharanashala, IIT Ropar (current role) */}
+            {/* AI Engineer Intern — VLED Lab, IIT Ropar (current role) */}
             <article aria-labelledby="iit-ropar-heading">
               <header>
-                <h2 id="iit-ropar-heading">
-                  Artificial Intelligence Developer Intern
-                </h2>
+                <h2 id="iit-ropar-heading">AI Engineer Intern</h2>
                 <p>
-                  <strong>Vicharanashala, IIT Ropar · Aug 2026 – Present</strong>{" "}
-                  · Remote · 3-month track
+                  <strong>
+                    VLED Lab (Vicharanashala Lab for Education Design), IIT Ropar
+                    · Aug 2026 – Oct 2026
+                  </strong>{" "}
+                  · Remote · Project: Ajrasakha
                 </p>
               </header>
               <ul itemProp="description">
                 <li>
-                  <strong>Building &amp; designing AI solutions</strong> —
-                  architecting intelligent AI applications with a focus on system
-                  design and scalable software architecture.
+                  <strong>Contributing to Ajrasakha</strong> — an open-source
+                  assistant that answers farmers&apos; questions in their local
+                  languages.
                 </li>
                 <li>
-                  <strong>Full-stack &amp; AI engineering</strong> — an intensive
-                  track integrating foundational AI methodologies with the MERN
-                  (MongoDB, Express, React, Node.js) stack via the ViBe platform.
+                  <strong>3-tier retrieval pipeline</strong> — serving
+                  expert-verified answers first, then the Package of Practices
+                  database, and calling local LLMs (DeepSeek-R1, Qwen3) through
+                  Ollama only as a fallback.
                 </li>
                 <li>
-                  <strong>Mathematical foundations &amp; mentoring</strong> —
-                  peer-to-peer technical validation sessions (Matrix Mystics)
-                  solving and endorsing the Linear Algebra behind ML models.
-                </li>
-                <li>
-                  <strong>Agile collaboration</strong> — daily agile standups and
-                  cross-functional breakout rooms, with asynchronous technical
-                  documentation on Discourse.
+                  <strong>Selected competitively</strong> — committing code to a
+                  live public repository after selection through a competitive
+                  evaluation.
                 </li>
               </ul>
             </article>

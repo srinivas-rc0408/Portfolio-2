@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     "Large Language Models",
     "LLM Developer",
     "Agentic Systems",
-    "CrewAI",
+    "LangGraph",
     "Prompt Engineering",
     "Python Developer",
     "Linux Administration",

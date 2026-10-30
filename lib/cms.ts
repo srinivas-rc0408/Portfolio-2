@@ -57,7 +57,7 @@ export interface SiteSettings {
 }
 
 export const DEFAULT_SUMMARY =
-  "I'm a results-driven AI/ML Engineer and AIML undergraduate with proven experience building end-to-end ML pipelines, LLM-powered applications, and autonomous agentic AI frameworks. Proficient in Python, Linux (Arch Linux, Ubuntu), and MLOps tooling, and certified by IIT Ropar/NPTEL in Deep Learning and Microsoft in Software Engineering. I'm seeking an AI/ML engineering internship to drive real-world impact.";
+  "AI/ML engineering student (B.Tech, REVA University, 2027) and AI Engineer Intern at IIT Ropar's VLED Lab. I build LLM systems that run offline on small hardware: LangGraph agents, hybrid RAG, and local models through Ollama. Recent work includes AEGIS, an air-gapped agentic workbench built for Smart India Hackathon 2026, and an autonomous codebase-migration agent for my major project. Open to AI/ML and SDE internships and 2027 roles.";
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   displayName: "Srinivas RC",

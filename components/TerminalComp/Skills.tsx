@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import WindowDots from "@/components/WindowDots";
+import { skills as skillsData, skillCommands } from "@/lib/portfolio-data";
 
 /**
  * TechStack — an interactive, accordion-style "terminal cards" grid.
@@ -19,92 +20,39 @@ interface StackCategory {
   skills: string[];
 }
 
+// Built from the shared source of truth (lib/portfolio-data.ts) so the terminal
+// pane and the /skills page never drift. Category metadata (titles) lives here;
+// the skill items and faux commands come from the data.
 const stackData: StackCategory[] = [
   {
     id: "languages",
     title: "Languages",
-    command: "$ ls -la /skills/languages/",
-    skills: ["Python", "TypeScript", "JavaScript", "Java", "C", "C++", "SQL"],
+    command: `$ ${skillCommands.languages}`,
+    skills: skillsData.languages,
   },
   {
     id: "aiml",
     title: "AI / ML",
-    command: "$ python -m pip list | grep ai",
-    skills: [
-      "Machine Learning",
-      "Deep Learning",
-      "NLP",
-      "LLM Integration",
-      "Google Gemini",
-      "Hugging Face",
-      "Prompt Engineering",
-      "Agentic AI",
-      "Feature Engineering",
-      "MLOps",
-    ],
+    command: `$ ${skillCommands.ai_ml}`,
+    skills: skillsData.ai_ml,
   },
   {
-    id: "agentic",
+    id: "frameworks",
     title: "Frameworks / Libraries",
-    command: "$ cat /skills/frameworks/stack.txt",
-    skills: [
-      "React",
-      "Next.js",
-      "Vite",
-      "Tailwind CSS",
-      "Three.js",
-      "Scikit-learn",
-      "Pandas",
-      "NumPy",
-      "TensorFlow",
-      "OpenCV",
-      "MLflow",
-      "Streamlit",
-    ],
-  },
-  {
-    id: "linux",
-    title: "Linux / OS",
-    command: "$ cat /etc/os-release && lsblk",
-    skills: [
-      "Arch Linux",
-      "CachyOS",
-      "Pop!_OS",
-      "Ubuntu",
-      "Debian",
-      "Linux Mint",
-      "Windows",
-    ],
+    command: `$ ${skillCommands.frameworks}`,
+    skills: skillsData.frameworks,
   },
   {
     id: "tools",
-    title: "Cloud, Data & Tools",
-    command: "$ which --all tools",
-    skills: [
-      "Firebase",
-      "Supabase",
-      "Prisma",
-      "Inngest",
-      "Google Places API",
-      "REST APIs",
-      "Git",
-      "GitHub",
-      "VS Code",
-      "Jupyter Notebook",
-      "Google Colab",
-    ],
+    title: "OS & Tools",
+    command: `$ ${skillCommands.tools}`,
+    skills: skillsData.tools,
   },
   {
-    id: "corecs",
-    title: "Core CS",
-    command: "$ cat /skills/core-cs.txt",
-    skills: [
-      "Data Structures",
-      "DBMS",
-      "OOP",
-      "Computer Networks",
-      "UI/UX Design",
-    ],
+    id: "linux",
+    title: "Linux",
+    command: `$ ${skillCommands.linux}`,
+    skills: skillsData.linux,
   },
 ];
 

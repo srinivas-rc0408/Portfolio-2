@@ -43,18 +43,18 @@ const Experience: React.FC = () => {
             </div>
 
             <div className="ml-3 sm:ml-6 border-l-2 border-cyan-800/30 pl-3 sm:pl-6 space-y-8">
-              {/* AI Developer Intern — Vicharanashala, IIT Ropar (current role) */}
+              {/* AI Engineer Intern — VLED Lab, IIT Ropar (current role) */}
               <div>
                 <div className="flex items-start gap-3 mb-4">
                   <div className="min-w-0">
                     <h3 className="text-white font-semibold text-base sm:text-lg font-mono">
-                      Artificial Intelligence Developer Intern
+                      AI Engineer Intern
                     </h3>
                     <p className="text-gray-400 text-xs sm:text-sm">
-                      Vicharanashala, IIT Ropar · Aug 2026 – Present
+                      VLED Lab (Vicharanashala Lab for Education Design), IIT Ropar · Aug 2026 – Oct 2026
                     </p>
                     <p className="text-gray-400 text-xs sm:text-sm">
-                      Remote · 3-month track
+                      Remote · Project: Ajrasakha
                     </p>
                   </div>
                   <span className="ml-auto shrink-0 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
@@ -65,40 +65,37 @@ const Experience: React.FC = () => {
                 <ul className="list-disc list-outside space-y-1.5 text-gray-300 text-sm sm:text-base ml-5 sm:ml-7">
                   <li>
                     <strong className="font-semibold text-white">
-                      Building &amp; designing AI solutions
+                      Contributing to Ajrasakha
                     </strong>{" "}
-                    — architecting intelligent AI applications with a focus on
-                    system design and scalable software architecture.
+                    — an open-source assistant that answers farmers&apos; questions
+                    in their local languages.
                   </li>
                   <li>
                     <strong className="font-semibold text-white">
-                      Full-stack &amp; AI engineering
+                      3-tier retrieval pipeline
                     </strong>{" "}
-                    — an intensive track integrating foundational AI methodologies
-                    with the MERN stack via the ViBe platform.
+                    — serving expert-verified answers first, then the Package of
+                    Practices database, and calling local LLMs (DeepSeek-R1, Qwen3)
+                    through Ollama only as a fallback.
                   </li>
                   <li>
                     <strong className="font-semibold text-white">
-                      Mathematical foundations &amp; mentoring
+                      Selected competitively
                     </strong>{" "}
-                    — peer-to-peer validation sessions (Matrix Mystics) solving and
-                    endorsing the Linear Algebra behind ML models.
-                  </li>
-                  <li>
-                    <strong className="font-semibold text-white">
-                      Agile collaboration
-                    </strong>{" "}
-                    — daily standups and cross-functional breakout rooms, with
-                    async technical docs on Discourse.
+                    — committing code to a live public repository after selection
+                    through a competitive evaluation.
                   </li>
                 </ul>
 
                 <div className="mt-3 ml-5 flex flex-wrap gap-1.5 sm:ml-7">
                   {[
-                    "Artificial Intelligence",
-                    "MERN Stack",
-                    "Linear Algebra",
-                    "System Architecture",
+                    "React",
+                    "TypeScript",
+                    "Node.js",
+                    "Express",
+                    "MongoDB Atlas Vector Search",
+                    "Sarvam AI",
+                    "Ollama",
                   ].map((t) => (
                     <span
                       key={t}

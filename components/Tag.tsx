@@ -486,7 +486,7 @@ export default function Tag() {
           type="button"
           onClick={() => execInTerminal("experience")}
           whileTap={{ scale: 0.97 }}
-          aria-label="Current role: Artificial Intelligence Developer Intern at Vicharanashala, IIT Ropar — open experience"
+          aria-label="Current role: AI Engineer Intern at VLED Lab, IIT Ropar — open experience"
           title="Current role — open experience"
           className="group/role inline-flex min-h-[44px] items-center gap-2 whitespace-nowrap rounded-full border border-[rgba(var(--accent-rgb),0.45)] bg-[rgba(var(--accent-rgb),0.1)] px-3 py-1.5 font-mono text-[11px] text-[var(--text)] shadow-[0_0_18px_-7px_rgba(var(--accent-rgb),0.7)] transition-all duration-200 hover:border-[rgba(var(--accent-rgb),0.7)] hover:bg-[rgba(var(--accent-rgb),0.16)] active:scale-[0.97]"
         >
@@ -496,7 +496,7 @@ export default function Tag() {
             aria-hidden
             className="shrink-0 text-[var(--accent)]"
           />
-          <span className="font-semibold">AI Developer Intern</span>
+          <span className="font-semibold">AI Engineer Intern</span>
           <span className="text-[var(--text-secondary)]">·</span>
           <span>IIT Ropar</span>
           <span className="relative ml-0.5 flex h-1.5 w-1.5 shrink-0" aria-hidden>

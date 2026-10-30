@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: `About Me | ${SITE_TAGLINE}`,
   description:
-    "AI / ML Engineer from Bengaluru, India. Building and deploying web applications powered by Large Language Models (LLMs) and agentic systems. Passionate about Linux system optimization with CachyOS. Pursuing B.Tech in AI & ML at REVA University.",
+    "AI/ML engineering student (B.Tech, REVA University, 2027) and AI Engineer Intern at IIT Ropar's VLED Lab. Builds offline-first LLM systems — LangGraph agents, hybrid RAG, and local models through Ollama — and daily-drives Arch Linux and CachyOS. Based in Bengaluru, India.",
   keywords: [
     "AI Engineer",
     "AI / ML Engineer",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "Large Language Models",
     "LLM Developer",
     "Agentic Systems",
-    "CrewAI",
+    "LangGraph",
     "Prompt Engineering",
     "Python Developer",
     "Linux Administration",
@@ -129,7 +129,7 @@ const structuredData = {
   email: `mailto:${CONTACT_EMAIL}`,
   jobTitle: "AI / ML Engineer",
   description:
-    "AI / ML Engineer building web applications powered by Large Language Models and agentic systems. Passionate about Linux system optimization with CachyOS. Based in Bengaluru, India.",
+    "AI/ML engineer and AI Engineer Intern at IIT Ropar's VLED Lab, building offline-first LLM systems — LangGraph agents, hybrid RAG, and local models through Ollama. Daily-drives Arch Linux and CachyOS. Based in Bengaluru, India.",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Bengaluru",
@@ -143,7 +143,7 @@ const structuredData = {
     "Machine Learning",
     "Large Language Models",
     "Agentic Systems",
-    "CrewAI",
+    "LangGraph",
     "Prompt Engineering",
     "Python",
     "Linux Administration",
@@ -171,7 +171,7 @@ const structuredData = {
     },
   ],
   skills:
-    "Python, Machine Learning, Large Language Models, Agentic Frameworks (CrewAI), Prompt Engineering, Linux Administration",
+    "Python, Machine Learning, Large Language Models, Agentic Frameworks (LangGraph), Prompt Engineering, Linux Administration",
   sameAs: ["https://github.com/srinivas-rc0408"],
 };
 
@@ -277,13 +277,14 @@ export default function About() {
               <div>
                 <p>
                   I am a B.Tech Artificial Intelligence &amp; Machine Learning
-                  undergraduate and an <strong>AI / ML Engineer</strong>. I specialize in
-                  building and deploying web applications powered by{" "}
+                  undergraduate and an{" "}
+                  <strong>AI Engineer Intern at IIT Ropar&apos;s VLED Lab</strong>.
+                  I build offline-first systems powered by{" "}
                   <strong>Large Language Models (LLMs)</strong> and{" "}
-                  <strong>agentic systems</strong>. I am passionate about Linux
-                  system optimization (specifically CachyOS) and leveraging AI
-                  to solve real-world problems. Off the keyboard, I enjoy
-                  motorcycle photography and use AI tools for image
+                  <strong>agentic workflows</strong> — LangGraph agents, hybrid
+                  RAG, and local models through Ollama. I daily-drive Arch Linux
+                  and CachyOS and enjoy tuning my Linux setup. Off the keyboard, I
+                  do motorcycle photography and use AI tools for image
                   enhancement.
                 </p>
 
@@ -292,7 +293,7 @@ export default function About() {
                     "Python",
                     "Machine Learning",
                     "LLMs",
-                    "CrewAI",
+                    "LangGraph",
                     "Prompt Engineering",
                     "Linux",
                   ].map((tech) => (
@@ -356,8 +357,10 @@ export default function About() {
                   <h3>Agentic AI Systems</h3>
                   <p>
                     Building agentic systems with <strong>LLMs</strong>,{" "}
-                    <strong>Google Gemini</strong> and <strong>CrewAI</strong> —
-                    like <strong>ArchAgent</strong>, an AI architectural design
+                    <strong>LangGraph</strong> and <strong>Google Gemini</strong> —
+                    like <strong>AEGIS</strong>, an air-gapped agentic workbench
+                    for Smart India Hackathon 2026, and <strong>ArchAgent</strong>,
+                    an AI architectural design
                     platform that turns a text brief into 3D renders, panoramic
                     views and itemised cost estimates through a 4-stage Gemini
                     prompt-chaining pipeline. Focused on prompt engineering and

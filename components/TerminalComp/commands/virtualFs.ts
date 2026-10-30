@@ -19,17 +19,17 @@ export type HomeDirEntry = (typeof HOME_DIR)[number];
 
 export const FILE_CONTENTS: Record<string, string> = {
   about:
-    "About Srinivas RC — AI / ML Engineer. B.Tech AI & ML undergraduate building web applications powered by LLMs and agentic systems. Passionate about Linux (CachyOS). Type 'cd about' to open the full section.",
+    "About Srinivas RC — AI / ML Engineer and AI Engineer Intern at IIT Ropar's VLED Lab. B.Tech AI & ML undergraduate building offline-first LLM systems — LangGraph agents, hybrid RAG, and local models via Ollama. Daily-drives Arch Linux and CachyOS. Type 'cd about' to open the full section.",
   projects:
-    "Recent projects: AEGIS (air-gapped on-premise agentic AI workbench — LangGraph + local Ollama models + FAISS/BM25, built for SIH 2026), ArchAgent (AI architectural design platform — Gemini prompt-chaining + FLUX + Three.js) and AquaSentinel (underwater inspection mission control — live demo). Type 'cd projects' to browse with links and descriptions.",
+    "Recent projects: AEGIS (air-gapped agentic AI workbench — LangGraph + local Ollama models + FAISS/BM25, SIH 2026), a Codebase Version-Migration Agent (B.Tech major project), ArchAgent (AI architectural design — Gemini prompt-chaining + FLUX + Three.js), AquaSentinel (underwater inspection mission control — live demo) and Geo Measure (geospatial measurement API). Type 'cd projects' to browse with links and descriptions.",
   skills:
-    "Tech: Python, Machine Learning, Large Language Models (LLMs), Agentic Frameworks (CrewAI), Prompt Engineering, Linux Administration. Type 'cd skills' to see all.",
+    "Tech: Python, TypeScript, Deep Learning, NLP, Computer Vision, LLMs, RAG, LangGraph, FastAPI, React, Next.js, Docker, PostgreSQL, Linux (Arch, CachyOS, Fedora, Pop!_OS). Type 'cd skills' to see all.",
   experience:
-    "Independent project work — building agentic AI systems and ML web apps. Open to internships and university placements. Type 'cd experience' for details.",
+    "AI Engineer Intern at IIT Ropar's VLED Lab (Ajrasakha), plus independent AI/ML project work. Open to AI/ML and SDE internships and 2027 roles. Type 'cd experience' for details.",
   contact:
     "Get in touch: email, GitHub. Type 'cd contact' for links and copy-paste.",
   education:
-    "B.Tech in Artificial Intelligence & Machine Learning, REVA University. Type 'education' for details.",
+    "B.Tech in Artificial Intelligence and Machine Learning, REVA University (CGPA 8.0/10, 2023–2027). Type 'education' for details.",
   certificates:
     "Certifications and credentials. Type 'certificates' to view (managed via the admin panel).",
   welcome:

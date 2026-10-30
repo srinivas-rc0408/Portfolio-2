@@ -1,7 +1,13 @@
 import "server-only";
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 import { projects as seedProjects } from "@/lib/portfolio-data";
-import { CERTIFICATES, EDUCATION } from "@/lib/section-fallbacks";
+import {
+  CERTIFICATES,
+  EDUCATION,
+  EXPERIENCE,
+  ACHIEVEMENTS,
+  CONNECT,
+} from "@/lib/section-fallbacks";
 
 /**
  * Neon PostgreSQL data layer — server-only.
@@ -205,41 +211,9 @@ async function seed(): Promise<void> {
     push("certificates", { ...e, sortOrder: i })
   );
   EDUCATION.forEach((e, i) => push("education", { ...e, sortOrder: i }));
-  push("experience", {
-    title: "Independent AI/ML Engineering — Self-Directed Projects",
-    description:
-      "Design, build, and ship full-stack AI products end to end — from a 4-stage Gemini prompt-chaining platform (ArchAgent) to MLOps pipelines and LLM-powered web apps (14 shipped solo, plus AEGIS built with Team Alpha for Smart India Hackathon 2026). Integrate real production stacks (Google Gemini, Hugging Face, Firebase, Supabase, Three.js), and continuously explore the open-source ecosystem on GitHub — evaluating new frameworks, plugins, and tooling and turning them into production-grade builds. Open to AI/ML internships and placements.",
-    date: "Self-directed · 2025 – Present",
-  });
-  push("experience", {
-    title: "Core Member & Head of Media — Yantra IoT Club, REVA University",
-    description:
-      "Led media and outreach for the club, running promotional campaigns for 2 robotics events — ROBONEMESIS microcontroller training and a Follow Bot Competition — that drew 17K+ combined views. Coordinated technical workshops and career panels with professionals from Amazon and Google, reaching 100+ students across university events.",
-    date: "2025",
-    sortOrder: 1,
-  });
-  push("achievements", {
-    title: "Certified — Deep Learning (IIT Ropar / NPTEL)",
-    description: "Completed the 12-week proctored academic programme.",
-    date: "2026",
-  });
-  push("connect", {
-    title: "Email",
-    description: "srinivasrc01@gmail.com",
-    link: "mailto:srinivasrc01@gmail.com",
-  });
-  push("connect", {
-    title: "GitHub",
-    description: "github.com/srinivas-rc0408",
-    link: "https://github.com/srinivas-rc0408",
-    sortOrder: 1,
-  });
-  push("connect", {
-    title: "Phone",
-    description: "+91 72049 54568",
-    link: "tel:+917204954568",
-    sortOrder: 2,
-  });
+  EXPERIENCE.forEach((e, i) => push("experience", { ...e, sortOrder: i }));
+  ACHIEVEMENTS.forEach((e, i) => push("achievements", { ...e, sortOrder: i }));
+  CONNECT.forEach((e, i) => push("connect", { ...e, sortOrder: i }));
 
   // Batch insert all seed rows.
   for (const r of rows) {

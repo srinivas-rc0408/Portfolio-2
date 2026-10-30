@@ -21,31 +21,49 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    name: "AEGIS — Air-Gapped Engineering Intelligence System",
+    name: "AEGIS — Air-Gapped Agentic AI Workbench",
     description:
-      "An offline, on-premise agentic AI workbench that lets high-security industries — oil refineries, defence, nuclear — run multimodal AI on confidential documents without a byte leaving the plant. A LangGraph state machine with a bounded retry loop plans the job, then runs it end to end locally: a vision model reads P&IDs, gauges and scans; hybrid FAISS + BM25 retrieval grounds every answer in the plant's own SOPs (dense search alone misses exact IDs like SOP-MNT-402 — BM25 catches them); safety arithmetic is evaluated in a network-disabled Docker sandbox so numbers are computed, never hallucinated; a deterministic rule engine — not the LLM — judges safety thresholds; and the agent self-critiques before answering. Every step is SHA-256 hash-chained into a tamper-evident audit log, and safety-critical findings are gated behind a named human sign-off. Open-weight models via Ollama (Qwen2.5 for reasoning, Qwen2.5-VL for vision, nomic-embed-text for retrieval) keep the whole stack on a single 4GB-VRAM laptop GPU. Telemetry is force-disabled at import, the UI binds to localhost only, and a live self-audit proves the sole network call ever made is to the local model server. Built for Smart India Hackathon 2026 (PS SIH26117, Mangalore Refinery & Petrochemicals Ltd).",
+      "An offline, on-premise agentic AI workbench that lets high-security industries — oil refineries, defence, nuclear — run multimodal AI on confidential documents without a byte leaving the plant. A LangGraph state machine with a bounded retry loop plans the job, then runs it end to end locally: a vision model reads P&IDs, gauges and scans; hybrid FAISS + BM25 retrieval grounds every answer in the plant's own SOPs (dense search alone misses exact IDs like SOP-MNT-402 — BM25 catches them); safety arithmetic is evaluated in a network-disabled Docker sandbox so numbers are computed, never hallucinated; a deterministic rule engine — not the LLM — judges safety thresholds; and the agent self-critiques before answering. Every step is SHA-256 hash-chained into a tamper-evident audit log, and safety-critical findings are gated behind a named human sign-off. Open-weight models via Ollama (Qwen2.5 for reasoning, Qwen2.5-VL for vision, nomic-embed-text for retrieval) run a 7B model on a single 4 GB laptop GPU. Telemetry is force-disabled at import, the UI binds to localhost only, and a live self-audit proves the sole network call ever made is to the local model server. Built for Smart India Hackathon 2026 (PS SIH26117).",
     imageUrl: "/images/projects/aegis.png",
     liveUrl: "#",
-    githubUrl: "https://github.com/srinivas-rc0408/Team-Alpha---Sovereign-On-Premise-Agentic-AI-Workbench",
-    tech: ["Python", "LangGraph", "LangChain", "Ollama", "Qwen2.5", "Qwen2.5-VL", "FAISS", "BM25", "Streamlit", "Docker", "SHA-256 Audit Chain"],
+    githubUrl: "https://github.com/srinivas-rc0408/aegis",
+    tech: ["Python", "LangGraph", "Ollama", "Qwen2.5", "Qwen2.5-VL", "FAISS", "BM25", "Docker", "Streamlit"],
+  },
+  {
+    name: "Codebase-Wide Version Migration and Refactoring Agent",
+    description:
+      "An autonomous LLM agent that upgrades whole codebases across breaking library-version changes. It maps each codebase with AST-based static analysis and a dependency graph, then runs a plan, edit, test, and self-correct loop inside a Docker sandbox, producing a patch and an audit log for every change. Deliverables include a benchmark report and a research paper. Built as my B.Tech major project at the Center for AI and ML (CAIML), REVA University.",
+    imageUrl: "/images/logo.jpg",
+    liveUrl: "#",
+    githubUrl: "https://github.com/srinivas-rc0408/Code-Base-Version-Migration-and-Refactoring-agent",
+    tech: ["Python", "LLM Agents", "AST", "Static Analysis", "Dependency Graph", "Docker"],
   },
   {
     name: "ArchAgent — AI Architectural Design Platform",
     description:
-      "An AI platform that turns text design briefs into 3D renders, panoramic views, and itemised cost estimates through a 4-stage Google Gemini prompt-chaining pipeline. Combines two AI models — Gemini for design reasoning and Hugging Face FLUX for image generation — with an interactive Three.js 3D viewer, plus Supabase login and project storage. Fixed inaccurate cost estimates (LLM hallucinations) using few-shot prompting with real INR price examples, and added 1-click PDF report export with jsPDF.",
+      "An AI platform that turns text design briefs into 3D renders, panoramic views, and itemised cost estimates through a 4-stage Google Gemini prompt-chaining pipeline. Combines two AI models — Gemini for design reasoning and Hugging Face FLUX for image generation — with an interactive Three.js 3D viewer, plus Supabase login and project storage. Fixed inaccurate cost estimates (LLM hallucinations) using few-shot prompting with real INR price examples, and added 1-click PDF report export with jsPDF. Turns a plain-language building brief into 3D panoramic renders and an itemised INR cost estimate in under 60 seconds.",
     imageUrl: "/images/projects/archagent.png",
     liveUrl: "#",
-    githubUrl: "https://github.com/srinivas-rc0408/ArchAgent---Agentic-AI",
+    githubUrl: "https://github.com/srinivas-rc0408/archagent",
     tech: ["React", "TypeScript", "Google Gemini", "Hugging Face FLUX", "Three.js", "Supabase", "jsPDF"],
   },
   {
-    name: "AquaSentinel — AI-Based Submersible Micro-Robot",
+    name: "AquaSentinel — Underwater Inspection Robot Platform",
     description:
-      "A full-stack mission-control platform for an autonomous underwater inspection robot. Operators plan a waypoint coverage route on an interactive map (with live distance and thruster-time estimates), watch real-time sensor telemetry (pH, temperature, turbidity, depth, battery) and the mission camera, and let an AI image-analysis pipeline flag structural defects — cracks, corrosion, algae, leakage — with confidence scores. Rounded out by a per-component robot-health monitor, auto/manual mission controls (start / pause / return-home / capture), a detection gallery with mission history, and a one-click PDF mission report — all in a dark, real-time command center. Telemetry is HTTP-polled; the React/TypeScript frontend and Node/Express backend deploy on Vercel + Render.",
+      "A full-stack mission-control platform for an autonomous underwater inspection robot. Operators plan a waypoint coverage route on an interactive map (with live distance and thruster-time estimates), watch real-time sensor telemetry (pH, temperature, turbidity, depth, battery) and the mission camera, and let an AI image-analysis pipeline flag structural defects — cracks, corrosion, algae, leakage — with confidence scores. Rounded out by a per-component robot-health monitor, auto/manual mission controls (start / pause / return-home / capture), a detection gallery with mission history, and a one-click PDF mission report — all in a dark, real-time command center. Backed by a 13-document engineering suite (PRD, API contract, database schema, 40+ tickets, security spec, CI workflow), which also corrected a physics error in the legacy specs: GPS does not work underwater.",
     imageUrl: "/images/projects/aquasentinel.jpg",
-    liveUrl: "https://aqua-wheat.vercel.app/home",
-    githubUrl: "https://github.com/srinivas-rc0408/Project-Aqua",
-    tech: ["React", "TypeScript", "Node.js", "Express", "Vite", "Tailwind CSS", "Leaflet", "Three.js", "AI Image Analysis", "JWT"],
+    liveUrl: "https://aqua-wheat.vercel.app",
+    githubUrl: "https://github.com/srinivas-rc0408/aquasentinel",
+    tech: ["React 19", "TypeScript", "Vite", "Node.js", "Express", "PostgreSQL (Neon)", "Computer Vision", "Leaflet"],
+  },
+  {
+    name: "Geo Measure — Geospatial File Measurement API",
+    description:
+      "A REST API that accepts Shapefile (.zip) and KML uploads, extracts each feature's geometry, CRS, and properties, and returns the area of polygons and the length of lines. Every feature is reprojected to its local UTM zone before measuring and cross-checked against a geodesic calculation, flagging gaps above 0.5%; naive Web Mercator overstates area by 5.8% near Bengaluru. The frontend and API ship as a single Docker image on Render, with measurement history in PostgreSQL managed through Alembic migrations.",
+    imageUrl: "/images/logo.jpg",
+    liveUrl: "https://geo-measure.onrender.com",
+    githubUrl: "https://github.com/srinivas-rc0408/geospatial-measurement-api",
+    tech: ["Python", "FastAPI", "React", "PostgreSQL (Neon)", "Alembic", "Docker", "Render"],
   },
   {
     name: "Debug.ext — Autonomous AI Bug Triage",
@@ -79,7 +97,7 @@ export const projects: Project[] = [
   {
     name: "Health Risk MLOps",
     description:
-      "An end-to-end MLOps pipeline that fully automates training, evaluation, and production deployment of health-risk prediction models. Integrated MLflow for strict model versioning and continuous performance monitoring, and designed 4 reproducible, modular pipeline stages for seamless preprocessing, feature tracking, and standardised evaluation.",
+      "An end-to-end MLOps pipeline that fully automates training, evaluation, and production deployment of health-risk prediction models. Integrated MLflow for strict model versioning and continuous performance monitoring, and designed 4 reproducible, modular pipeline stages for clean preprocessing, feature tracking, and standardised evaluation.",
     imageUrl: "/images/projects/health-risk-mlops.png",
     liveUrl: "#",
     githubUrl: "https://github.com/srinivas-rc0408/health-risk-mlops",
@@ -181,53 +199,56 @@ export interface SkillsCategory {
 }
 
 export const skills: SkillsCategory = {
-  languages: ["Python", "TypeScript", "JavaScript", "Java", "C", "C++", "SQL"],
+  languages: ["Python", "Java", "C", "C++", "JavaScript", "TypeScript", "SQL", "Bash"],
   ai_ml: [
-    "Machine Learning",
     "Deep Learning",
-    "LLMs (Gemini · Hugging Face)",
-    "Prompt Engineering",
-    "Agentic AI",
     "NLP",
-    "Feature Engineering",
+    "Computer Vision",
+    "Agentic AI",
+    "LLMs",
+    "RAG",
+    "LangGraph",
+    "Prompt Engineering",
+    "Hybrid Retrieval (FAISS, BM25)",
+    "Vector Search",
+    "Ollama",
+    "Google Gemini API",
+    "Hugging Face",
+    "Scikit-learn",
+    "TensorFlow",
+    "Pandas",
+    "NumPy",
     "MLOps",
-    "OpenCV",
   ],
   frameworks: [
+    "FastAPI",
+    "Node.js",
+    "Express",
     "React",
     "Next.js",
     "Vite",
     "Tailwind CSS",
     "Three.js",
-    "TensorFlow",
-    "Scikit-learn",
-    "Pandas / NumPy",
     "Streamlit",
   ],
   tools: [
-    "Git / GitHub",
-    "Firebase",
-    "Supabase",
-    "Neon Postgres",
-    "Prisma",
-    "Inngest",
-    "Google Places API",
-    "REST APIs",
-    "MLflow",
+    "Git",
+    "GitHub",
+    "GitHub Actions (CI/CD)",
+    "Docker",
     "VS Code",
     "Jupyter Notebook",
-    "Google Colab",
+    "PostgreSQL",
+    "MongoDB",
+    "SQLite",
+    "Supabase",
+    "Firebase",
+    "Render",
+    "Vercel",
+    "Neon",
   ],
-  // Distros daily-driven / distro-hopped over the years (Arch-family is home base).
-  linux: [
-    "Arch Linux",
-    "CachyOS",
-    "Fedora",
-    "Ubuntu",
-    "Linux Mint",
-    "Debian",
-    "Pop!_OS",
-  ],
+  // Arch-family is home base.
+  linux: ["Arch Linux", "CachyOS", "Fedora", "Pop!_OS"],
 };
 
 // Faux shell command shown above each skill category.
@@ -243,7 +264,7 @@ export const skillCommands: Record<keyof SkillsCategory, string> = {
 // Contact
 // ---------------------------------------------------------------------------
 
-export const CONTACT_EMAIL = "srinivasrc01@gmail.com";
+export const CONTACT_EMAIL = "srinivasrc0408@gmail.com";
 export const CONTACT_PHONE = "+91 72049 54568";
 export const CONTACT_LOCATION = "Bengaluru, Karnataka, India";
 export const RESUME_URL = "/srinivas-rc-resume.pdf";

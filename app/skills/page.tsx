@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Skills & Tech Stack | AI / ML Engineer",
   description:
-    "Technical skills of Srinivas RC: Python, Machine Learning, Large Language Models (LLMs), Agentic Frameworks (CrewAI), Prompt Engineering, and Linux Administration. AI / ML Engineer from Bengaluru, India.",
+    "Technical skills of Srinivas RC: Python, Machine Learning, Large Language Models (LLMs), Agentic Frameworks (LangGraph), Prompt Engineering, and Linux Administration. AI / ML Engineer from Bengaluru, India.",
   keywords: [
     "AI Engineering Skills",
     "JavaScript Developer",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Skills & Tech Stack | AI / ML Engineer",
     description:
-      "Python, Machine Learning, LLMs, agentic frameworks (CrewAI), prompt engineering, and Linux administration. AI / ML Engineer from Bengaluru, India.",
+      "Python, Machine Learning, LLMs, agentic frameworks (LangGraph), prompt engineering, and Linux administration. AI / ML Engineer from Bengaluru, India.",
     type: "website",
     url: `${SITE_URL}/skills`,
     siteName: "Srinivas RC - Developer Portfolio",
@@ -161,6 +161,7 @@ const structuredData = {
     ...skillsData.ai_ml,
     ...skillsData.frameworks,
     ...skillsData.tools,
+    ...skillsData.linux,
   ],
   jobTitle: "AI / ML Engineer",
   address: {
@@ -179,7 +180,7 @@ const structuredData = {
       "@type": "EducationalOccupationalCredential",
       credentialCategory: "AI & Machine Learning",
       competencyRequired:
-        "Machine Learning, Large Language Models, CrewAI, Prompt Engineering",
+        "Machine Learning, Large Language Models, LangGraph, Prompt Engineering",
     },
     {
       "@type": "EducationalOccupationalCredential",
