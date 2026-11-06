@@ -271,8 +271,12 @@ export default function DocViewer() {
               <LockedState label={doc.label} onClose={() => setDoc(null)} />
             ) : (
               <>
-                {/* Document — rendered to canvas (works on every device) */}
-                <div className="relative flex-1 bg-white/[0.02]">
+                {/* Document — rendered to canvas (works on every device).
+                    min-h-0 is essential: without it this flex-1 child defaults to
+                    min-height:auto and grows to the full multi-page canvas stack,
+                    so PdfCanvas's inner overflow-y-auto never gets a bounded
+                    height and a >1-page PDF can't scroll. */}
+                <div className="relative min-h-0 flex-1 overflow-hidden bg-white/[0.02]">
                   <PdfCanvas url={doc.url} onStatus={setStatus} />
                   {status === "error" && (
                     <div
