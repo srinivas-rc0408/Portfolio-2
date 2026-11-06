@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Volume2, VolumeOff } from "lucide-react";
 import { SoundEngine } from "@/lib/sound";
 
@@ -10,7 +10,17 @@ import { SoundEngine } from "@/lib/sound";
  * persists the user's preference to localStorage on toggle.
  */
 export default function SoundToggle() {
-  const [off, setOff] = useState(() => SoundEngine.isMuted());
+  // Start from the server-safe default (unmuted — SoundEngine reads no
+  // localStorage on the server), then adopt the stored preference after mount.
+  // Reading localStorage in the initial render instead would make the first
+  // client paint disagree with the SSR HTML for anyone who muted before,
+  // triggering a hydration mismatch and a full client re-render.
+  const [off, setOff] = useState(false);
+  // Sync the real (localStorage-backed) preference once, after mount. The value
+  // is client-only, so this is the correct place to read it — not a derived
+  // value we could compute during render.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setOff(SoundEngine.isMuted()), []);
 
   const toggle = () => {
     const nowMuted = SoundEngine.toggleMute();
